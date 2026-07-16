@@ -5,7 +5,7 @@ async function getAll(req, res, next) {
   try {
     const tenantId = req.user?.tenant_id;
     const result = await pool.query(
-      'SELECT id, username FROM usuarios WHERE tenant_id = $1 ORDER BY id',
+      'SELECT id, username, email FROM usuarios WHERE tenant_id = $1 ORDER BY id',
       [tenantId]
     );
     res.json({ ok: true, data: result.rows });
@@ -15,12 +15,12 @@ async function getAll(req, res, next) {
 async function create(req, res, next) {
   try {
     const tenantId = req.user?.tenant_id;
-    const { password } = req.body;
+    const { password, email } = req.body;
     const username = req.body.username.toLowerCase().trim();
     const hashed = bcrypt.hashSync(password, 10);
     const result = await pool.query(
-      'INSERT INTO usuarios (tenant_id, username, password) VALUES ($1, $2, $3) RETURNING id, username',
-      [tenantId, username, hashed]
+      'INSERT INTO usuarios (tenant_id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING id, username, email',
+      [tenantId, username, email || null, hashed]
     );
     res.status(201).json({ ok: true, data: result.rows[0] });
   } catch (err) {
@@ -54,6 +54,7 @@ async function update(req, res, next) {
     const tenantId = req.user?.tenant_id;
     const id = parseInt(req.params.id);
     const username = req.body.username?.toLowerCase().trim();
+    const email = req.body.email;
     const password = req.body.password;
 
     if (!username) {
@@ -65,13 +66,13 @@ async function update(req, res, next) {
     if (password && password.trim() !== '') {
       const hashed = bcrypt.hashSync(password, 10);
       result = await pool.query(
-        'UPDATE usuarios SET username = $1, password = $2 WHERE id = $3 AND tenant_id = $4 RETURNING id, username',
-        [username, hashed, id, tenantId]
+        'UPDATE usuarios SET username = $1, email = $2, password = $3 WHERE id = $4 AND tenant_id = $5 RETURNING id, username, email',
+        [username, email || null, hashed, id, tenantId]
       );
     } else {
       result = await pool.query(
-        'UPDATE usuarios SET username = $1 WHERE id = $2 AND tenant_id = $3 RETURNING id, username',
-        [username, id, tenantId]
+        'UPDATE usuarios SET username = $1, email = $2 WHERE id = $3 AND tenant_id = $4 RETURNING id, username, email',
+        [username, email || null, id, tenantId]
       );
     }
 

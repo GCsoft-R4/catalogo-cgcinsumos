@@ -37,14 +37,6 @@ function ForgotPassword() {
           {result ? (
             <div>
               <div className="alert alert-success py-2 small">{result.mensaje}</div>
-              {result.resetUrl && (
-                <div className="mb-3">
-                  <label className="form-label small text-muted">Hacé clic en el enlace para restablecer tu contraseña:</label>
-                  <div className="d-grid gap-2">
-                    <a href={result.resetUrl} className="btn btn-accent">{result.resetUrl}</a>
-                  </div>
-                </div>
-              )}
               <div className="text-center mt-3">
                 <Link to="/admin/login" className="text-muted small">Volver al inicio de sesión</Link>
               </div>

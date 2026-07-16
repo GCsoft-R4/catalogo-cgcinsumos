@@ -54,6 +54,7 @@ async function initDatabase() {
         id SERIAL PRIMARY KEY,
         tenant_id INTEGER NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
         username VARCHAR(100) NOT NULL,
+        email VARCHAR(255),
         password TEXT NOT NULL
       );
 
@@ -117,6 +118,19 @@ async function initDatabase() {
           ALTER TABLE categorias ADD COLUMN tenant_id INTEGER REFERENCES tenants(id);
           UPDATE categorias SET tenant_id = ${defaultTenantId} WHERE tenant_id IS NULL;
           ALTER TABLE categorias ALTER COLUMN tenant_id SET NOT NULL;
+        END IF;
+      END $$;
+    `);
+
+    // Migrar columna email en usuarios
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='usuarios' AND column_name='email'
+        ) THEN
+          ALTER TABLE usuarios ADD COLUMN email VARCHAR(255);
         END IF;
       END $$;
     `);

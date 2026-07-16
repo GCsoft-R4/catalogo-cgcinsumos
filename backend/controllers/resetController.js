@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { pool } = require('../config/db');
+const { sendResetEmail } = require('../config/mailer');
 
 async function forgotPassword(req, res) {
   try {
@@ -12,34 +13,33 @@ async function forgotPassword(req, res) {
     }
 
     const userResult = await pool.query(
-      'SELECT id FROM usuarios WHERE LOWER(username) = LOWER($1) AND tenant_id = $2',
+      'SELECT id, email FROM usuarios WHERE LOWER(username) = LOWER($1) AND tenant_id = $2',
       [username, tenantId]
     );
 
-    if (userResult.rows.length === 0) {
-      return res.json({ ok: true, data: { mensaje: 'Si el usuario existe, recibirás un enlace de recuperación' } });
+    const user = userResult.rows[0];
+
+    if (!user || !user.email) {
+      return res.json({ ok: true, data: { mensaje: 'Si el usuario existe y tiene email configurado, recibirás un enlace de recuperación.' } });
     }
 
-    const usuarioId = userResult.rows[0].id;
     const token = crypto.randomUUID();
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
     await pool.query(
       'INSERT INTO password_reset_tokens (tenant_id, usuario_id, token, expires_at) VALUES ($1, $2, $3, $4)',
-      [tenantId, usuarioId, token, expiresAt]
+      [tenantId, user.id, token, expiresAt]
     );
 
-    res.json({
-      ok: true,
-      data: {
-        mensaje: 'Enlace de recuperación generado.',
-        resetUrl: `${req.protocol}://${req.headers.host}/admin/reset-password?token=${token}`
-      }
-    });
+    const resetUrl = `${req.protocol}://${req.headers.host}/admin/reset-password?token=${token}`;
+
+    await sendResetEmail(user.email, resetUrl);
+
+    res.json({ ok: true, data: { mensaje: 'Recibí un enlace de recuperación en tu correo electrónico.' } });
 
   } catch (error) {
     console.error('Error forgot password:', error);
-    res.status(500).json({ ok: false, error: 'Error interno del servidor' });
+    res.status(500).json({ ok: false, error: 'Error al enviar el correo. Verificá la configuración SMTP.' });
   }
 }
 

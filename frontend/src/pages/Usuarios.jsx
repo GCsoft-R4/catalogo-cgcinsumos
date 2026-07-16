@@ -10,11 +10,13 @@ function Usuarios() {
 
   // Crear usuario
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   // Editar usuario
   const [editing, setEditing] = useState(null);
   const [editUsername, setEditUsername] = useState('');
+  const [editEmail, setEditEmail] = useState('');
   const [editPassword, setEditPassword] = useState('');
 
   const [error, setError] = useState('');
@@ -45,10 +47,12 @@ function Usuarios() {
     try {
       await api.post('/usuarios', {
         username,
+        email,
         password
       });
 
       setUsername('');
+      setEmail('');
       setPassword('');
 
       fetchUsuarios();
@@ -77,6 +81,7 @@ function Usuarios() {
         `/usuarios/${editing.id}`,
         {
           username: editUsername,
+          email: editEmail,
           password: editPassword
         }
       );
@@ -84,6 +89,7 @@ function Usuarios() {
 
       setEditing(null);
       setEditUsername('');
+      setEditEmail('');
       setEditPassword('');
 
       fetchUsuarios();
@@ -104,6 +110,7 @@ function Usuarios() {
 
     setEditing(usuario);
     setEditUsername(usuario.username);
+    setEditEmail(usuario.email || '');
     setEditPassword('');
 
   };
@@ -113,6 +120,7 @@ function Usuarios() {
 
     setEditing(null);
     setEditUsername('');
+    setEditEmail('');
     setEditPassword('');
 
   };
@@ -141,6 +149,7 @@ function Usuarios() {
             <tr>
               <th>ID</th>
               <th>Usuario</th>
+              <th>Email</th>
               <th style={{ width: 180 }} />
             </tr>
           </thead>
@@ -207,6 +216,24 @@ function Usuarios() {
 
           </div>
 
+
+          <div className="mb-3">
+
+            <label className="form-label">
+              Email
+            </label>
+
+            <input
+              type="email"
+              className="form-control"
+              value={editEmail}
+              placeholder="usuario@ejemplo.com"
+              onChange={
+                e => setEditEmail(e.target.value)
+              }
+            />
+
+          </div>
 
           <div className="mb-3">
 
@@ -308,6 +335,24 @@ function Usuarios() {
               <div className="mb-3">
 
                 <label className="form-label">
+                  Email
+                </label>
+
+                <input
+                  type="email"
+                  className="form-control"
+                  value={email}
+                  placeholder="usuario@ejemplo.com"
+                  onChange={
+                    e => setEmail(e.target.value)
+                  }
+                />
+
+              </div>
+
+              <div className="mb-3">
+
+                <label className="form-label">
                   Contraseña
                 </label>
 
@@ -374,6 +419,8 @@ function Usuarios() {
 
                   <th>Usuario</th>
 
+                  <th>Email</th>
+
                   <th style={{ width: 180 }} />
 
                 </tr>
@@ -398,6 +445,11 @@ function Usuarios() {
 
                       <td className="fw-medium">
                         {u.username}
+                      </td>
+
+
+                      <td className="text-muted small">
+                        {u.email || '—'}
                       </td>
 
 
