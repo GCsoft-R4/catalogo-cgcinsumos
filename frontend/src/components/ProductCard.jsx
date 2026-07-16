@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { getImageUrl } from "../utils/imageUrl";
+import { imageUrl as getImgUrl } from "../services/api";
 
 const WHATSAPP = '5493586546525';
 
 function ProductCard({ producto }) {
   const navigate = useNavigate();
 
-  const imageUrl = getImageUrl(producto.imagen);
+  const imageUrl = getImgUrl(producto.imagen);
   const precio = producto.precio > 0
     ? `$${parseFloat(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
     : '';

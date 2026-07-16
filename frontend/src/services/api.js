@@ -8,6 +8,7 @@ const api = axios.create({
 
 export function imageUrl(filename) {
   if (!filename) return 'https://placehold.co/400x300/e5e7eb/9ca3af?text=Sin+imagen';
+  if (filename.startsWith('http')) return filename;
   return API_BASE ? `${API_BASE}/uploads/${filename}` : `/uploads/${filename}`;
 }
 
