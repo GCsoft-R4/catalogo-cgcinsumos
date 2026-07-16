@@ -383,11 +383,11 @@ body {
 }
 
 .carousel-arrow:first-child {
-  left: -16px;
+  left: -28px;
 }
 
 .carousel-arrow:last-child {
-  right: -16px;
+  right: -28px;
 }
 
 .carousel-arrow:hover {
