@@ -2,6 +2,8 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 
 const { initDatabase } = require('./database/init');
@@ -43,6 +45,34 @@ app.options('*', cors());
 
 
 // =======================
+// Seguridad: headers HTTP
+// =======================
+
+app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+
+
+// =======================
+// Rate limiting
+// =======================
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { ok: false, error: 'Demasiados intentos. Intentá de nuevo en 15 minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: { ok: false, error: 'Demasiadas solicitudes. Intentá de nuevo más tarde.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+
+// =======================
 // Middlewares globales
 // =======================
 
@@ -64,6 +94,11 @@ app.use(
 // =======================
 
 app.use('/api', tenantMiddleware);
+
+app.use('/api/login', authLimiter);
+app.use('/api/forgot-password', authLimiter);
+
+app.use('/api', apiLimiter);
 
 app.use('/api', authRoutes);
 
