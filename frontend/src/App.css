@@ -336,8 +336,9 @@ body {
 .categoria-carousel-wrapper {
   max-width: min(90vw, 400px);
   margin: 0 auto;
-  overflow: hidden;
-  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .categoria-carousel {
@@ -346,8 +347,9 @@ body {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 8px;
+  padding: 4px 0 8px;
   scrollbar-width: none;
+  flex: 1;
 }
 
 .categoria-carousel::-webkit-scrollbar {
@@ -357,6 +359,34 @@ body {
 .categoria-carousel > .btn {
   flex-shrink: 0;
   scroll-snap-align: start;
+}
+
+.carousel-arrow {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 0;
+}
+
+.carousel-arrow:hover {
+  background: var(--bg-secondary);
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+@media (max-width: 575.98px) {
+  .carousel-arrow {
+    display: none;
+  }
 }
 
 @media (max-width: 575.98px) {

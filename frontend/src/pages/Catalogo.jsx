@@ -51,6 +51,13 @@ function Catalogo() {
     return () => clearInterval(intervalRef.current);
   }, [categorias]);
 
+  const scrollCarousel = (dir) => {
+    clearInterval(intervalRef.current);
+    const el = carouselRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * 200, behavior: 'smooth' });
+  };
+
   const cambiarCategoria = slug => {
     setCategoriaActiva(slug);
     setPage(1);
@@ -138,7 +145,10 @@ function Catalogo() {
       </div>
 
       {categorias.length > 0 && (
-        <div className="categoria-carousel-wrapper mb-4">
+        <div className="categoria-carousel-wrapper mb-4" onMouseEnter={() => clearInterval(intervalRef.current)}>
+          <button className="carousel-arrow" onClick={() => scrollCarousel(-1)} aria-label="Anterior">
+            <i className="bi bi-chevron-left"></i>
+          </button>
           <div className="categoria-carousel" ref={carouselRef}>
             <button
               className={`btn btn-sm ${!categoriaActiva ? 'btn-accent' : 'btn-outline'}`}
@@ -156,6 +166,9 @@ function Catalogo() {
               </button>
             ))}
           </div>
+          <button className="carousel-arrow" onClick={() => scrollCarousel(1)} aria-label="Siguiente">
+            <i className="bi bi-chevron-right"></i>
+          </button>
         </div>
       )}
 
