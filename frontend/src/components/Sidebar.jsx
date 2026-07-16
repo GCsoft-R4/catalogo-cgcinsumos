@@ -40,6 +40,9 @@ function Sidebar() {
         <NavLink to="/admin/usuarios" className="nav-link">
           Usuarios
         </NavLink>
+        <NavLink to="/admin/forgot-password" className="nav-link">
+          Recuperar contraseña
+        </NavLink>
       </nav>
       <div className="px-4 mt-auto">
         <button onClick={handleLogout} className="btn btn-outline w-100">
