@@ -4,7 +4,7 @@ const { pool } = require('../config/db');
 
 async function forgotPassword(req, res) {
   try {
-    const tenantId = req.user?.tenant_id;
+    const tenantId = req.tenant?.id;
     const username = req.body.username?.toLowerCase().trim();
 
     if (!username) {

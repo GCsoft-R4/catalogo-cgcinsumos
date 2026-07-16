@@ -25,9 +25,9 @@ function App() {
         </Route>
 
         <Route path="/admin/login" element={<Login />} />
+        <Route path="/admin/forgot-password" element={<ForgotPassword />} />
         <Route path="/admin/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<AdminLayout />}>
-          <Route path="forgot-password" element={<ForgotPassword />} />
           <Route index element={<Navigate to="productos" replace />} />
           <Route path="productos" element={<Dashboard />} />
           <Route path="productos/nuevo" element={<ProductForm />} />
