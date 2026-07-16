@@ -57,9 +57,6 @@ async function initDatabase() {
         password TEXT NOT NULL
       );
 
-      CREATE UNIQUE INDEX IF NOT EXISTS usuarios_tenant_username_lower_idx
-        ON usuarios (tenant_id, LOWER(username));
-
       CREATE TABLE IF NOT EXISTS producto_imagenes (
         id SERIAL PRIMARY KEY,
         producto_id INTEGER NOT NULL REFERENCES productos(id) ON DELETE CASCADE,
@@ -141,9 +138,13 @@ async function initDatabase() {
         ON categorias (tenant_id, slug);
     `);
 
-    // Migrar índice único de username
+    // Migrar índice único de username y crear nuevo índice compuesto
     await pool.query(`
       DROP INDEX IF EXISTS usuarios_username_lower_idx;
+    `);
+    await pool.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS usuarios_tenant_username_lower_idx
+        ON usuarios (tenant_id, LOWER(username));
     `);
 
     // Migrar imagen -> producto_imagenes
