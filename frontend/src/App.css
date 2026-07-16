@@ -333,6 +333,39 @@ body {
   color: #dc2626;
 }
 
+.categoria-carousel-wrapper {
+  overflow: hidden;
+}
+
+.categoria-carousel {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.categoria-carousel::-webkit-scrollbar {
+  height: 4px;
+}
+
+.categoria-carousel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.categoria-carousel::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.categoria-carousel > .btn {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}
+
 @media (max-width: 575.98px) {
   .card-product .card-img-top {
     height: 160px;

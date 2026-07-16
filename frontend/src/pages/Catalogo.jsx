@@ -121,22 +121,24 @@ function Catalogo() {
       </div>
 
       {categorias.length > 0 && (
-        <div className="d-flex justify-content-center gap-2 mb-4 flex-wrap">
-          <button
-            className={`btn btn-sm ${!categoriaActiva ? 'btn-accent' : 'btn-outline'}`}
-            onClick={() => cambiarCategoria('')}
-          >
-            Todas
-          </button>
-          {categorias.map(c => (
+        <div className="categoria-carousel-wrapper mb-4">
+          <div className="categoria-carousel">
             <button
-              key={c.id}
-              className={`btn btn-sm ${categoriaActiva === c.slug ? 'btn-accent' : 'btn-outline'}`}
-              onClick={() => cambiarCategoria(c.slug)}
+              className={`btn btn-sm ${!categoriaActiva ? 'btn-accent' : 'btn-outline'}`}
+              onClick={() => cambiarCategoria('')}
             >
-              {c.nombre}
+              Todas
             </button>
-          ))}
+            {categorias.map(c => (
+              <button
+                key={c.id}
+                className={`btn btn-sm ${categoriaActiva === c.slug ? 'btn-accent' : 'btn-outline'}`}
+                onClick={() => cambiarCategoria(c.slug)}
+              >
+                {c.nombre}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
