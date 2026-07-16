@@ -334,7 +334,10 @@ body {
 }
 
 .categoria-carousel-wrapper {
+  max-width: min(90vw, 400px);
+  margin: 0 auto;
   overflow: hidden;
+  position: relative;
 }
 
 .categoria-carousel {
@@ -343,22 +346,12 @@ body {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 4px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+  padding-bottom: 8px;
+  scrollbar-width: none;
 }
 
 .categoria-carousel::-webkit-scrollbar {
-  height: 4px;
-}
-
-.categoria-carousel::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.categoria-carousel::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
+  display: none;
 }
 
 .categoria-carousel > .btn {

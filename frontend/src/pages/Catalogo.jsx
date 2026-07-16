@@ -39,7 +39,7 @@ function Catalogo() {
 
   useEffect(() => {
     const el = carouselRef.current;
-    if (!el || categorias.length < 4) return;
+    if (!el || categorias.length < 3) return;
     intervalRef.current = setInterval(() => {
       const maxScroll = el.scrollWidth - el.clientWidth;
       if (el.scrollLeft >= maxScroll - 10) {
