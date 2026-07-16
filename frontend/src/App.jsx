@@ -5,6 +5,8 @@ import AdminLayout from './layouts/AdminLayout';
 import Catalogo from './pages/Catalogo';
 import ProductoDetalle from './pages/ProductoDetalle';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import ProductForm from './pages/ProductForm';
 import Categorias from './pages/Categorias';
@@ -23,6 +25,8 @@ function App() {
         </Route>
 
         <Route path="/admin/login" element={<Login />} />
+        <Route path="/admin/forgot-password" element={<ForgotPassword />} />
+        <Route path="/admin/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="productos" replace />} />
           <Route path="productos" element={<Dashboard />} />

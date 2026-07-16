@@ -169,6 +169,21 @@ async function initDatabase() {
     `);
 
     // =====================================
+    // Password reset tokens
+    // =====================================
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS password_reset_tokens (
+        id SERIAL PRIMARY KEY,
+        tenant_id INTEGER NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+        usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+        token VARCHAR(255) NOT NULL UNIQUE,
+        usado BOOLEAN NOT NULL DEFAULT FALSE,
+        expires_at TIMESTAMP NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // =====================================
     // Seed: usuario admin del tenant por defecto
     // =====================================
     const adminUser = (process.env.ADMIN_USER || 'admin').toLowerCase().trim();
