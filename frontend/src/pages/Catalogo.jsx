@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../services/api';
 import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
@@ -7,6 +7,8 @@ function Catalogo() {
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [categoriaActiva, setCategoriaActiva] = useState('');
+  const carouselRef = useRef(null);
+  const intervalRef = useRef(null);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -35,11 +37,26 @@ function Catalogo() {
     fetchProductos(categoriaActiva, page, searchQuery);
   }, [categoriaActiva, page, searchQuery]);
 
+  useEffect(() => {
+    const el = carouselRef.current;
+    if (!el || categorias.length < 4) return;
+    intervalRef.current = setInterval(() => {
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      if (el.scrollLeft >= maxScroll - 10) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        el.scrollBy({ left: 180, behavior: 'smooth' });
+      }
+    }, 3000);
+    return () => clearInterval(intervalRef.current);
+  }, [categorias]);
+
   const cambiarCategoria = slug => {
     setCategoriaActiva(slug);
     setPage(1);
     setSearchInput('');
     setSearchQuery('');
+    clearInterval(intervalRef.current);
   };
 
   const handleSearch = () => {
@@ -122,7 +139,7 @@ function Catalogo() {
 
       {categorias.length > 0 && (
         <div className="categoria-carousel-wrapper mb-4">
-          <div className="categoria-carousel">
+          <div className="categoria-carousel" ref={carouselRef}>
             <button
               className={`btn btn-sm ${!categoriaActiva ? 'btn-accent' : 'btn-outline'}`}
               onClick={() => cambiarCategoria('')}
