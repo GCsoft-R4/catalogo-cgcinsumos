@@ -4,12 +4,17 @@ const { pool } = require('../config/db');
 
 async function login(req, res) {
   try {
+    const tenantId = req.tenant?.id;
+    if (!tenantId) {
+      return res.status(400).json({ ok: false, error: 'Tenant no identificado' });
+    }
+
     const { password } = req.body;
     const username = req.body.username.toLowerCase().trim();
 
     const result = await pool.query(
-      'SELECT * FROM usuarios WHERE LOWER(username) = $1',
-      [username]
+      'SELECT * FROM usuarios WHERE LOWER(username) = $1 AND tenant_id = $2',
+      [username, tenantId]
     );
 
     const user = result.rows[0];
@@ -24,7 +29,8 @@ async function login(req, res) {
     const token = jwt.sign(
       {
         id: user.id,
-        username: user.username
+        username: user.username,
+        tenant_id: tenantId
       },
       process.env.JWT_SECRET || 'secretkey',
       {

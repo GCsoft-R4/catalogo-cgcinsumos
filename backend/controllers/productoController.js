@@ -2,15 +2,16 @@ const { pool } = require('../config/db');
 
 async function getAll(req, res) {
   try {
+    const tenantId = req.tenant?.id;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 12;
     const offset = (page - 1) * limit;
     const categoria = req.query.categoria;
     const search = req.query.search;
 
-    const conditions = [];
-    const params = [];
-    let idx = 0;
+    const conditions = ['p.tenant_id = $1'];
+    const params = [tenantId];
+    let idx = 1;
 
     if (categoria) {
       params.push(categoria);
@@ -23,7 +24,7 @@ async function getAll(req, res) {
       conditions.push(`(p.nombre ILIKE $${++idx} OR p.descripcion ILIKE $${++idx} OR c.nombre ILIKE $${++idx})`);
     }
 
-    const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    const where = `WHERE ${conditions.join(' AND ')}`;
 
     const countResult = await pool.query(
       `SELECT COUNT(*)::int AS total FROM productos p
@@ -61,9 +62,10 @@ async function getAll(req, res) {
 
 async function getById(req, res) {
   try {
+    const tenantId = req.tenant?.id;
     const result = await pool.query(
-      'SELECT * FROM productos WHERE id = $1',
-      [req.params.id]
+      'SELECT * FROM productos WHERE id = $1 AND tenant_id = $2',
+      [req.params.id, tenantId]
     );
 
     const producto = result.rows[0];
@@ -90,6 +92,7 @@ async function getById(req, res) {
 
 async function create(req, res) {
   try {
+    const tenantId = req.user?.tenant_id || req.tenant?.id;
     const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id } = req.body;
 
     const imagen = req.file
@@ -99,10 +102,11 @@ async function create(req, res) {
     const catId = categoria_id ? parseInt(categoria_id) : null;
 
     const result = await pool.query(
-      `INSERT INTO productos (nombre, descripcion, precio, imagen, categoria_id)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO productos (tenant_id, nombre, descripcion, precio, imagen, categoria_id)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
       [
+        tenantId,
         nombre,
         descripcion || '',
         precio || 0,
@@ -135,11 +139,12 @@ async function create(req, res) {
 
 async function update(req, res) {
   try {
+    const tenantId = req.user?.tenant_id || req.tenant?.id;
     const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id } = req.body;
 
     const existing = await pool.query(
-      'SELECT * FROM productos WHERE id = $1',
-      [req.params.id]
+      'SELECT * FROM productos WHERE id = $1 AND tenant_id = $2',
+      [req.params.id, tenantId]
     );
 
     if (existing.rows.length === 0) {
@@ -165,7 +170,7 @@ async function update(req, res) {
            imagen = $4,
            categoria_id = $5,
            fecha_actualizacion = CURRENT_TIMESTAMP
-       WHERE id = $6
+       WHERE id = $6 AND tenant_id = $7
        RETURNING *`,
       [
         nombre,
@@ -173,7 +178,8 @@ async function update(req, res) {
         precio || 0,
         imagen,
         catId,
-        req.params.id
+        req.params.id,
+        tenantId
       ]
     );
 
@@ -200,9 +206,10 @@ async function update(req, res) {
 
 async function remove(req, res) {
   try {
+    const tenantId = req.user?.tenant_id || req.tenant?.id;
     const existing = await pool.query(
-      'SELECT * FROM productos WHERE id = $1',
-      [req.params.id]
+      'SELECT * FROM productos WHERE id = $1 AND tenant_id = $2',
+      [req.params.id, tenantId]
     );
 
     if (existing.rows.length === 0) {
@@ -213,8 +220,8 @@ async function remove(req, res) {
     }
 
     await pool.query(
-      'DELETE FROM productos WHERE id = $1',
-      [req.params.id]
+      'DELETE FROM productos WHERE id = $1 AND tenant_id = $2',
+      [req.params.id, tenantId]
     );
 
     res.json({

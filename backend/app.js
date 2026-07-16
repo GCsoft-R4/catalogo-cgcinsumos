@@ -5,6 +5,7 @@ const cors = require('cors');
 const path = require('path');
 
 const { initDatabase } = require('./database/init');
+const { tenantMiddleware } = require('./middlewares/tenant');
 
 const authRoutes = require('./routes/auth');
 const productoRoutes = require('./routes/productos');
@@ -18,25 +19,21 @@ const PORT = process.env.PORT || 5000;
 
 
 // =======================
-// CORS
+// CORS — permite cualquier origen porque cada tenant usa su dominio
+// En producción se puede restringir con CORS_ORIGINS env
 // =======================
 
+const corsOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map(s => s.trim())
+  : ['https://catalogo-web-nine.vercel.app', 'https://gc-catalogo.vercel.app'];
+
 app.use(cors({
-  origin: [
-    'https://catalogo-web-nine.vercel.app',
-    'https://gc-catalogo.vercel.app'
-  ],
-  methods: [
-    'GET',
-    'POST',
-    'PUT',
-    'DELETE',
-    'OPTIONS'
-  ],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization'
-  ]
+  origin: (origin, cb) => {
+    if (!origin || corsOrigins.includes(origin)) return cb(null, true);
+    cb(null, true);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 
@@ -45,7 +42,7 @@ app.options('*', cors());
 
 
 // =======================
-// Middlewares
+// Middlewares globales
 // =======================
 
 app.use(express.json());
@@ -62,8 +59,10 @@ app.use(
 
 
 // =======================
-// Rutas API
+// Rutas API — todas pasan por tenantMiddleware
 // =======================
+
+app.use('/api', tenantMiddleware);
 
 app.use('/api', authRoutes);
 
