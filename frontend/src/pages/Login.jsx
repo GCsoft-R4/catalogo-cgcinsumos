@@ -51,7 +51,8 @@ function Login() {
             {loading ? 'Ingresando...' : 'Ingresar'}
           </button>
         </form>
-        <div className="text-center mt-3">
+        <div className="d-flex justify-content-between mt-3">
+          <a href="/admin/forgot-password" className="text-muted small">Olvidé mi contraseña</a>
           <a href="/" className="text-muted small">Volver al catálogo</a>
         </div>
       </div>
