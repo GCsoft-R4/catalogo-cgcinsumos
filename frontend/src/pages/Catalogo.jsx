@@ -45,7 +45,7 @@ function Catalogo() {
       if (el.scrollLeft >= maxScroll - 10) {
         el.scrollTo({ left: 0, behavior: 'smooth' });
       } else {
-        el.scrollBy({ left: 180, behavior: 'smooth' });
+        el.scrollBy({ left: 130, behavior: 'smooth' });
       }
     }, 3000);
     return () => clearInterval(intervalRef.current);
