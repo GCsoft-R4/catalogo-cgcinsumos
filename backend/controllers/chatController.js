@@ -1,6 +1,5 @@
 const { pool } = require('../config/db');
 
-// Palabras a ignorar al buscar productos
 const STOP_WORDS = new Set([
   'hola', 'buen', 'buena', 'buenas', 'buenos', 'como', 'que', 'cual',
   'cuales', 'quien', 'quienes', 'donde', 'cuando', 'por', 'para',
@@ -32,8 +31,7 @@ async function chat(req, res) {
 
     const keywords = extractKeywords(message);
 
-    // Buscar productos que coincidan con las palabras clave
-    let productos = [];
+    // Buscar productos por palabras clave
     if (keywords.length > 0) {
       const conditions = keywords.map((_, i) =>
         `(p.nombre ILIKE $${i + 2} OR p.descripcion ILIKE $${i + 2})`
@@ -47,65 +45,22 @@ async function chat(req, res) {
          ORDER BY p.nombre`,
         params
       );
-      productos = result.rows;
+      const productos = result.rows;
+
+      if (productos.length > 0) {
+        const reply = productos.map(p => {
+          let line = `*${p.nombre}* — $${p.precio} (${p.categoria}) ${p.disponible ? '✅' : '❌ Sin stock'}`;
+          if (p.descripcion) line += `\n   ${p.descripcion}`;
+          return line;
+        }).join('\n\n');
+        return res.json({ ok: true, data: { reply } });
+      }
+
+      return res.json({ ok: true, data: { reply: 'No tenemos ese producto.' } });
     }
 
-    // Si hay productos coincidentes, responder directamente
-    if (productos.length > 0) {
-      const reply = productos.map(p => {
-        let line = `*${p.nombre}* — $${p.precio} (${p.categoria}) ${p.disponible ? '✅' : '❌ Sin stock'}`;
-        if (p.descripcion) line += `\n   ${p.descripcion}`;
-        return line;
-      }).join('\n\n');
-      return res.json({ ok: true, data: { reply } });
-    }
-
-    // Si no hay productos, consultar datos del negocio con la IA
-    const configResult = await pool.query(
-      'SELECT telefono, direccion, horarios FROM configuracion WHERE tenant_id = $1',
-      [tenantId]
-    );
-    const cfg = configResult.rows[0] || {};
-    const businessInfo = [
-      cfg.telefono ? `Teléfono: ${cfg.telefono}` : '',
-      cfg.direccion ? `Dirección: ${cfg.direccion}` : '',
-      cfg.horarios ? `Horarios: ${cfg.horarios}` : '',
-    ].filter(Boolean).join('\n') || '(sin datos del negocio cargados)';
-
-    const prompt = `Datos del negocio:
-${businessInfo}
-
-Respondé SOLO con la información de arriba. Si te preguntan por productos y no hay coincidencias, decí "No tenemos ese producto". Sé breve.
-
-Usuario: ${message}`;
-
-    const ollamaUrl = process.env.OLLAMA_URL || 'http://ollama:11434';
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
-
-    const response = await fetch(`${ollamaUrl}/api/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: controller.signal,
-      body: JSON.stringify({
-        model: 'tinyllama',
-        prompt: prompt,
-        stream: false,
-        options: { temperature: 0.1, num_predict: 80 },
-      }),
-    });
-    clearTimeout(timeout);
-
-    if (!response.ok) {
-      const text = await response.text();
-      console.error('Ollama error:', response.status, text);
-      return res.status(502).json({ ok: false, error: 'El asistente no está disponible' });
-    }
-
-    const data = await response.json();
-    const reply = data?.response?.trim() || 'No pude generar una respuesta.';
-
-    res.json({ ok: true, data: { reply } });
+    // Sin palabras clave — responder saludo simple
+    res.json({ ok: true, data: { reply: '¡Hola! Preguntame por nuestros productos o por datos del negocio.' } });
   } catch (err) {
     console.error('Chat error:', err);
     res.status(500).json({ ok: false, error: 'Error interno' });
