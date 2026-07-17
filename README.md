@@ -100,7 +100,36 @@ categorías y usuarios para esa organización, antes de llegar a los controllers
 
 ## 🖼️ Capturas
 
-<img src="./assets/screenshot-usuarios.png" alt="Gestión de usuarios" width="100%" />
+<table>
+<tr>
+<td width="50%">
+
+**Catálogo público**
+<img src="./assets/screenshot-catalogo.png" alt="Catálogo público de productos" width="100%" />
+
+</td>
+<td width="50%">
+
+**Panel — Productos**
+<img src="./assets/screenshot-productos.png" alt="Panel de administración - listado de productos" width="100%" />
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**Panel — Nuevo producto**
+<img src="./assets/screenshot-nuevo-producto.png" alt="Formulario de alta de producto" width="100%" />
+
+</td>
+<td width="50%">
+
+**Panel — Usuarios**
+<img src="./assets/screenshot-usuarios.png" alt="Gestión de usuarios (emails ocultos)" width="100%" />
+
+</td>
+</tr>
+</table>
 
 ---
 
