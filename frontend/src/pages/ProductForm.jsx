@@ -88,7 +88,7 @@ function ProductForm() {
     fd.append('nombre', form.nombre);
     fd.append('descripcion', form.descripcion);
     fd.append('precio', form.precio);
-    fd.append('disponible', disponible);
+    fd.append('disponible', disponible ? '1' : '0');
     if (categoriaId) fd.append('categoria_id', categoriaId);
     if (imagen) {
       fd.append('imagen', imagen);

@@ -100,7 +100,7 @@ async function create(req, res) {
       : (imagen_existente || null);
 
     const catId = categoria_id ? parseInt(categoria_id) : null;
-    const disp = disponible !== undefined ? disponible : true;
+    const disp = disponible !== undefined ? (disponible === '1' || disponible === true) : true;
 
     const result = await pool.query(
       `INSERT INTO productos (tenant_id, nombre, descripcion, precio, imagen, categoria_id, disponible)
@@ -163,7 +163,7 @@ async function update(req, res) {
       : (imagen_existente || productoActual.imagen);
 
     const catId = categoria_id !== undefined ? (categoria_id ? parseInt(categoria_id) : null) : productoActual.categoria_id;
-    const disp = disponible !== undefined ? disponible : productoActual.disponible;
+    const disp = disponible !== undefined ? (disponible === '1' || disponible === true) : productoActual.disponible;
 
     const result = await pool.query(
       `UPDATE productos
