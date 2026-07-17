@@ -11,8 +11,8 @@ function PublicLayout() {
         <div className="marquee-wrapper">
           <div className="marquee-track">
             <span className="marquee-text">Envíos a toda la ciudad &nbsp;·&nbsp; Consultanos por WhatsApp &nbsp;·&nbsp; Los mejores precios del mercado &nbsp;·&nbsp; Stock permanente &nbsp;·&nbsp;</span>
-            <span className="marquee-text">Envíos a todo la ciudad &nbsp;·&nbsp; Consultanos por WhatsApp &nbsp;·&nbsp; Los mejores precios del mercado &nbsp;·&nbsp; Stock permanente &nbsp;·&nbsp;</span>
-            <span className="marquee-text">Envíos a todo la ciudad &nbsp;·&nbsp; Consultanos por WhatsApp &nbsp;·&nbsp; Los mejores precios del mercado &nbsp;·&nbsp; Stock permanente &nbsp;·&nbsp;</span>
+            <span className="marquee-text">Envíos a toda la ciudad &nbsp;·&nbsp; Consultanos por WhatsApp &nbsp;·&nbsp; Los mejores precios del mercado &nbsp;·&nbsp; Stock permanente &nbsp;·&nbsp;</span>
+            <span className="marquee-text">Envíos a toda la ciudad &nbsp;·&nbsp; Consultanos por WhatsApp &nbsp;·&nbsp; Los mejores precios del mercado &nbsp;·&nbsp; Stock permanente &nbsp;·&nbsp;</span>
           </div>
         </div>
       )}
