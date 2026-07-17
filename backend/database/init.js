@@ -197,6 +197,27 @@ async function initDatabase() {
       AND NOT EXISTS (SELECT 1 FROM producto_imagenes WHERE producto_imagenes.producto_id = productos.id)
     `);
 
+    // =====================================
+    // Tabla de configuración del negocio por tenant
+    // =====================================
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS configuracion (
+        id SERIAL PRIMARY KEY,
+        tenant_id INTEGER NOT NULL REFERENCES tenants(id) ON DELETE CASCADE UNIQUE,
+        telefono VARCHAR(50) NOT NULL DEFAULT '',
+        direccion TEXT NOT NULL DEFAULT '',
+        horarios VARCHAR(255) NOT NULL DEFAULT '',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await pool.query(`
+      INSERT INTO configuracion (tenant_id)
+      SELECT id FROM tenants
+      WHERE NOT EXISTS (SELECT 1 FROM configuracion WHERE configuracion.tenant_id = tenants.id)
+    `);
+
     // Migrar categoria_id
     await pool.query(`
       DO $$

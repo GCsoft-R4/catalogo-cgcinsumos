@@ -20,15 +20,33 @@ async function chat(req, res) {
 
     const productos = productResult.rows;
 
-    const catalogContext = productos.length > 0
-      ? 'Catálogo actual:\n' + productos.map(p =>
-          `- ${p.nombre} (${p.categoria}): $${p.precio} ${p.disponible ? '[DISPONIBLE]' : '[SIN STOCK]'}`
-        ).join('\n')
-      : 'El catálogo está vacío.';
+    const configResult = await pool.query(
+      'SELECT telefono, direccion, horarios FROM configuracion WHERE tenant_id = $1',
+      [tenantId]
+    );
+    const cfg = configResult.rows[0] || {};
 
-    const prompt = `Sos un asistente de ventas de un catálogo de productos. Respondé preguntas sobre los productos disponibles, precios, y recomendaciones. Sé breve y amable.
+    const businessContext = [
+      cfg.telefono ? `Teléfono: ${cfg.telefono}` : '',
+      cfg.direccion ? `Dirección: ${cfg.direccion}` : '',
+      cfg.horarios ? `Horarios: ${cfg.horarios}` : '',
+    ].filter(Boolean).join('\n');
 
-${catalogContext}
+    const fullContext = [
+      'Datos del negocio:',
+      businessContext || '(sin datos cargados)',
+      '',
+      'Catálogo:',
+      ...(productos.length > 0
+        ? productos.map(p =>
+            `- ${p.nombre} (${p.categoria}): $${p.precio} ${p.disponible ? '[DISPONIBLE]' : '[SIN STOCK]'}`
+          )
+        : ['(vacío)']),
+    ].join('\n');
+
+    const prompt = `Sos un asistente de ventas de un catálogo de productos. Respondé preguntas sobre el negocio (teléfono, dirección, horarios) y sobre los productos disponibles. Sé breve y amable.
+
+${fullContext}
 
 Usuario: ${message}`;
 

@@ -12,6 +12,7 @@ import ProductForm from './pages/ProductForm';
 import Categorias from './pages/Categorias';
 import Imagenes from './pages/Imagenes';
 import Usuarios from './pages/Usuarios';
+import Configuracion from './pages/Configuracion';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
           <Route path="categorias" element={<Categorias />} />
           <Route path="imagenes" element={<Imagenes />} />
           <Route path="usuarios" element={<Usuarios />} />
+          <Route path="configuracion" element={<Configuracion />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
