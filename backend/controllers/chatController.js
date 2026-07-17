@@ -1,25 +1,5 @@
 const { pool } = require('../config/db');
 
-const STOP_WORDS = new Set([
-  'hola', 'buen', 'buena', 'buenas', 'buenos', 'como', 'que', 'cual',
-  'cuales', 'quien', 'quienes', 'donde', 'cuando', 'por', 'para',
-  'con', 'sin', 'los', 'las', 'el', 'la', 'un', 'una', 'del', 'al',
-  'tienen', 'tiene', 'hay', 'saber', 'puedo', 'quiero', 'quiere',
-  'me', 'te', 'se', 'le', 'les', 'su', 'sus', 'tu', 'mi',
-  'esta', 'este', 'esto', 'ese', 'esa', 'esos', 'esas',
-  'gracias', 'porfa', 'por favor', 'ayuda', 'consultar',
-  'precio', 'precios', 'producto', 'productos', 'info', 'informacion',
-  'digame', 'decime', 'contame', 'consulta', 'consulto',
-]);
-
-function extractKeywords(message) {
-  return message
-    .toLowerCase()
-    .replace(/[¿?!¡.,;:()]/g, '')
-    .split(/\s+/)
-    .filter(w => w.length > 2 && !STOP_WORDS.has(w));
-}
-
 async function chat(req, res) {
   try {
     const { message } = req.body;
@@ -29,38 +9,80 @@ async function chat(req, res) {
       return res.status(400).json({ ok: false, error: 'Mensaje requerido' });
     }
 
-    const keywords = extractKeywords(message);
+    // Buscar productos en DB
+    const productResult = await pool.query(
+      `SELECT p.nombre, p.descripcion, p.precio, p.disponible, c.nombre AS categoria
+       FROM productos p
+       JOIN categorias c ON c.id = p.categoria_id
+       WHERE p.tenant_id = $1
+       ORDER BY p.nombre`,
+      [tenantId]
+    );
+    const productos = productResult.rows;
 
-    // Buscar productos por palabras clave
-    if (keywords.length > 0) {
-      const conditions = keywords.map((_, i) =>
-        `(p.nombre ILIKE $${i + 2} OR p.descripcion ILIKE $${i + 2})`
-      );
-      const params = [tenantId, ...keywords.map(k => `%${k}%`)];
-      const result = await pool.query(
-        `SELECT p.nombre, p.descripcion, p.precio, p.disponible, c.nombre AS categoria
-         FROM productos p
-         JOIN categorias c ON c.id = p.categoria_id
-         WHERE p.tenant_id = $1 AND (${conditions.join(' OR ')})
-         ORDER BY p.nombre`,
-        params
-      );
-      const productos = result.rows;
+    // Buscar config del negocio
+    const configResult = await pool.query(
+      'SELECT telefono, direccion, horarios FROM configuracion WHERE tenant_id = $1',
+      [tenantId]
+    );
+    const cfg = configResult.rows[0] || {};
 
-      if (productos.length > 0) {
-        const reply = productos.map(p => {
-          let line = `*${p.nombre}* — $${p.precio} (${p.categoria}) ${p.disponible ? '✅' : '❌ Sin stock'}`;
-          if (p.descripcion) line += `\n   ${p.descripcion}`;
-          return line;
-        }).join('\n\n');
-        return res.json({ ok: true, data: { reply } });
-      }
+    // Armar contexto
+    const productList = productos.length > 0
+      ? productos.map(p =>
+          `- ${p.nombre} | ${p.categoria} | $${p.precio} | ${p.disponible ? 'DISPONIBLE' : 'SIN STOCK'}${p.descripcion ? ' | ' + p.descripcion : ''}`
+        ).join('\n')
+      : '(catálogo vacío)';
 
-      return res.json({ ok: true, data: { reply: 'No tenemos ese producto.' } });
+    const businessInfo = [
+      cfg.telefono ? `Teléfono: ${cfg.telefono}` : '',
+      cfg.direccion ? `Dirección: ${cfg.direccion}` : '',
+      cfg.horarios ? `Horarios: ${cfg.horarios}` : '',
+    ].filter(Boolean).join('\n') || '(sin datos del negocio)';
+
+    const groqKey = process.env.GROQ_API_KEY;
+    if (!groqKey) {
+      return res.status(500).json({ ok: false, error: 'GROQ_API_KEY no configurada' });
     }
 
-    // Sin palabras clave — responder saludo simple
-    res.json({ ok: true, data: { reply: '¡Hola! Preguntame por nuestros productos o por datos del negocio.' } });
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${groqKey}`,
+      },
+      body: JSON.stringify({
+        model: 'llama3-8b-8192',
+        messages: [
+          {
+            role: 'system',
+            content: `Sos un asistente de ventas de un catálogo. Usá esta información para responder:
+
+DATOS DEL NEGOCIO:
+${businessInfo}
+
+CATÁLOGO DE PRODUCTOS:
+${productList}
+
+Respondé de forma natural y breve. Si no hay un producto que pidan, decilo amablemente.`,
+          },
+          { role: 'user', content: message },
+        ],
+        temperature: 0.3,
+        max_tokens: 200,
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      console.error('Groq error:', response.status, text);
+      return res.status(502).json({ ok: false, error: 'Error del asistente' });
+    }
+
+    const data = await response.json();
+    const reply = data?.choices?.[0]?.message?.content?.trim() || 'No pude generar una respuesta.';
+
+    res.json({ ok: true, data: { reply } });
   } catch (err) {
     console.error('Chat error:', err);
     res.status(500).json({ ok: false, error: 'Error interno' });
