@@ -425,8 +425,8 @@ body {
 
 .marquee-wrapper {
   overflow: hidden;
-  background: var(--accent-secondary);
-  color: #fff;
+  background: #f5c87c;
+  color: #292524;
   font-size: 0.8rem;
   font-weight: 500;
   padding: 0.35rem 0;
