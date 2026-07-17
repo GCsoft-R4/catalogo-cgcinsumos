@@ -22,7 +22,7 @@ function Catalogo() {
     if (search) params.search = search;
     api.get('/productos', { params })
       .then(res => {
-        setProductos(res.data.data);
+        setProductos(res.data.data || []);
         setTotalPages(res.data.totalPages);
       })
       .catch(console.error)
@@ -30,7 +30,7 @@ function Catalogo() {
   };
 
   useEffect(() => {
-    api.get('/categorias').then(res => setCategorias(res.data.data)).catch(() => {});
+    api.get('/categorias').then(res => setCategorias(res.data.data || [])).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ function Catalogo() {
 
   useEffect(() => {
     const el = carouselRef.current;
-    if (!el || categorias.length < 3) return;
+    if (!el || !Array.isArray(categorias) || categorias.length < 3) return;
     intervalRef.current = setInterval(() => {
       const maxScroll = el.scrollWidth - el.clientWidth;
       if (el.scrollLeft >= maxScroll - 10) {
@@ -75,15 +75,16 @@ function Catalogo() {
     if (e.key === 'Enter') handleSearch();
   };
 
+  const list = Array.isArray(productos) ? productos : [];
   const filtered = searchQuery
-    ? productos.filter(p =>
+    ? list.filter(p =>
         p.nombre.toLowerCase().includes(searchQuery) ||
         (p.descripcion && p.descripcion.toLowerCase().includes(searchQuery)) ||
         (p.categoria_nombre && p.categoria_nombre.toLowerCase().includes(searchQuery))
       )
-    : productos;
+    : list;
 
-  if (loading && productos.length === 0) {
+  if (loading && (!Array.isArray(productos) || productos.length === 0)) {
     return (
       <div className="container py-5">
         <div className="text-center mb-4">
@@ -144,7 +145,7 @@ function Catalogo() {
         </div>
       </div>
 
-      {categorias.length > 0 && (
+      {Array.isArray(categorias) && categorias.length > 0 && (
         <div className="categoria-carousel-wrapper mb-4" onMouseEnter={() => clearInterval(intervalRef.current)}>
           <button className="carousel-arrow" onClick={() => scrollCarousel(-1)} aria-label="Anterior">
             <i className="bi bi-chevron-left"></i>
