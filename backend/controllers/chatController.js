@@ -32,34 +32,27 @@ ${catalogContext}
 
 Usuario: ${message}`;
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return res.status(500).json({ ok: false, error: 'API key no configurada' });
-    }
+    const ollamaUrl = process.env.OLLAMA_URL || 'http://ollama:11434';
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 500,
-          },
-        }),
-      }
-    );
-
-    const data = await response.json();
+    const response = await fetch(`${ollamaUrl}/api/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'phi3',
+        prompt: prompt,
+        stream: false,
+        options: { temperature: 0.7, num_predict: 500 },
+      }),
+    });
 
     if (!response.ok) {
-      console.error('Gemini error:', data);
-      return res.status(502).json({ ok: false, error: 'Error del asistente' });
+      const text = await response.text();
+      console.error('Ollama error:', response.status, text);
+      return res.status(502).json({ ok: false, error: 'El asistente no está disponible' });
     }
 
-    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No pude generar una respuesta.';
+    const data = await response.json();
+    const reply = data?.response?.trim() || 'No pude generar una respuesta.';
 
     res.json({ ok: true, data: { reply } });
   } catch (err) {
