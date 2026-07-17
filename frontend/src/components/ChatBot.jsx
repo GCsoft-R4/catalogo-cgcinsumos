@@ -52,7 +52,7 @@ function ChatBot() {
         }}
         aria-label="Chat"
       >
-        {open ? '✕' : <i className="bi bi-robot"></i>}
+        {open ? '✕' : '💬'}
       </button>
 
       {open && (
