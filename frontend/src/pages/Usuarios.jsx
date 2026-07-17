@@ -27,7 +27,7 @@ function Usuarios() {
 
   const fetchUsuarios = () => {
     api.get('/usuarios')
-      .then(res => setUsuarios(res.data.data))
+      .then(res => setUsuarios(res.data.data || []))
       .catch(console.error)
       .finally(() => setLoading(false));
   };

@@ -14,7 +14,7 @@ function Categorias() {
 
   const fetch = () => {
     api.get('/categorias')
-      .then(res => setList(res.data.data))
+      .then(res => setList(res.data.data || []))
       .catch(console.error)
       .finally(() => setLoading(false));
   };

@@ -9,7 +9,7 @@ function Imagenes() {
 
   const fetchImages = () => {
     api.get('/uploads')
-      .then(res => setImages(res.data.data))
+      .then(res => setImages(res.data.data || []))
       .catch(console.error)
       .finally(() => setLoading(false));
   };

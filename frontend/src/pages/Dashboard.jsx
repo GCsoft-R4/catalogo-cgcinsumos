@@ -21,7 +21,7 @@ function Dashboard() {
     if (search.trim()) params.search = search.trim();
     api.get('/productos', { params })
       .then(res => {
-        setProductos(res.data.data);
+        setProductos(res.data.data || []);
         setTotalPages(res.data.totalPages);
         setTotal(res.data.total);
       })
