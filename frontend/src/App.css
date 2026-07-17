@@ -423,6 +423,33 @@ body {
   z-index: 1;
 }
 
+.marquee-wrapper {
+  overflow: hidden;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.35rem 0;
+  white-space: nowrap;
+}
+
+.marquee-track {
+  display: flex;
+  gap: 0;
+  width: max-content;
+  animation: marquee-scroll 30s linear infinite;
+}
+
+.marquee-text {
+  padding: 0 2rem;
+  flex-shrink: 0;
+}
+
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 @media (max-width: 575.98px) {
   .card-product .card-img-top {
     height: 160px;
