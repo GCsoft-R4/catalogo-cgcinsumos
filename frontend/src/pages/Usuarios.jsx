@@ -143,13 +143,14 @@ function Usuarios() {
 
   if (loading) {
     return (
-      <div className="table-responsive" style={{ opacity: 0.6, maxWidth: 400, marginTop: 80 }}>
+      <div className="table-responsive" style={{ opacity: 0.6, maxWidth: 600, marginTop: 80 }}>
         <table className="table align-middle">
           <thead>
             <tr>
               <th>ID</th>
               <th>Usuario</th>
               <th>Email</th>
+              <th>Último acceso</th>
               <th style={{ width: 180 }} />
             </tr>
           </thead>
@@ -158,6 +159,8 @@ function Usuarios() {
               <tr key={i}>
                 <td><div className="skeleton skeleton-line-sm" /></td>
                 <td><div className="skeleton skeleton-line" /></td>
+                <td><div className="skeleton skeleton-line" /></td>
+                <td><div className="skeleton skeleton-line-sm" /></td>
                 <td><div className="skeleton" style={{ height: 30, width: 140 }} /></td>
               </tr>
             ))}
@@ -421,6 +424,8 @@ function Usuarios() {
 
                   <th>Email</th>
 
+                  <th>Último acceso</th>
+
                   <th style={{ width: 180 }} />
 
                 </tr>
@@ -450,6 +455,13 @@ function Usuarios() {
 
                       <td className="text-muted small">
                         {u.email || '—'}
+                      </td>
+
+
+                      <td className="text-muted small" style={{ whiteSpace: 'nowrap' }}>
+                        {u.ultimo_acceso
+                          ? new Date(u.ultimo_acceso).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                          : '—'}
                       </td>
 
 

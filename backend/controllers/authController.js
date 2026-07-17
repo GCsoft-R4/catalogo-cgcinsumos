@@ -26,6 +26,11 @@ async function login(req, res) {
       });
     }
 
+    await pool.query(
+      'UPDATE usuarios SET ultimo_acceso = CURRENT_TIMESTAMP WHERE id = $1',
+      [user.id]
+    );
+
     const token = jwt.sign(
       {
         id: user.id,

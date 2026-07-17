@@ -56,7 +56,8 @@ async function initDatabase() {
         tenant_id INTEGER NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
         username VARCHAR(100) NOT NULL,
         email VARCHAR(255),
-        password TEXT NOT NULL
+        password TEXT NOT NULL,
+        ultimo_acceso TIMESTAMP
       );
 
       CREATE TABLE IF NOT EXISTS producto_imagenes (
@@ -132,6 +133,19 @@ async function initDatabase() {
           WHERE table_name='usuarios' AND column_name='email'
         ) THEN
           ALTER TABLE usuarios ADD COLUMN email VARCHAR(255);
+        END IF;
+      END $$;
+    `);
+
+    // Migrar columna ultimo_acceso en usuarios
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='usuarios' AND column_name='ultimo_acceso'
+        ) THEN
+          ALTER TABLE usuarios ADD COLUMN ultimo_acceso TIMESTAMP;
         END IF;
       END $$;
     `);

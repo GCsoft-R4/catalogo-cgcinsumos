@@ -5,7 +5,7 @@ async function getAll(req, res, next) {
   try {
     const tenantId = req.user?.tenant_id;
     const result = await pool.query(
-      'SELECT id, username, email FROM usuarios WHERE tenant_id = $1 ORDER BY id',
+      'SELECT id, username, email, ultimo_acceso FROM usuarios WHERE tenant_id = $1 ORDER BY id',
       [tenantId]
     );
     res.json({ ok: true, data: result.rows });
