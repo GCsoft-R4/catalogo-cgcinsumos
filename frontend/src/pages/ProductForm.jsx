@@ -17,6 +17,7 @@ function ProductForm() {
   const [allImages, setAllImages] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [categoriaId, setCategoriaId] = useState('');
+  const [disponible, setDisponible] = useState(true);
   const [error, setError] = useState('');
   const fileRef = useRef(null);
 
@@ -32,6 +33,7 @@ function ProductForm() {
         const p = res.data.data;
         setForm({ nombre: p.nombre, descripcion: p.descripcion, precio: p.precio || '' });
         if (p.categoria_id) setCategoriaId(p.categoria_id);
+        if (p.disponible !== undefined) setDisponible(p.disponible);
         if (p.imagen) {
           setImagenExistente(p.imagen);
           setPreview(imageUrl(p.imagen));
@@ -86,6 +88,7 @@ function ProductForm() {
     fd.append('nombre', form.nombre);
     fd.append('descripcion', form.descripcion);
     fd.append('precio', form.precio);
+    fd.append('disponible', disponible);
     if (categoriaId) fd.append('categoria_id', categoriaId);
     if (imagen) {
       fd.append('imagen', imagen);
@@ -158,6 +161,22 @@ function ProductForm() {
             </select>
           </div>
         )}
+        <div className="mb-3 d-flex align-items-center gap-3">
+          <div className="form-check form-switch mb-0">
+            <input
+              type="checkbox"
+              id="disponible"
+              className="form-check-input"
+              role="switch"
+              checked={disponible}
+              onChange={e => setDisponible(e.target.checked)}
+              style={{ width: 40, height: 20, cursor: 'pointer' }}
+            />
+            <label htmlFor="disponible" className="form-check-label ms-2" style={{ cursor: 'pointer' }}>
+              {disponible ? 'Disponible' : 'Sin stock'}
+            </label>
+          </div>
+        </div>
         <div className="mb-3">
           <label htmlFor="imagen" className="form-label">Subir imagen nueva</label>
           <input ref={fileRef} type="file" id="imagen" className="form-control" accept="image/jpeg,image/png,image/webp" onChange={handleFile} />

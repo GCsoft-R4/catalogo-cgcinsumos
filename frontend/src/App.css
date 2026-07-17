@@ -396,6 +396,29 @@ body {
   border-color: var(--accent);
 }
 
+.producto-sin-stock {
+  opacity: 0.75;
+}
+
+.img-grayscale {
+  filter: grayscale(100%);
+}
+
+.sin-stock-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(4px);
+}
+
 @media (max-width: 575.98px) {
   .card-product .card-img-top {
     height: 160px;

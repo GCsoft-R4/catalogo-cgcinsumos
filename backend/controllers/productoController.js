@@ -93,17 +93,18 @@ async function getById(req, res) {
 async function create(req, res) {
   try {
     const tenantId = req.user?.tenant_id || req.tenant?.id;
-    const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id } = req.body;
+    const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id, disponible } = req.body;
 
     const imagen = req.file
       ? req.file.filename
       : (imagen_existente || null);
 
     const catId = categoria_id ? parseInt(categoria_id) : null;
+    const disp = disponible !== undefined ? disponible : true;
 
     const result = await pool.query(
-      `INSERT INTO productos (tenant_id, nombre, descripcion, precio, imagen, categoria_id)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO productos (tenant_id, nombre, descripcion, precio, imagen, categoria_id, disponible)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
       [
         tenantId,
@@ -111,7 +112,8 @@ async function create(req, res) {
         descripcion || '',
         precio || 0,
         imagen,
-        catId
+        catId,
+        disp
       ]
     );
 
@@ -140,7 +142,7 @@ async function create(req, res) {
 async function update(req, res) {
   try {
     const tenantId = req.user?.tenant_id || req.tenant?.id;
-    const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id } = req.body;
+    const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id, disponible } = req.body;
 
     const existing = await pool.query(
       'SELECT * FROM productos WHERE id = $1 AND tenant_id = $2',
@@ -161,6 +163,7 @@ async function update(req, res) {
       : (imagen_existente || productoActual.imagen);
 
     const catId = categoria_id !== undefined ? (categoria_id ? parseInt(categoria_id) : null) : productoActual.categoria_id;
+    const disp = disponible !== undefined ? disponible : productoActual.disponible;
 
     const result = await pool.query(
       `UPDATE productos
@@ -169,8 +172,9 @@ async function update(req, res) {
            precio = $3,
            imagen = $4,
            categoria_id = $5,
+           disponible = $6,
            fecha_actualizacion = CURRENT_TIMESTAMP
-       WHERE id = $6 AND tenant_id = $7
+       WHERE id = $7 AND tenant_id = $8
        RETURNING *`,
       [
         nombre,
@@ -178,6 +182,7 @@ async function update(req, res) {
         precio || 0,
         imagen,
         catId,
+        disp,
         req.params.id,
         tenantId
       ]

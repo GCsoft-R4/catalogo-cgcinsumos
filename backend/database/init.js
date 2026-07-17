@@ -46,6 +46,7 @@ async function initDatabase() {
         descripcion TEXT NOT NULL DEFAULT '',
         precio DECIMAL(10,2) NOT NULL DEFAULT 0,
         imagen TEXT,
+        disponible BOOLEAN NOT NULL DEFAULT TRUE,
         fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
@@ -131,6 +132,19 @@ async function initDatabase() {
           WHERE table_name='usuarios' AND column_name='email'
         ) THEN
           ALTER TABLE usuarios ADD COLUMN email VARCHAR(255);
+        END IF;
+      END $$;
+    `);
+
+    // Migrar columna disponible en productos
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='productos' AND column_name='disponible'
+        ) THEN
+          ALTER TABLE productos ADD COLUMN disponible BOOLEAN NOT NULL DEFAULT TRUE;
         END IF;
       END $$;
     `);
