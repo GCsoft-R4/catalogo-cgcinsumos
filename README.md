@@ -19,6 +19,7 @@ autenticación JWT y **aislamiento multi‑tenant por dominio**.
 [Características](#-características) ·
 [Stack](#-stack) ·
 [Arquitectura](#-arquitectura) ·
+[Capturas](#️-capturas) ·
 [Instalación](#-configuración) ·
 [API](#-api) ·
 [Estructura](#-estructura)
@@ -32,6 +33,7 @@ autenticación JWT y **aislamiento multi‑tenant por dominio**.
 - [Stack](#-stack)
 - [Características](#-características)
 - [Arquitectura](#-arquitectura)
+- [Capturas](#️-capturas)
 - [Requisitos](#-requisitos)
 - [Configuración](#-configuración)
 - [Ejecutar](#-ejecutar)
@@ -93,6 +95,41 @@ autenticación JWT y **aislamiento multi‑tenant por dominio**.
 El `Host` header de cada request identifica al tenant; el middleware de tenant
 resuelve el dominio contra la base y aísla las consultas de productos,
 categorías y usuarios para esa organización, antes de llegar a los controllers.
+
+---
+
+## 🖼️ Capturas
+
+<table>
+<tr>
+<td width="50%">
+
+**Catálogo público**
+<img src="./assets/screenshot-catalogo.png" alt="Catálogo público de productos" width="100%" />
+
+</td>
+<td width="50%">
+
+**Panel — Productos**
+<img src="./assets/screenshot-productos.png" alt="Panel de administración - listado de productos" width="100%" />
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**Panel — Nuevo producto**
+<img src="./assets/screenshot-nuevo-producto.png" alt="Formulario de alta de producto" width="100%" />
+
+</td>
+<td width="50%">
+
+**Panel — Usuarios**
+<img src="./assets/screenshot-usuarios.png" alt="Gestión de usuarios (emails ocultos)" width="100%" />
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -259,7 +296,7 @@ cd frontend && npm test
 
 ```
 catalogo-cgcinsumos/
-├── assets/              # banner.png, architecture.png
+├── assets/              # banner.png, architecture.png, capturas
 ├── backend/
 │   ├── config/          # db.js, mailer.js
 │   ├── controllers/     # Lógica CRUD
