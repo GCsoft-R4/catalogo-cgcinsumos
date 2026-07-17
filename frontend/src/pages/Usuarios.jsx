@@ -450,7 +450,7 @@ function Usuarios() {
 
                       <td className="text-muted small" style={{ whiteSpace: 'nowrap' }}>
                         {u.ultimo_acceso
-                          ? new Date(u.ultimo_acceso + 'Z').toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                          ? new Date(u.ultimo_acceso).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
                           : '—'}
                       </td>
 
