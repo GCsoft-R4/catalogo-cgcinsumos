@@ -1,5 +1,26 @@
 const { pool } = require('../config/db');
 
+// Palabras a ignorar al buscar productos
+const STOP_WORDS = new Set([
+  'hola', 'buen', 'buena', 'buenas', 'buenos', 'como', 'que', 'cual',
+  'cuales', 'quien', 'quienes', 'donde', 'cuando', 'por', 'para',
+  'con', 'sin', 'los', 'las', 'el', 'la', 'un', 'una', 'del', 'al',
+  'tienen', 'tiene', 'hay', 'saber', 'puedo', 'quiero', 'quiere',
+  'me', 'te', 'se', 'le', 'les', 'su', 'sus', 'tu', 'mi',
+  'esta', 'este', 'esto', 'ese', 'esa', 'esos', 'esas',
+  'gracias', 'porfa', 'por favor', 'ayuda', 'consultar',
+  'precio', 'precios', 'producto', 'productos', 'info', 'informacion',
+  'digame', 'decime', 'contame', 'consulta', 'consulto',
+]);
+
+function extractKeywords(message) {
+  return message
+    .toLowerCase()
+    .replace(/[¿?!¡.,;:()]/g, '')
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !STOP_WORDS.has(w));
+}
+
 async function chat(req, res) {
   try {
     const { message } = req.body;
@@ -9,61 +30,66 @@ async function chat(req, res) {
       return res.status(400).json({ ok: false, error: 'Mensaje requerido' });
     }
 
-    const productResult = await pool.query(
-      `SELECT p.nombre, p.descripcion, p.precio, p.disponible, c.nombre AS categoria
-       FROM productos p
-       JOIN categorias c ON c.id = p.categoria_id
-       WHERE p.tenant_id = $1
-       ORDER BY p.nombre`,
-      [tenantId]
-    );
+    const keywords = extractKeywords(message);
 
-    const productos = productResult.rows;
+    // Buscar productos que coincidan con las palabras clave
+    let productos = [];
+    if (keywords.length > 0) {
+      const conditions = keywords.map((_, i) =>
+        `(p.nombre ILIKE $${i + 2} OR p.descripcion ILIKE $${i + 2})`
+      );
+      const params = [tenantId, ...keywords.map(k => `%${k}%`)];
+      const result = await pool.query(
+        `SELECT p.nombre, p.descripcion, p.precio, p.disponible, c.nombre AS categoria
+         FROM productos p
+         JOIN categorias c ON c.id = p.categoria_id
+         WHERE p.tenant_id = $1 AND (${conditions.join(' OR ')})
+         ORDER BY p.nombre`,
+        params
+      );
+      productos = result.rows;
+    }
 
+    // Si hay productos coincidentes, responder directamente
+    if (productos.length > 0) {
+      const reply = productos.map(p =>
+        `*${p.nombre}* — $${p.precio} (${p.categoria}) ${p.disponible ? '✅' : '❌ Sin stock'}`
+      ).join('\n');
+      return res.json({ ok: true, data: { reply } });
+    }
+
+    // Si no hay productos, consultar datos del negocio con la IA
     const configResult = await pool.query(
       'SELECT telefono, direccion, horarios FROM configuracion WHERE tenant_id = $1',
       [tenantId]
     );
     const cfg = configResult.rows[0] || {};
-
-    const businessContext = [
+    const businessInfo = [
       cfg.telefono ? `Teléfono: ${cfg.telefono}` : '',
       cfg.direccion ? `Dirección: ${cfg.direccion}` : '',
       cfg.horarios ? `Horarios: ${cfg.horarios}` : '',
-    ].filter(Boolean).join('\n');
+    ].filter(Boolean).join('\n') || '(sin datos del negocio cargados)';
 
-    const fullContext = [
-      'Datos del negocio:',
-      businessContext || '(sin datos cargados)',
-      '',
-      'Catálogo:',
-      ...(productos.length > 0
-        ? productos.map(p =>
-            `- ${p.nombre} (${p.categoria}): $${p.precio} ${p.disponible ? '[DISPONIBLE]' : '[SIN STOCK]'}`
-          )
-        : ['(vacío)']),
-    ].join('\n');
+    const prompt = `Datos del negocio:
+${businessInfo}
 
-    const prompt = `Sos un asistente de ventas. Respondé SOLO con la información disponible abajo. Si algo no está en los datos, decí "No tengo esa información". Sé breve y amable.
-
-${fullContext}
+Respondé SOLO con la información de arriba. Si te preguntan por productos y no hay coincidencias, decí "No tenemos ese producto". Sé breve.
 
 Usuario: ${message}`;
 
     const ollamaUrl = process.env.OLLAMA_URL || 'http://ollama:11434';
-
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30000);
+    const timeout = setTimeout(() => controller.abort(), 15000);
 
     const response = await fetch(`${ollamaUrl}/api/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
       body: JSON.stringify({
-        model: 'qwen2.5:1.5b',
+        model: 'tinyllama',
         prompt: prompt,
         stream: false,
-        options: { temperature: 0.2, num_predict: 80 },
+        options: { temperature: 0.1, num_predict: 80 },
       }),
     });
     clearTimeout(timeout);
