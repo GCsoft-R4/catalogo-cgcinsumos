@@ -38,10 +38,10 @@ Usuario: ${message}`;
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'phi3',
+        model: 'qwen2.5:1.5b',
         prompt: prompt,
         stream: false,
-        options: { temperature: 0.7, num_predict: 500 },
+        options: { temperature: 0.3, num_predict: 150 },
       }),
     });
 
