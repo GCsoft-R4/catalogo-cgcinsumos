@@ -147,7 +147,6 @@ function Usuarios() {
         <table className="table align-middle">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Usuario</th>
               <th>Email</th>
               <th>Último acceso</th>
@@ -157,7 +156,6 @@ function Usuarios() {
           <tbody>
             {[1,2,3].map(i => (
               <tr key={i}>
-                <td><div className="skeleton skeleton-line-sm" /></td>
                 <td><div className="skeleton skeleton-line" /></td>
                 <td><div className="skeleton skeleton-line" /></td>
                 <td><div className="skeleton skeleton-line-sm" /></td>
@@ -418,8 +416,6 @@ function Usuarios() {
 
                 <tr>
 
-                  <th>ID</th>
-
                   <th>Usuario</th>
 
                   <th>Email</th>
@@ -441,12 +437,6 @@ function Usuarios() {
                   usuarios.map(u => (
 
                     <tr key={u.id}>
-
-
-                      <td className="text-muted">
-                        {u.id}
-                      </td>
-
 
                       <td className="fw-medium">
                         {u.username}
