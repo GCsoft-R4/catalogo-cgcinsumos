@@ -18,6 +18,7 @@ function ProductForm() {
   const [categorias, setCategorias] = useState([]);
   const [categoriaId, setCategoriaId] = useState('');
   const [disponible, setDisponible] = useState(true);
+  const [showGallery, setShowGallery] = useState(false);
   const [error, setError] = useState('');
   const fileRef = useRef(null);
 
@@ -188,72 +189,79 @@ function ProductForm() {
         </div>
         {allImages.length > 0 && (
           <div className="mb-4">
-            <label className="form-label">Imágenes</label>
-            <div className="row g-2">
-              {allImages.map(img => {
-                const enGaleria = galeria.includes(img) || imagenExistente === img;
-                const esPrincipal = imagenExistente === img;
-                return (
-                  <div className="col-4 col-sm-3 col-md-2" key={img}>
-                    <div
-                      className={`p-1 border rounded ${esPrincipal ? 'border-primary' : enGaleria ? 'border-success' : ''}`}
-                      style={{
-                        cursor: 'pointer',
-                        borderWidth: esPrincipal || enGaleria ? 2 : 1,
-                        position: 'relative',
-                      }}
-                      onClick={() => toggleGaleria(img)}
-                    >
-                      {esPrincipal && (
-                        <span
-                          className="position-absolute start-50 translate-middle-x"
-                          style={{
-                            top: -1,
-                            background: 'var(--accent)',
-                            color: '#fff',
-                            borderRadius: 4,
-                            fontSize: 9,
-                            fontWeight: 600,
-                            padding: '0 5px',
-                            lineHeight: '16px',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.04em',
-                            whiteSpace: 'nowrap',
-                            zIndex: 1,
-                          }}
-                        >
-                          Principal
-                        </span>
-                      )}
-                      {enGaleria && !esPrincipal && (
-                        <span
-                          className="position-absolute top-0 end-0"
-                          style={{
-                            background: '#198754',
-                            color: '#fff',
-                            borderRadius: '50%',
-                            width: 18,
-                            height: 18,
-                            fontSize: 11,
-                            lineHeight: '18px',
-                            textAlign: 'center',
-                            margin: 2,
-                          }}
-                        >
-                          <i className="bi bi-check"></i>
-                        </span>
-                      )}
-                      <img
-                        src={imageUrl(img)}
-                        alt={img}
-                        className="w-100"
-                        style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 4 }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <label className="form-label mb-0" style={{ cursor: 'pointer' }} onClick={() => setShowGallery(p => !p)}>
+                <i className={`bi bi-chevron-${showGallery ? 'down' : 'right'} me-1`}></i>
+                Imágenes ({allImages.length})
+              </label>
             </div>
+            {showGallery && (
+              <div className="row g-2">
+                {allImages.map(img => {
+                  const enGaleria = galeria.includes(img) || imagenExistente === img;
+                  const esPrincipal = imagenExistente === img;
+                  return (
+                    <div className="col-4 col-sm-3 col-md-2" key={img}>
+                      <div
+                        className={`p-1 border rounded ${esPrincipal ? 'border-primary' : enGaleria ? 'border-success' : ''}`}
+                        style={{
+                          cursor: 'pointer',
+                          borderWidth: esPrincipal || enGaleria ? 2 : 1,
+                          position: 'relative',
+                        }}
+                        onClick={() => toggleGaleria(img)}
+                      >
+                        {esPrincipal && (
+                          <span
+                            className="position-absolute start-50 translate-middle-x"
+                            style={{
+                              top: -1,
+                              background: 'var(--accent)',
+                              color: '#fff',
+                              borderRadius: 4,
+                              fontSize: 9,
+                              fontWeight: 600,
+                              padding: '0 5px',
+                              lineHeight: '16px',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.04em',
+                              whiteSpace: 'nowrap',
+                              zIndex: 1,
+                            }}
+                          >
+                            Principal
+                          </span>
+                        )}
+                        {enGaleria && !esPrincipal && (
+                          <span
+                            className="position-absolute top-0 end-0"
+                            style={{
+                              background: '#198754',
+                              color: '#fff',
+                              borderRadius: '50%',
+                              width: 18,
+                              height: 18,
+                              fontSize: 11,
+                              lineHeight: '18px',
+                              textAlign: 'center',
+                              margin: 2,
+                            }}
+                          >
+                            <i className="bi bi-check"></i>
+                          </span>
+                        )}
+                        <img
+                          src={imageUrl(img)}
+                          alt={img}
+                          className="w-100"
+                          style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 4 }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
         <div className="d-flex gap-2">
