@@ -44,7 +44,7 @@ async function chat(req, res) {
         : ['(vacío)']),
     ].join('\n');
 
-    const prompt = `Sos un asistente de ventas de un catálogo de productos. Respondé preguntas sobre el negocio (teléfono, dirección, horarios) y sobre los productos disponibles. Sé breve y amable.
+    const prompt = `Sos un asistente de ventas. Respondé SOLO con la información disponible abajo. Si algo no está en los datos, decí "No tengo esa información". Sé breve y amable.
 
 ${fullContext}
 
@@ -60,10 +60,10 @@ Usuario: ${message}`;
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
       body: JSON.stringify({
-        model: 'qwen2.5:0.5b',
+        model: 'qwen2.5:1.5b',
         prompt: prompt,
         stream: false,
-        options: { temperature: 0.3, num_predict: 120 },
+        options: { temperature: 0.2, num_predict: 80 },
       }),
     });
     clearTimeout(timeout);
