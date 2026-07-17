@@ -52,9 +52,11 @@ async function chat(req, res) {
 
     // Si hay productos coincidentes, responder directamente
     if (productos.length > 0) {
-      const reply = productos.map(p =>
-        `*${p.nombre}* — $${p.precio} (${p.categoria}) ${p.disponible ? '✅' : '❌ Sin stock'}`
-      ).join('\n');
+      const reply = productos.map(p => {
+        let line = `*${p.nombre}* — $${p.precio} (${p.categoria}) ${p.disponible ? '✅' : '❌ Sin stock'}`;
+        if (p.descripcion) line += `\n   ${p.descripcion}`;
+        return line;
+      }).join('\n\n');
       return res.json({ ok: true, data: { reply } });
     }
 
