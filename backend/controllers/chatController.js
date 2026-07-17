@@ -42,7 +42,7 @@ Usuario: ${message}`;
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
       body: JSON.stringify({
-        model: 'qwen2.5:1.5b',
+        model: 'qwen2.5:0.5b',
         prompt: prompt,
         stream: false,
         options: { temperature: 0.3, num_predict: 120 },
