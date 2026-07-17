@@ -34,16 +34,21 @@ Usuario: ${message}`;
 
     const ollamaUrl = process.env.OLLAMA_URL || 'http://ollama:11434';
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+
     const response = await fetch(`${ollamaUrl}/api/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
       body: JSON.stringify({
         model: 'qwen2.5:1.5b',
         prompt: prompt,
         stream: false,
-        options: { temperature: 0.3, num_predict: 150 },
+        options: { temperature: 0.3, num_predict: 120 },
       }),
     });
+    clearTimeout(timeout);
 
     if (!response.ok) {
       const text = await response.text();
