@@ -14,6 +14,7 @@ const productoRoutes = require('./routes/productos');
 const usuarioRoutes = require('./routes/usuarios');
 const categoriaRoutes = require('./routes/categorias');
 const resetRoutes = require('./routes/reset');
+const chatRoutes = require('./routes/chat');
 
 
 const app = express();
@@ -107,6 +108,7 @@ app.use('/api', productoRoutes);
 app.use('/api', usuarioRoutes);
 app.use('/api', categoriaRoutes);
 app.use('/api', resetRoutes);
+app.use('/api', chatRoutes);
 
 
 // =======================

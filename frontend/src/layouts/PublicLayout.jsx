@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import ChatBot from '../components/ChatBot';
 
 function PublicLayout() {
   const esCatalogo = useLocation().pathname === '/' || useLocation().pathname.startsWith('/producto');
@@ -19,6 +20,7 @@ function PublicLayout() {
       <main>
         <Outlet />
       </main>
+      <ChatBot />
     </>
   );
 }
