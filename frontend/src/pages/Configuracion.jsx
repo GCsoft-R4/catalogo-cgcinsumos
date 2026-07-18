@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import api from '../services/api';
 
 function Configuracion() {
-  const [form, setForm] = useState({ telefono: '', direccion: '', horarios: '' });
+  const [form, setForm] = useState({ telefono: '', direccion: '', horarios: '', marquesina: '' });
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     api.get('/config').then(res => {
       const d = res.data?.data;
-      if (d) setForm({ telefono: d.telefono || '', direccion: d.direccion || '', horarios: d.horarios || '' });
+      if (d) setForm({ telefono: d.telefono || '', direccion: d.direccion || '', horarios: d.horarios || '', marquesina: d.marquesina || '' });
     }).finally(() => setLoading(false));
   }, []);
 
@@ -59,6 +59,17 @@ function Configuracion() {
             onChange={e => setForm({ ...form, horarios: e.target.value })}
             placeholder="Ej: Lun a Vie 9-18, Sáb 9-13"
           />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Texto de la marquesina</label>
+          <textarea
+            className="form-control"
+            rows={3}
+            value={form.marquesina}
+            onChange={e => setForm({ ...form, marquesina: e.target.value })}
+            placeholder="Ej: Envíos a toda la ciudad · Consultanos por WhatsApp · Los mejores precios"
+          />
+          <div className="form-text">Separá los mensajes con "·". Se mostrará como texto deslizante en el catálogo público.</div>
         </div>
         <button type="submit" className="btn btn-primary">
           Guardar

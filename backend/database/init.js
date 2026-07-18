@@ -218,6 +218,19 @@ async function initDatabase() {
       WHERE NOT EXISTS (SELECT 1 FROM configuracion WHERE configuracion.tenant_id = tenants.id)
     `);
 
+    // Migrar columna marquesina en configuracion
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='configuracion' AND column_name='marquesina'
+        ) THEN
+          ALTER TABLE configuracion ADD COLUMN marquesina TEXT NOT NULL DEFAULT '';
+        END IF;
+      END $$;
+    `);
+
     // Migrar categoria_id
     await pool.query(`
       DO $$
