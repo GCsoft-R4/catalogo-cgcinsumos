@@ -59,7 +59,7 @@ function CartProvider({ children }) {
     });
     const totalFmt = total.toLocaleString('es-AR', { minimumFractionDigits: 2 });
     const text = encodeURIComponent(
-      `Hola, quiero hacer un pedido:\n\n${lines.join('\n')}\n\n*Total: $${totalFmt}*`
+      `Hola, quiero hacer un pedido:\n\n${lines.join('\n')}\n\n*Total: $${totalFmt}*\n\n¿Me confirmás si tenés stock?`
     );
     window.open(`https://wa.me/${WHATSAPP}?text=${text}`, '_blank');
   };
