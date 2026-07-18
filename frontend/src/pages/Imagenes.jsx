@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import api, { imageUrl } from '../services/api';
+import ConfirmModal from '../components/ConfirmModal';
 
 function Imagenes() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchImages = () => {
     api.get('/uploads')
@@ -32,6 +34,17 @@ function Imagenes() {
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = '';
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await api.delete(`/uploads/${deleteTarget}`);
+      setDeleteTarget(null);
+      fetchImages();
+    } catch (err) {
+      console.error('Error al eliminar:', err);
     }
   };
 
@@ -79,7 +92,7 @@ function Imagenes() {
       ) : (
         <div className="row g-3">
           {images.map(img => (
-            <div className="col-6 col-sm-4 col-md-3 col-lg-2" key={img}>
+            <div className="col-6 col-sm-4 col-md-3 col-lg-2" key={img} style={{ position: 'relative' }}>
               <img
                 src={imageUrl(img)}
                 alt={img}
@@ -87,10 +100,27 @@ function Imagenes() {
                 style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }}
                 title={img}
               />
+              <button
+                className="btn btn-sm position-absolute top-0 end-0 m-1 d-flex align-items-center justify-content-center"
+                style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: '0.7rem', padding: 0 }}
+                onClick={() => setDeleteTarget(img)}
+                title="Eliminar"
+              >
+                <i className="bi bi-trash"></i>
+              </button>
             </div>
           ))}
         </div>
       )}
+
+      <ConfirmModal
+        show={!!deleteTarget}
+        title="Eliminar imagen"
+        message="¿Seguro que querés eliminar esta imagen? Esta acción no se puede deshacer."
+        confirmLabel="Eliminar"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

@@ -19,4 +19,21 @@ function uploadMultiple(req, res) {
   res.json({ ok: true, data: files });
 }
 
-module.exports = { listImages, uploadMultiple };
+function deleteImage(req, res) {
+  try {
+    const { filename } = req.params;
+    const filePath = path.join(uploadsDir, filename);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ ok: false, error: 'Imagen no encontrada' });
+    }
+
+    fs.unlinkSync(filePath);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Error deleteImage:', err);
+    res.status(500).json({ ok: false, error: 'Error interno' });
+  }
+}
+
+module.exports = { listImages, uploadMultiple, deleteImage };
