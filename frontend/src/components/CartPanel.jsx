@@ -1,11 +1,8 @@
-import { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { imageUrl as getImgUrl } from '../services/api';
-import CheckoutQR from './CheckoutQR';
 
 function CartPanel({ show, onClose }) {
-  const { items, removeItem, updateCantidad, total } = useCart();
-  const [showCheckout, setShowCheckout] = useState(false);
+  const { items, removeItem, updateCantidad, total, sendWhatsApp, clearCart } = useCart();
 
   return (
     <>
@@ -76,20 +73,16 @@ function CartPanel({ show, onClose }) {
               </span>
             </div>
             <button
-              className="btn w-100 d-flex align-items-center justify-content-center gap-2 mb-2"
-              style={{ background: '#009ee3', color: '#fff', fontWeight: 600, borderRadius: 8, padding: '0.6rem' }}
-              onClick={() => { setShowCheckout(true); onClose(); }}
+              className="btn w-100 d-flex align-items-center justify-content-center gap-2"
+              style={{ background: '#25D366', color: '#fff', fontWeight: 600, borderRadius: 8, padding: '0.6rem' }}
+              onClick={() => { sendWhatsApp(); clearCart(); onClose(); }}
             >
-              <i className="bi bi-credit-card"></i>
-              Finalizar compra
+              <i className="bi bi-whatsapp"></i>
+              Enviar pedido por WhatsApp
             </button>
           </div>
         )}
       </div>
-
-      {showCheckout && (
-        <CheckoutQR total={total} onClose={() => setShowCheckout(false)} />
-      )}
     </>
   );
 }
