@@ -17,7 +17,7 @@ function Navbar() {
         
         <div className="d-flex align-items-center gap-3">
           <Link to="/admin/login" className="text-decoration-none d-flex" title="Administrador">
-            <img src="/gclogo.png" alt="Admin" style={{ height: 50, width: 'auto' }} />
+            <img src="/gclogo.png" alt="Admin" style={{ height: 65, width: 'auto' }} />
           </Link>
 
           <Link to="/" className="text-decoration-none text-nowrap" style={{ fontWeight: 700, fontSize: '1.25rem', color: 'var(--text)' }}>
