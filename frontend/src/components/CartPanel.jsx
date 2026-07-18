@@ -2,7 +2,7 @@ import { useCart } from '../context/CartContext';
 import { imageUrl as getImgUrl } from '../services/api';
 
 function CartPanel({ show, onClose }) {
-  const { items, removeItem, updateCantidad, total, sendWhatsApp } = useCart();
+  const { items, removeItem, updateCantidad, total, sendWhatsApp, clearCart } = useCart();
 
   return (
     <>
@@ -75,7 +75,7 @@ function CartPanel({ show, onClose }) {
             <button
               className="btn w-100 d-flex align-items-center justify-content-center gap-2"
               style={{ background: '#25D366', color: '#fff', fontWeight: 600, borderRadius: 8, padding: '0.6rem' }}
-              onClick={() => { sendWhatsApp(); onClose(); }}
+              onClick={() => { sendWhatsApp(); clearCart(); onClose(); }}
             >
               <i className="bi bi-whatsapp"></i>
               Enviar pedido por WhatsApp
