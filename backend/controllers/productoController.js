@@ -26,6 +26,15 @@ async function getAll(req, res) {
 
     const where = `WHERE ${conditions.join(' AND ')}`;
 
+    const sortOptions = {
+      nombre_asc: 'p.nombre ASC',
+      nombre_desc: 'p.nombre DESC',
+      precio_asc: 'p.precio ASC',
+      precio_desc: 'p.precio DESC',
+      newest: 'p.fecha_creacion DESC'
+    };
+    const orderBy = sortOptions[req.query.sort] || 'p.fecha_creacion DESC';
+
     const countResult = await pool.query(
       `SELECT COUNT(*)::int AS total FROM productos p
        LEFT JOIN categorias c ON c.id = p.categoria_id
@@ -42,7 +51,7 @@ async function getAll(req, res) {
        FROM productos p
        LEFT JOIN categorias c ON c.id = p.categoria_id
        ${where}
-       ORDER BY p.fecha_creacion DESC
+       ORDER BY ${orderBy}
        LIMIT $${idx + 1} OFFSET $${idx + 2}`,
       params
     );

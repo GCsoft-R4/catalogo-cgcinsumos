@@ -14,10 +14,11 @@ function Catalogo() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [sort, setSort] = useState('newest');
 
-  const fetchProductos = (cat = categoriaActiva, pg = page, search = searchQuery) => {
+  const fetchProductos = (cat = categoriaActiva, pg = page, search = searchQuery, sortBy = sort) => {
     setLoading(true);
-    const params = { page: pg, limit: 12 };
+    const params = { page: pg, limit: 12, sort: sortBy };
     if (cat) params.categoria = cat;
     if (search) params.search = search;
     api.get('/productos', { params })
@@ -34,8 +35,8 @@ function Catalogo() {
   }, []);
 
   useEffect(() => {
-    fetchProductos(categoriaActiva, page, searchQuery);
-  }, [categoriaActiva, page, searchQuery]);
+    fetchProductos(categoriaActiva, page, searchQuery, sort);
+  }, [categoriaActiva, page, searchQuery, sort]);
 
   useEffect(() => {
     const el = carouselRef.current;
@@ -142,6 +143,20 @@ function Catalogo() {
               <i className="bi bi-search"></i>
             </button>
           </div>
+        </div>
+        <div className="col-auto d-flex align-items-center">
+          <select
+            className="form-select form-select-sm"
+            value={sort}
+            onChange={e => { setSort(e.target.value); setPage(1); }}
+            style={{ borderRadius: 8, border: '1px solid var(--border)', padding: '0.4rem 2rem 0.4rem 0.75rem' }}
+          >
+            <option value="newest">Más nuevos</option>
+            <option value="nombre_asc">Alfabético A-Z</option>
+            <option value="nombre_desc">Alfabético Z-A</option>
+            <option value="precio_desc">Mayor precio</option>
+            <option value="precio_asc">Menor precio</option>
+          </select>
         </div>
       </div>
 
