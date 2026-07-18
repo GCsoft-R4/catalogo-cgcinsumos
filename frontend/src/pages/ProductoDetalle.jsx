@@ -70,29 +70,33 @@ function ProductoDetalle() {
       <Link to="/" className="btn btn-outline mb-4">&larr; Volver</Link>
       <div className="row g-5 align-items-start">
         <div className="col-lg-7">
-          {selectedImg ? (
-            <img src={imageUrl(selectedImg)} alt={producto.nombre} className="detail-image w-100" />
-          ) : (
-            <img src="https://placehold.co/800x500/e5e7eb/9ca3af?text=Sin+imagen" alt={producto.nombre} className="detail-image w-100" />
-          )}
-          {todasLasImagenes.length > 1 && (
-            <div className="d-flex gap-2 mt-3 flex-wrap">
-              {todasLasImagenes.map((f, i) => (
-                <div
-                  key={f}
-                  className={`border rounded overflow-hidden ${f === selectedImg ? 'border-primary' : 'border'}`}
-                  style={{ width: 64, height: 64, cursor: 'pointer', opacity: f === selectedImg ? 1 : 0.5, borderWidth: f === selectedImg ? 2 : 1 }}
-                  onClick={() => setSelectedImg(f)}
-                >
-                  <img
-                    src={imageUrl(f)}
-                    alt={`${producto.nombre} ${i + 1}`}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                </div>
-              ))}
+          <div className="d-flex gap-3">
+            {todasLasImagenes.length > 1 && (
+              <div className="d-flex flex-column gap-2" style={{ flexShrink: 0 }}>
+                {todasLasImagenes.map((f, i) => (
+                  <div
+                    key={f}
+                    className={`border rounded overflow-hidden ${f === selectedImg ? 'border-primary' : 'border'}`}
+                    style={{ width: 64, height: 64, cursor: 'pointer', opacity: f === selectedImg ? 1 : 0.5, borderWidth: f === selectedImg ? 2 : 1 }}
+                    onClick={() => setSelectedImg(f)}
+                  >
+                    <img
+                      src={imageUrl(f)}
+                      alt={`${producto.nombre} ${i + 1}`}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="flex-grow-1">
+              {selectedImg ? (
+                <img src={imageUrl(selectedImg)} alt={producto.nombre} className="detail-image w-100" />
+              ) : (
+                <img src="https://placehold.co/800x500/e5e7eb/9ca3af?text=Sin+imagen" alt={producto.nombre} className="detail-image w-100" />
+              )}
             </div>
-          )}
+          </div>
         </div>
         <div className="col-lg-5">
           <h1 className="fw-bold mb-2" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }}>{producto.nombre}</h1>
