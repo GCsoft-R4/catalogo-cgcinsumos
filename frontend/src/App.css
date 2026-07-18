@@ -28,6 +28,9 @@ body {
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border);
   padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .sidebar {
@@ -431,6 +434,9 @@ body {
   font-weight: 500;
   padding: 0.5rem 0;
   white-space: nowrap;
+  position: sticky;
+  top: 3.3rem;
+  z-index: 999;
 }
 
 .marquee-track {
