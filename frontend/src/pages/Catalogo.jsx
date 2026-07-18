@@ -15,6 +15,7 @@ function Catalogo() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [sort, setSort] = useState('newest');
+  const [viewMode, setViewMode] = useState('grid');
 
   const fetchProductos = (cat = categoriaActiva, pg = page, search = searchQuery, sortBy = sort) => {
     setLoading(true);
@@ -150,6 +151,24 @@ function Catalogo() {
             <option value="precio_desc">Mayor precio</option>
             <option value="precio_asc">Menor precio</option>
           </select>
+          <div className="btn-group ms-2" role="group">
+            <button
+              type="button"
+              className={`btn btn-sm ${viewMode === 'grid' ? 'btn-dark' : 'btn-outline'}`}
+              onClick={() => setViewMode('grid')}
+              title="Vista cuadrícula"
+            >
+              <i className="bi bi-grid-3x3-gap"></i>
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${viewMode === 'list' ? 'btn-dark' : 'btn-outline'}`}
+              onClick={() => setViewMode('list')}
+              title="Vista lista"
+            >
+              <i className="bi bi-list"></i>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -199,13 +218,21 @@ function Catalogo() {
         </div>
       ) : (
         <>
-          <div className="row g-4">
-            {filtered.map(p => (
-              <div className="col-6 col-md-4 col-lg-3" key={p.id}>
-                <ProductCard producto={p} />
-              </div>
-            ))}
-          </div>
+          {viewMode === 'grid' ? (
+            <div className="row g-4">
+              {filtered.map(p => (
+                <div className="col-6 col-md-4 col-lg-3" key={p.id}>
+                  <ProductCard producto={p} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="d-flex flex-column gap-3">
+              {filtered.map(p => (
+                <ProductCard key={p.id} producto={p} viewMode="list" />
+              ))}
+            </div>
+          )}
 
           {totalPages > 1 && (
             <div className="d-flex justify-content-center gap-2 mt-5">

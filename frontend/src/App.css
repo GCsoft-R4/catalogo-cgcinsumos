@@ -65,6 +65,10 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
+.card-product.card-product-list:hover {
+  transform: none;
+}
+
 .card-product .card-img-top {
   width: 100%;
   height: 260px;
@@ -523,5 +527,15 @@ body {
 @media (min-width: 768px) and (max-width: 991.98px) {
   .card-product .card-img-top {
     height: 220px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .card-product.card-product-list {
+    flex-direction: column !important;
+  }
+  .card-product.card-product-list > div:first-child {
+    flex: 0 0 180px !important;
+    width: 100%;
   }
 }
