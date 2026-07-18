@@ -15,6 +15,10 @@ function Navbar() {
           </Link>
         </div>
 
+        <span className="d-none d-md-inline fw-bold" style={{ fontSize: '1.1rem', color: 'var(--text)' }}>
+          Catálogo
+        </span>
+
         <div className="d-flex align-items-center gap-3">
           <span className="text-muted fw-semibold d-none d-md-inline">
             Nuestras redes:

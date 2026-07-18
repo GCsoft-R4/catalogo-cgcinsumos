@@ -117,7 +117,6 @@ function Catalogo() {
     />
     <div className="container py-5">
       <div className="text-center mb-4">
-        <h1 className="fw-bold mb-3">Catálogo</h1>
         <p className="text-muted" style={{ maxWidth: 480, margin: '0 auto' }}>
           Insumos y accesorios para tu vida diaria
         </p>
