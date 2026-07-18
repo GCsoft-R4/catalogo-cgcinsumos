@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { useAuth } from '../hooks/useAuth';
-import ChatBot from '../components/ChatBot';
 
 function AdminLayout() {
   const { isAuthenticated, loading } = useAuth();
@@ -53,7 +52,6 @@ function AdminLayout() {
         </div>
         <Outlet />
       </main>
-      <ChatBot />
     </div>
   );
 }

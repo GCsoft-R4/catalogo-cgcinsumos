@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import ChatBot from '../components/ChatBot';
 import api from '../services/api';
 
 function PublicLayout() {
@@ -32,7 +31,6 @@ function PublicLayout() {
       <main>
         <Outlet />
       </main>
-      <ChatBot />
     </>
   );
 }
