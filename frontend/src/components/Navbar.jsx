@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import { useCart } from '../context/CartContext';
+import CartPanel from './CartPanel';
 
 function Navbar() {
   const [direccion, setDireccion] = useState('');
+  const [cartOpen, setCartOpen] = useState(false);
+  const { totalItems } = useCart();
 
   useEffect(() => {
     api.get('/config').then(res => {
@@ -12,6 +16,7 @@ function Navbar() {
   }, []);
 
   return (
+    <>
     <nav className="navbar-custom">
       <div className="container d-flex align-items-center justify-content-between flex-wrap gap-2">
         
@@ -64,6 +69,20 @@ function Navbar() {
             >
               <i className="bi bi-whatsapp"></i>
             </a>
+
+            <button
+              className="btn p-0 border-0 position-relative"
+              style={{ color: 'var(--text)', fontSize: '1.25rem' }}
+              onClick={() => setCartOpen(true)}
+              title="Carrito"
+            >
+              <i className="bi bi-cart3"></i>
+              {totalItems > 0 && (
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '0.6rem' }}>
+                  {totalItems}
+                </span>
+              )}
+            </button>
           </div>
 
           {direccion && (
@@ -76,6 +95,8 @@ function Navbar() {
 
       </div>
     </nav>
+    <CartPanel show={cartOpen} onClose={() => setCartOpen(false)} />
+    </>
   );
 }
 

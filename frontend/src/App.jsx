@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+import { CartProvider } from './context/CartContext';
 import PublicLayout from './layouts/PublicLayout';
 import AdminLayout from './layouts/AdminLayout';
 import Catalogo from './pages/Catalogo';
@@ -18,6 +19,7 @@ import NotFound from './pages/NotFound';
 function App() {
   return (
     <HelmetProvider>
+    <CartProvider>
     <BrowserRouter>
       <Routes>
         <Route element={<PublicLayout />}>
@@ -42,6 +44,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
+    </CartProvider>
     </HelmetProvider>
   );
 }

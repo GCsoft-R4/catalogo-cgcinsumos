@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { imageUrl as getImgUrl } from "../services/api";
+import { useCart } from "../context/CartContext";
 
 const WHATSAPP = '5493586546525';
 
 function ProductCard({ producto, viewMode = 'grid' }) {
   const navigate = useNavigate();
+  const { addItem } = useCart();
 
   const imageUrl = getImgUrl(producto.imagen);
   const precio = producto.precio > 0
@@ -16,6 +18,11 @@ function ProductCard({ producto, viewMode = 'grid' }) {
   const msg = encodeURIComponent(
     `Hola, me interesa ${producto.nombre}${precio ? ` (${precio})` : ''}`
   );
+
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
+    addItem(producto);
+  };
 
   if (viewMode === 'list') {
     return (
@@ -60,22 +67,32 @@ function ProductCard({ producto, viewMode = 'grid' }) {
             <p className="card-text">{producto.descripcion}</p>
           </div>
           {sinStock ? (
+            <div className="d-flex gap-2 mt-1">
+              <button
+                className="btn d-inline-flex align-items-center justify-content-center gap-1"
+                style={{ background: 'var(--accent)', color: '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                onClick={handleAddToCart}
+              >
+                <i className="bi bi-cart-plus" style={{ fontSize: '0.75rem' }}></i>
+                Agregar
+              </button>
+              <a
+                href={`https://wa.me/${WHATSAPP}?text=${msg}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn d-inline-flex align-items-center justify-content-center gap-1"
+                style={{ background: '#25D366', color: '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                onClick={e => e.stopPropagation()}
+              >
+                <i className="bi bi-whatsapp" style={{ fontSize: '0.75rem' }}></i>
+                Consultar
+              </a>
+            </div>
+          ) : (
             <span className="btn mt-1 d-inline-flex align-items-center justify-content-center gap-1 align-self-start"
               style={{ background: '#e5e5e0', color: '#999', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem', cursor: 'default' }}>
               No disponible
             </span>
-          ) : (
-            <a
-              href={`https://wa.me/${WHATSAPP}?text=${msg}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn mt-1 d-inline-flex align-items-center justify-content-center gap-1 align-self-start"
-              style={{ background: '#25D366', color: '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
-              onClick={e => e.stopPropagation()}
-            >
-              <i className="bi bi-whatsapp" style={{ fontSize: '0.75rem' }}></i>
-              Consultar
-            </a>
           )}
         </div>
       </div>
@@ -125,17 +142,27 @@ function ProductCard({ producto, viewMode = 'grid' }) {
             No disponible
           </span>
         ) : (
-          <a
-            href={`https://wa.me/${WHATSAPP}?text=${msg}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn w-100 mt-1 d-flex align-items-center justify-content-center gap-1"
-            style={{ background: '#25D366', color: '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
-            onClick={e => e.stopPropagation()}
-          >
-            <i className="bi bi-whatsapp" style={{ fontSize: '0.75rem' }}></i>
-            Consultar
-          </a>
+          <div className="d-flex gap-2 mt-1">
+            <button
+              className="btn flex-grow-1 d-flex align-items-center justify-content-center gap-1"
+              style={{ background: 'var(--accent)', color: '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+              onClick={handleAddToCart}
+            >
+              <i className="bi bi-cart-plus" style={{ fontSize: '0.75rem' }}></i>
+              Agregar
+            </button>
+            <a
+              href={`https://wa.me/${WHATSAPP}?text=${msg}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn flex-grow-1 d-flex align-items-center justify-content-center gap-1"
+              style={{ background: '#25D366', color: '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+              onClick={e => e.stopPropagation()}
+            >
+              <i className="bi bi-whatsapp" style={{ fontSize: '0.75rem' }}></i>
+              Consultar
+            </a>
+          </div>
         )}
       </div>
     </div>
