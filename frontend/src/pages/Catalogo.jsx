@@ -116,12 +116,6 @@ function Catalogo() {
       description="Parlantes, cargadores, auriculares y accesorios electrónicos. Comprá online en GCinsumos, General Cabrera."
     />
     <div className="container py-5">
-      <div className="text-center mb-4">
-        <p className="text-muted" style={{ maxWidth: 480, margin: '0 auto' }}>
-          Insumos y accesorios para tu vida diaria
-        </p>
-      </div>
-
       <div className="row justify-content-center mb-4">
         <div className="col-md-6">
           <div className="input-group" style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid var(--border)' }}>
