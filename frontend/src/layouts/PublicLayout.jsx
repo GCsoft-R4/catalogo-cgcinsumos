@@ -17,16 +17,18 @@ function PublicLayout() {
 
   return (
     <>
-      <Navbar />
-      {esCatalogo && marquesina && (
-        <div className="marquee-wrapper">
-          <div className="marquee-track">
-            <span className="marquee-text">{marquesina} &nbsp;·&nbsp;</span>
-            <span className="marquee-text">{marquesina} &nbsp;·&nbsp;</span>
-            <span className="marquee-text">{marquesina} &nbsp;·&nbsp;</span>
+      <div className="sticky-top-wrapper">
+        <Navbar />
+        {esCatalogo && marquesina && (
+          <div className="marquee-wrapper">
+            <div className="marquee-track">
+              <span className="marquee-text">{marquesina} &nbsp;·&nbsp;</span>
+              <span className="marquee-text">{marquesina} &nbsp;·&nbsp;</span>
+              <span className="marquee-text">{marquesina} &nbsp;·&nbsp;</span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
       <main>
         <Outlet />
       </main>
