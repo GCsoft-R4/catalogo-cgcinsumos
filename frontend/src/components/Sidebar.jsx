@@ -26,25 +26,25 @@ function Sidebar() {
       </div>
       <nav className="nav flex-column mb-auto">
         <NavLink to="/admin/productos" end className="nav-link">
-          Productos
+          <i className="bi bi-box-seam me-2"></i>Productos
         </NavLink>
         <NavLink to="/admin/productos/nuevo" className="nav-link">
-          Agregar producto
+          <i className="bi bi-plus-circle me-2"></i>Agregar producto
         </NavLink>
         <NavLink to="/admin/categorias" className="nav-link">
-          Categorías
+          <i className="bi bi-tags me-2"></i>Categorías
         </NavLink>
         <NavLink to="/admin/imagenes" className="nav-link">
-          Imágenes
+          <i className="bi bi-images me-2"></i>Imágenes
         </NavLink>
         <NavLink to="/admin/usuarios" className="nav-link">
-          Usuarios
+          <i className="bi bi-people me-2"></i>Usuarios
         </NavLink>
         <NavLink to="/admin/visitas" className="nav-link">
-          Visitas
+          <i className="bi bi-bar-chart me-2"></i>Visitas
         </NavLink>
         <NavLink to="/admin/configuracion" className="nav-link">
-          Configuración
+          <i className="bi bi-gear me-2"></i>Configuración
         </NavLink>
       </nav>
       <div className="px-4 mt-auto">
