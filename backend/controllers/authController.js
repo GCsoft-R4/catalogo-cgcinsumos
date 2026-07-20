@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { pool } = require('../config/db');
 
-async function login(req, res) {
+async function login(req, res, next) {
   try {
     const tenantId = req.tenant?.id;
     if (!tenantId) {
@@ -47,14 +47,7 @@ async function login(req, res) {
       data: { token }
     });
 
-  } catch (error) {
-    console.error('Error login:', error);
-
-    res.status(500).json({
-      ok: false,
-      error: 'Error interno del servidor'
-    });
-  }
+  } catch (error) { next(error); }
 }
 
 module.exports = { login };

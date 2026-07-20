@@ -1,6 +1,6 @@
 const { pool } = require('../config/db');
 
-async function getConfig(req, res) {
+async function getConfig(req, res, next) {
   try {
     const tenantId = req.tenant?.id;
     const result = await pool.query(
@@ -9,13 +9,10 @@ async function getConfig(req, res) {
     );
     const config = result.rows[0] || { telefono: '', direccion: '', horarios: '', marquesina: '' };
     res.json({ ok: true, data: config });
-  } catch (err) {
-    console.error('Error getConfig:', err);
-    res.status(500).json({ ok: false, error: 'Error interno' });
-  }
+  } catch (err) { next(err); }
 }
 
-async function updateConfig(req, res) {
+async function updateConfig(req, res, next) {
   try {
     const tenantId = req.tenant?.id;
     const { telefono, direccion, horarios, marquesina } = req.body;
@@ -26,10 +23,7 @@ async function updateConfig(req, res) {
     );
 
     res.json({ ok: true });
-  } catch (err) {
-    console.error('Error updateConfig:', err);
-    res.status(500).json({ ok: false, error: 'Error interno' });
-  }
+  } catch (err) { next(err); }
 }
 
 module.exports = { getConfig, updateConfig };

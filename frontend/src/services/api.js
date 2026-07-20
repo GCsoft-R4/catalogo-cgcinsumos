@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { navigate } from './navigation';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
@@ -31,7 +32,7 @@ api.interceptors.response.use(
   error => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/admin/login';
+      navigate('/admin/login');
     }
 
     return Promise.reject(error);
