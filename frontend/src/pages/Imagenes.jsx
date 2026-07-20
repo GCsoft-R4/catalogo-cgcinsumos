@@ -11,7 +11,10 @@ function Imagenes() {
 
   const fetchImages = () => {
     api.get('/uploads')
-      .then(res => setImages(res.data.data || []))
+      .then(res => {
+        const data = res.data.data || [];
+        setImages(data);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   };
@@ -91,25 +94,43 @@ function Imagenes() {
         </div>
       ) : (
         <div className="row g-3">
-          {images.map(img => (
-            <div className="col-6 col-sm-4 col-md-3 col-lg-2" key={img} style={{ position: 'relative' }}>
-              <img
-                src={imageUrl(img)}
-                alt={img}
-                className="w-100"
-                style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }}
-                title={img}
-              />
-              <button
-                className="btn btn-sm position-absolute top-0 end-0 m-1 d-flex align-items-center justify-content-center"
-                style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: '0.7rem', padding: 0 }}
-                onClick={() => setDeleteTarget(img)}
-                title="Eliminar"
-              >
-                <i className="bi bi-trash"></i>
-              </button>
-            </div>
-          ))}
+          {images.map(img => {
+            const date = new Date(img.mtime);
+            const isToday = new Date().toDateString() === date.toDateString();
+            const dateLabel = isToday
+              ? date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
+              : date.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
+            return (
+              <div className="col-6 col-sm-4 col-md-3 col-lg-2" key={img.name} style={{ position: 'relative' }}>
+                <img
+                  src={imageUrl(img.name)}
+                  alt={img.name}
+                  className="w-100"
+                  style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }}
+                />
+                <div
+                  className="position-absolute start-0 bottom-0 w-100 px-2 py-1"
+                  style={{
+                    background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+                    borderRadius: '0 0 8px 8px',
+                    color: '#fff',
+                    fontSize: '0.65rem',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  {dateLabel}
+                </div>
+                <button
+                  className="btn btn-sm position-absolute top-0 end-0 m-1 d-flex align-items-center justify-content-center"
+                  style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: '0.7rem', padding: 0 }}
+                  onClick={() => setDeleteTarget(img.name)}
+                  title="Eliminar"
+                >
+                  <i className="bi bi-trash"></i>
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
 

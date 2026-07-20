@@ -4,10 +4,10 @@ const path = require('path');
 const uploadsDir = path.join(__dirname, '..', 'uploads');
 
 function listImages(req, res) {
-  const files = fs.readdirSync(uploadsDir).filter(f => {
-    const ext = path.extname(f).toLowerCase();
-    return ['.jpg', '.jpeg', '.png', '.webp'].includes(ext);
-  });
+  const files = fs.readdirSync(uploadsDir)
+    .filter(f => ['.jpg', '.jpeg', '.png', '.webp'].includes(path.extname(f).toLowerCase()))
+    .map(f => ({ name: f, mtime: fs.statSync(path.join(uploadsDir, f)).mtimeMs }))
+    .sort((a, b) => b.mtime - a.mtime);
   res.json({ ok: true, data: files });
 }
 
