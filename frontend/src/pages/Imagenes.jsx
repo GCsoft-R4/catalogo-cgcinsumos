@@ -138,11 +138,6 @@ function Imagenes() {
             : key === '__ayer__' ? 'Ayer'
             : key;
 
-          const dateLabel = (mtime) => {
-            const d = new Date(mtime);
-            return d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-          };
-
           return order.map(key =>
             groups[key].length > 0 && (
               <div key={key} className="mb-4">
@@ -162,18 +157,6 @@ function Imagenes() {
                           En uso
                         </span>
                       )}
-                      <div
-                        className="position-absolute start-0 bottom-0 w-100 px-2 py-1"
-                        style={{
-                          background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
-                          borderRadius: '0 0 8px 8px',
-                          color: '#fff',
-                          fontSize: '0.65rem',
-                          pointerEvents: 'none',
-                        }}
-                      >
-                        {dateLabel(img.mtime)}
-                      </div>
                       <button
                         className="btn btn-sm position-absolute top-0 end-0 m-1 d-flex align-items-center justify-content-center"
                         style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: '0.7rem', padding: 0 }}
