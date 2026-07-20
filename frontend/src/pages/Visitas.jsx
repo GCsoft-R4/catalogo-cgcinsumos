@@ -7,6 +7,7 @@ function Visitas() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [tipo, setTipo] = useState('todas');
+  const [msg, setMsg] = useState('');
 
   useEffect(() => {
     setLoading(true);
@@ -32,15 +33,24 @@ function Visitas() {
 
   async function borrarVisita(id) {
     if (!confirm('¿Borrar esta visita?')) return;
-    await api.delete(`/visitas/${id}`).catch(() => {});
-    setVisitas(prev => prev.filter(v => v.id !== id));
+    try {
+      await api.delete(`/visitas/${id}`);
+      setVisitas(prev => prev.filter(v => v.id !== id));
+    } catch {}
   }
 
   async function borrarTodas() {
     if (!confirm('¿Borrar TODAS las visitas?')) return;
-    await api.delete('/visitas').catch(() => {});
-    setPage(1);
-    setTipo('todas');
+    try {
+      await api.delete('/visitas');
+      setPage(1);
+      setTipo('todas');
+      setMsg('Todas las visitas fueron borradas');
+      setTimeout(() => setMsg(''), 3000);
+    } catch {
+      setMsg('Error al borrar');
+      setTimeout(() => setMsg(''), 3000);
+    }
   }
 
   function cambiarTipo(nuevo) {
@@ -54,9 +64,12 @@ function Visitas() {
     <div>
       <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
         <h4 className="mb-0">Visitas al catálogo</h4>
-        <button className="btn btn-outline-danger btn-sm" onClick={borrarTodas}>
-          <i className="bi bi-trash me-1"></i>Borrar todas
-        </button>
+        <div className="d-flex align-items-center gap-2">
+          {msg && <span className="small text-success">{msg}</span>}
+          <button className="btn btn-outline-danger btn-sm" onClick={borrarTodas}>
+            <i className="bi bi-trash me-1"></i>Borrar todas
+          </button>
+        </div>
       </div>
 
       <div className="btn-group btn-group-sm mb-3">
