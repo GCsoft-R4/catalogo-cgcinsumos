@@ -260,6 +260,19 @@ async function initDatabase() {
     `);
 
     // =====================================
+    // Tabla de visitas al catálogo
+    // =====================================
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS visitas (
+        id SERIAL PRIMARY KEY,
+        tenant_id INTEGER NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+        ip VARCHAR(45) NOT NULL DEFAULT '',
+        pagina VARCHAR(255) NOT NULL DEFAULT '',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // =====================================
     // Seed: usuario admin del tenant por defecto
     // =====================================
     const adminUser = (process.env.ADMIN_USER || 'admin').toLowerCase().trim();

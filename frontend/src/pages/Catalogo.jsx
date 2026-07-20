@@ -4,6 +4,9 @@ import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
 
 function Catalogo() {
+  useEffect(() => {
+    api.post('/visitas', { pagina: window.location.pathname }).catch(() => {});
+  }, []);
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [categoriaActiva, setCategoriaActiva] = useState('');

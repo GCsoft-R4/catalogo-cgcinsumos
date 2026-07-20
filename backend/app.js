@@ -16,6 +16,7 @@ const categoriaRoutes = require('./routes/categorias');
 const resetRoutes = require('./routes/reset');
 const chatRoutes = require('./routes/chat');
 const configRoutes = require('./routes/config');
+const visitasRoutes = require('./routes/visitas');
 
 
 const app = express();
@@ -113,6 +114,7 @@ app.use('/api', categoriaRoutes);
 app.use('/api', resetRoutes);
 app.use('/api', chatRoutes);
 app.use('/api', configRoutes);
+app.use('/api', visitasRoutes);
 
 
 // =======================

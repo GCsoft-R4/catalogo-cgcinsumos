@@ -40,6 +40,9 @@ function Sidebar() {
         <NavLink to="/admin/usuarios" className="nav-link">
           Usuarios
         </NavLink>
+        <NavLink to="/admin/visitas" className="nav-link">
+          Visitas
+        </NavLink>
         <NavLink to="/admin/configuracion" className="nav-link">
           Configuración
         </NavLink>

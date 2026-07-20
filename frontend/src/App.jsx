@@ -14,6 +14,7 @@ import Categorias from './pages/Categorias';
 import Imagenes from './pages/Imagenes';
 import Usuarios from './pages/Usuarios';
 import Configuracion from './pages/Configuracion';
+import Visitas from './pages/Visitas';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
           <Route path="imagenes" element={<Imagenes />} />
           <Route path="usuarios" element={<Usuarios />} />
           <Route path="configuracion" element={<Configuracion />} />
+          <Route path="visitas" element={<Visitas />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
