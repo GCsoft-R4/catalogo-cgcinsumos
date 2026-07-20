@@ -272,6 +272,19 @@ async function initDatabase() {
       );
     `);
 
+    // Migrar columna geo en visitas
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='visitas' AND column_name='geo'
+        ) THEN
+          ALTER TABLE visitas ADD COLUMN geo JSONB;
+        END IF;
+      END $$;
+    `);
+
     // =====================================
     // Seed: usuario admin del tenant por defecto
     // =====================================

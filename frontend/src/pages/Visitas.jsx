@@ -73,12 +73,13 @@ function Visitas() {
               <th>Hora</th>
               <th>Página</th>
               <th>IP</th>
+              <th>Ubicación</th>
               <th style={{ width: 40 }}></th>
             </tr>
           </thead>
           <tbody>
             {visitas.length === 0 && (
-              <tr><td colSpan={5} className="text-muted text-center py-4">Sin visitas registradas</td></tr>
+              <tr><td colSpan={6} className="text-muted text-center py-4">Sin visitas registradas</td></tr>
             )}
             {visitas.map(v => (
               <tr key={v.id}>
@@ -88,6 +89,9 @@ function Visitas() {
                 <td>
                   <span className="text-muted" style={{ fontSize: '0.85rem' }}>{v.ip}</span>
                   {v.local && <span className="badge bg-info ms-1" style={{ fontSize: '0.7rem' }}>Local</span>}
+                </td>
+                <td style={{ fontSize: '0.85rem' }}>
+                  {v.geo ? `${v.geo.ciudad}, ${v.geo.pais}` : <span className="text-muted">—</span>}
                 </td>
                 <td>
                   <button className="btn btn-sm p-0 border-0 text-danger" onClick={() => borrarVisita(v.id)} title="Borrar">
