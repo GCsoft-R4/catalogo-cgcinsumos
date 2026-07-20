@@ -150,14 +150,13 @@ function Imagenes() {
                 <h6 className="text-muted fw-semibold mb-3 border-bottom pb-2">{section.label} — {groups[section.key].length}</h6>
                 <div className="row g-3">
                   {groups[section.key].map(img => {
-                    const borderColor = img.used ? '#0d6efd' : 'var(--border)';
                     return (
                     <div className="col-6 col-sm-4 col-md-3 col-lg-2" key={img.name} style={{ position: 'relative' }}>
                       <img
                         src={imageUrl(img.name)}
                         alt={img.name}
                         className="w-100"
-                        style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 8, border: '2px solid ' + borderColor }}
+                        style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }}
                       />
                       {img.used && (
                         <span className="position-absolute top-0 start-0 m-1 badge bg-primary" style={{ fontSize: '0.6rem' }}>
