@@ -4,12 +4,20 @@ const { pool } = require('../config/db');
 
 const uploadsDir = path.join(__dirname, '..', 'uploads');
 
-function listImages(req, res) {
-  const files = fs.readdirSync(uploadsDir)
-    .filter(f => ['.jpg', '.jpeg', '.png', '.webp'].includes(path.extname(f).toLowerCase()))
-    .map(f => ({ name: f, mtime: fs.statSync(path.join(uploadsDir, f)).mtimeMs }))
-    .sort((a, b) => b.mtime - a.mtime);
-  res.json({ ok: true, data: files });
+async function listImages(req, res) {
+  try {
+    const usedResult = await pool.query('SELECT DISTINCT filename FROM producto_imagenes');
+    const usedSet = new Set(usedResult.rows.map(r => r.filename));
+
+    const files = fs.readdirSync(uploadsDir)
+      .filter(f => ['.jpg', '.jpeg', '.png', '.webp'].includes(path.extname(f).toLowerCase()))
+      .map(f => ({ name: f, mtime: fs.statSync(path.join(uploadsDir, f)).mtimeMs, used: usedSet.has(f) }))
+      .sort((a, b) => b.mtime - a.mtime);
+    res.json({ ok: true, data: files });
+  } catch (err) {
+    console.error('Error listImages:', err);
+    res.status(500).json({ ok: false, error: 'Error interno' });
+  }
 }
 
 function uploadMultiple(req, res) {
