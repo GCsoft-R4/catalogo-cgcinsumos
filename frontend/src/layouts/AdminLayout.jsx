@@ -17,16 +17,15 @@ function AdminLayout() {
       <div
         className="d-none d-lg-flex flex-column"
         style={{
-          width: collapsed ? 0 : 250,
+          width: collapsed ? 62 : 250,
           minHeight: '100vh',
           flexShrink: 0,
-          overflow: 'hidden',
           transition: 'width 0.2s ease',
           background: 'var(--bg-secondary)',
-          borderRight: collapsed ? 'none' : '1px solid var(--border)',
+          borderRight: '1px solid var(--border)',
         }}
       >
-        <Sidebar />
+        <Sidebar collapsed={collapsed} />
       </div>
 
       {open && (

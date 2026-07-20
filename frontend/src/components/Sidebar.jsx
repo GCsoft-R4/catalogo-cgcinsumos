@@ -1,7 +1,7 @@
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
-function Sidebar() {
+function Sidebar({ collapsed }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -10,46 +10,59 @@ function Sidebar() {
     navigate('/admin/login');
   };
 
+  const cls = collapsed ? 'text-center px-0' : 'px-4';
+  const linkCls = 'nav-link d-flex align-items-center gap-2 px-3 py-2';
+
   return (
     <>
-      <div className="px-4 mb-3">
-        <Link to="/" className="text-decoration-none d-flex align-items-center gap-2 mb-1">
+      <div className={`mb-3 ${cls}`}>
+        <Link to="/" className="text-decoration-none d-flex align-items-center gap-2 mb-1 justify-content-center">
           <img src="/gclogo.png" alt="GC" style={{ height: 32, width: 'auto' }} />
-          <span style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text)' }}>GCinsumos</span>
+          {!collapsed && <span style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text)' }}>GCinsumos</span>}
         </Link>
-        <div className="d-flex align-items-center justify-content-between">
-          <span className="small" style={{ color: 'var(--text-secondary)' }}>Administrador</span>
-          <Link to="/" className="text-decoration-none small" style={{ color: 'var(--accent)' }}>
-            <i className="bi bi-box-arrow-up-right me-1"></i>Catálogo
-          </Link>
-        </div>
+        {!collapsed && (
+          <div className="d-flex align-items-center justify-content-between">
+            <span className="small" style={{ color: 'var(--text-secondary)' }}>Administrador</span>
+            <Link to="/" className="text-decoration-none small" style={{ color: 'var(--accent)' }}>
+              <i className="bi bi-box-arrow-up-right me-1"></i>Catálogo
+            </Link>
+          </div>
+        )}
       </div>
       <nav className="nav flex-column mb-auto">
-        <NavLink to="/admin/productos" end className="nav-link">
-          <i className="bi bi-box-seam me-2"></i>Productos
+        <NavLink to="/admin/productos" end className={linkCls}>
+          <i className="bi bi-box-seam fs-5"></i>
+          {!collapsed && <span>Productos</span>}
         </NavLink>
-        <NavLink to="/admin/productos/nuevo" className="nav-link">
-          <i className="bi bi-plus-circle me-2"></i>Agregar producto
+        <NavLink to="/admin/productos/nuevo" className={linkCls}>
+          <i className="bi bi-plus-circle fs-5"></i>
+          {!collapsed && <span>Agregar producto</span>}
         </NavLink>
-        <NavLink to="/admin/categorias" className="nav-link">
-          <i className="bi bi-tags me-2"></i>Categorías
+        <NavLink to="/admin/categorias" className={linkCls}>
+          <i className="bi bi-tags fs-5"></i>
+          {!collapsed && <span>Categorías</span>}
         </NavLink>
-        <NavLink to="/admin/imagenes" className="nav-link">
-          <i className="bi bi-images me-2"></i>Imágenes
+        <NavLink to="/admin/imagenes" className={linkCls}>
+          <i className="bi bi-images fs-5"></i>
+          {!collapsed && <span>Imágenes</span>}
         </NavLink>
-        <NavLink to="/admin/usuarios" className="nav-link">
-          <i className="bi bi-people me-2"></i>Usuarios
+        <NavLink to="/admin/usuarios" className={linkCls}>
+          <i className="bi bi-people fs-5"></i>
+          {!collapsed && <span>Usuarios</span>}
         </NavLink>
-        <NavLink to="/admin/visitas" className="nav-link">
-          <i className="bi bi-bar-chart me-2"></i>Visitas
+        <NavLink to="/admin/visitas" className={linkCls}>
+          <i className="bi bi-bar-chart fs-5"></i>
+          {!collapsed && <span>Visitas</span>}
         </NavLink>
-        <NavLink to="/admin/configuracion" className="nav-link">
-          <i className="bi bi-gear me-2"></i>Configuración
+        <NavLink to="/admin/configuracion" className={linkCls}>
+          <i className="bi bi-gear fs-5"></i>
+          {!collapsed && <span>Configuración</span>}
         </NavLink>
       </nav>
-      <div className="px-4 mt-auto">
-        <button onClick={handleLogout} className="btn btn-outline w-100">
-          Cerrar sesión
+      <div className={`mt-auto ${collapsed ? 'text-center px-1' : 'px-4'}`}>
+        <button onClick={handleLogout} className={`btn btn-outline ${collapsed ? 'px-2' : 'w-100'}`} title={collapsed ? 'Cerrar sesión' : ''}>
+          <i className={`bi bi-box-arrow-left ${collapsed ? 'fs-5' : 'me-2'}`}></i>
+          {!collapsed && 'Cerrar sesión'}
         </button>
       </div>
     </>
