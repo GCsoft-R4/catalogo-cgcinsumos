@@ -1,19 +1,9 @@
 const { pool } = require('../config/db');
 
-function isLocalIp(ip) {
-  if (!ip) return false;
-  ip = ip.replace(/^::ffff:/, '');
-  if (ip === '::1' || ip === '127.0.0.1') return true;
-  if (/^10\./.test(ip)) return true;
-  if (/^172\.(1[6-9]|2\d|3[01])\./.test(ip)) return true;
-  if (/^192\.168\./.test(ip)) return true;
-  return false;
-}
-
 async function resolveGeo(ip) {
   try {
     const cleanIp = ip.replace(/^::ffff:/, '');
-    if (isLocalIp(cleanIp)) return;
+    if (/^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.)/.test(cleanIp) || cleanIp === '::1' || cleanIp === '127.0.0.1') return;
     const res = await fetch(`http://ip-api.com/json/${cleanIp}?fields=status,country,city,regionName,isp,query`);
     const data = await res.json();
     if (data.status === 'success') {
@@ -50,43 +40,21 @@ async function listarVisitas(req, res) {
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
     const offset = (page - 1) * limit;
-    const tipo = req.query.tipo || 'todas';
-
-    let where = 'WHERE tenant_id = $1';
-    const params = [tenantId];
-
-    if (tipo === 'locales') {
-      where = 'WHERE tenant_id = $1 AND (ip LIKE $2 OR ip LIKE $3 OR ip LIKE $4 OR ip LIKE $5 OR ip = $6 OR ip = $7)';
-      params.push('10.%', '172.1%', '172.2%', '172.3%', '::1', '127.0.0.1');
-    } else if (tipo === 'externas') {
-      where = 'WHERE tenant_id = $1 AND ip NOT LIKE $2 AND ip NOT LIKE $3 AND ip NOT LIKE $4 AND ip NOT LIKE $5 AND ip <> $6 AND ip <> $7';
-      params.push('10.%', '172.1%', '172.2%', '172.3%', '::1', '127.0.0.1');
-    }
 
     const countResult = await pool.query(
-      `SELECT COUNT(*) AS total FROM visitas ${where}`,
-      params
+      'SELECT COUNT(*) AS total FROM visitas WHERE tenant_id = $1',
+      [tenantId]
     );
     const total = parseInt(countResult.rows[0].total);
 
     const result = await pool.query(
-      `SELECT id, ip, pagina, created_at, geo FROM visitas ${where} ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`,
-      [...params, limit, offset]
+      'SELECT id, ip, pagina, created_at, geo FROM visitas WHERE tenant_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
+      [tenantId, limit, offset]
     );
 
-    const data = result.rows.map(v => ({
-      ...v,
-      local: isLocalIp(v.ip),
-      geo: v.geo || null,
-    }));
+    const data = result.rows.map(v => ({ ...v, geo: v.geo || null }));
 
-    res.json({
-      ok: true,
-      data,
-      total,
-      page,
-      totalPages: Math.ceil(total / limit),
-    });
+    res.json({ ok: true, data, total, page, totalPages: Math.ceil(total / limit) });
   } catch (err) {
     console.error('Error listarVisitas:', err);
     res.status(500).json({ ok: false, error: 'Error interno' });

@@ -6,16 +6,15 @@ function Visitas() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [tipo, setTipo] = useState('todas');
   const [msg, setMsg] = useState('');
 
   useEffect(() => {
     setLoading(true);
-    api.get(`/visitas?page=${page}&limit=50&tipo=${tipo}`).then(res => {
+    api.get(`/visitas?page=${page}&limit=50`).then(res => {
       setVisitas(res.data?.data || []);
       setTotalPages(res.data?.totalPages || 1);
     }).catch(() => {}).finally(() => setLoading(false));
-  }, [page, tipo]);
+  }, [page]);
 
   function formatDate(d) {
     const date = new Date(d);
@@ -44,18 +43,12 @@ function Visitas() {
     try {
       await api.delete('/visitas');
       setPage(1);
-      setTipo('todas');
       setMsg('Todas las visitas fueron borradas');
       setTimeout(() => setMsg(''), 3000);
     } catch {
       setMsg('Error al borrar');
       setTimeout(() => setMsg(''), 3000);
     }
-  }
-
-  function cambiarTipo(nuevo) {
-    setTipo(nuevo);
-    setPage(1);
   }
 
   if (loading) return <p className="text-muted">Cargando...</p>;
@@ -65,17 +58,11 @@ function Visitas() {
       <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
         <h4 className="mb-0">Visitas al catálogo</h4>
         <div className="d-flex align-items-center gap-2">
-          {msg && <span className="small text-success">{msg}</span>}
+          {msg && <span className={`small ${msg.includes('Error') ? 'text-danger' : 'text-success'}`}>{msg}</span>}
           <button className="btn btn-outline-danger btn-sm" onClick={borrarTodas}>
             <i className="bi bi-trash me-1"></i>Borrar todas
           </button>
         </div>
-      </div>
-
-      <div className="btn-group btn-group-sm mb-3">
-        <button className={`btn ${tipo === 'todas' ? 'btn-primary' : 'btn-outline-secondary'}`} onClick={() => cambiarTipo('todas')}>Todas</button>
-        <button className={`btn ${tipo === 'locales' ? 'btn-primary' : 'btn-outline-secondary'}`} onClick={() => cambiarTipo('locales')}>Locales</button>
-        <button className={`btn ${tipo === 'externas' ? 'btn-primary' : 'btn-outline-secondary'}`} onClick={() => cambiarTipo('externas')}>Externas</button>
       </div>
 
       <div className="table-responsive">
@@ -99,10 +86,7 @@ function Visitas() {
                 <td>{formatDate(v.created_at)}</td>
                 <td>{formatTime(v.created_at)}</td>
                 <td><code>{v.pagina}</code></td>
-                <td>
-                  <span className="text-muted" style={{ fontSize: '0.85rem' }}>{v.ip}</span>
-                  {v.local && <span className="badge bg-info ms-1" style={{ fontSize: '0.7rem' }}>Local</span>}
-                </td>
+                <td className="text-muted" style={{ fontSize: '0.85rem' }}>{v.ip}</td>
                 <td style={{ fontSize: '0.85rem' }}>
                   {v.geo ? `${v.geo.ciudad}, ${v.geo.pais}` : <span className="text-muted">—</span>}
                 </td>
