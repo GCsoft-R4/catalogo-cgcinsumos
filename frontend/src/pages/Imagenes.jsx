@@ -110,44 +110,43 @@ function Imagenes() {
       ) : (
         (() => {
           const now = new Date();
-          const startOfWeek = new Date(now);
-          startOfWeek.setDate(now.getDate() - now.getDay() + 1);
-          startOfWeek.setHours(0,0,0,0);
-          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+          const yesterday = new Date(now);
+          yesterday.setDate(yesterday.getDate() - 1);
 
-          const groups = { hoy: [], semana: [], mes: [], anterior: [] };
+          const fmtDay = d =>
+            d.toLocaleDateString('es-AR', { day: 'numeric', month: 'numeric' });
+
+          const groups = {};
+          const order = [];
 
           images.forEach(img => {
             const d = new Date(img.mtime);
-            if (d.toDateString() === now.toDateString()) {
-              groups.hoy.push(img);
-            } else if (d >= startOfWeek) {
-              groups.semana.push(img);
-            } else if (d >= startOfMonth) {
-              groups.mes.push(img);
-            } else {
-              groups.anterior.push(img);
+            const dayStr = d.toDateString();
+            const key = dayStr === now.toDateString() ? '__hoy__'
+              : dayStr === yesterday.toDateString() ? '__ayer__'
+              : fmtDay(d);
+
+            if (!groups[key]) {
+              groups[key] = [];
+              order.push(key);
             }
+            groups[key].push(img);
           });
 
-          const sections = [
-            { key: 'hoy', label: 'Hoy' },
-            { key: 'semana', label: 'Esta semana' },
-            { key: 'mes', label: 'Este mes' },
-            { key: 'anterior', label: 'Anterior' },
-          ];
+          const labelFor = (key) =>
+            key === '__hoy__' ? 'Hoy'
+            : key === '__ayer__' ? 'Ayer'
+            : key;
 
           const dateLabel = (mtime) => {
             const d = new Date(mtime);
-            const isToday = d.toDateString() === now.toDateString();
-            if (isToday) return d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-            return d.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
+            return d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
           };
 
-          return sections.map(section =>
-            groups[section.key].length > 0 && (
-              <div key={section.key} className="mb-4">
-                <h6 className="text-muted fw-semibold mb-3 border-bottom pb-2">{section.label} — {groups[section.key].length}</h6>
+          return order.map(key =>
+            groups[key].length > 0 && (
+              <div key={key} className="mb-4">
+                <h6 className="text-muted fw-semibold mb-3 border-bottom pb-2">{labelFor(key)} — {groups[key].length}</h6>
                 <div className="row g-3">
                   {groups[section.key].map(img => {
                     return (
