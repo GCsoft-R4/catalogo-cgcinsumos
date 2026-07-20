@@ -1,19 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../services/api';
 import { useCart } from '../context/CartContext';
 import CartPanel from './CartPanel';
 
 function Navbar() {
-  const [direccion, setDireccion] = useState('');
   const [cartOpen, setCartOpen] = useState(false);
   const { totalItems } = useCart();
-
-  useEffect(() => {
-    api.get('/config').then(res => {
-      setDireccion(res.data?.data?.direccion || '');
-    }).catch(() => {});
-  }, []);
 
   return (
     <>
@@ -84,13 +76,6 @@ function Navbar() {
               )}
             </button>
           </div>
-
-          {direccion && (
-            <div className="d-flex align-items-center gap-1 text-muted" style={{ fontSize: '0.8rem' }}>
-              <i className="bi bi-geo-alt"></i>
-              <span>{direccion}</span>
-            </div>
-          )}
         </div>
 
       </div>
