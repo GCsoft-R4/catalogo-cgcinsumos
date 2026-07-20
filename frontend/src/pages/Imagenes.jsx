@@ -148,7 +148,7 @@ function Imagenes() {
               <div key={key} className="mb-4">
                 <h6 className="text-muted fw-semibold mb-3 border-bottom pb-2">{labelFor(key)} — {groups[key].length}</h6>
                 <div className="row g-3">
-                  {groups[section.key].map(img => {
+                  {groups[key].map(img => {
                     return (
                     <div className="col-6 col-sm-4 col-md-3 col-lg-2" key={img.name} style={{ position: 'relative' }}>
                       <img
