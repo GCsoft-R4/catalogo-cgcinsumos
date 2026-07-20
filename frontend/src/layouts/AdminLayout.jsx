@@ -60,7 +60,7 @@ function AdminLayout() {
       <main className="flex-grow-1 p-3 p-md-4" style={{ background: 'var(--bg-secondary)', minHeight: '100vh', minWidth: 0 }}>
         <div className="d-flex align-items-center gap-3 mb-4">
           <button className="btn p-0 border-0 fs-4 lh-1" onClick={() => { isMobile() ? setOpen(o => !o) : setCollapsed(c => !c) }} style={{ color: 'var(--text)' }}>
-            <i className={`bi ${isMobile() ? (open ? 'bi-x-lg' : 'bi-list') : (collapsed ? 'bi-list' : 'bi-x-lg')}`}></i>
+            <i className={`bi ${isMobile() ? (open ? 'bi-x-lg' : 'bi-list') : (collapsed ? 'bi-chevron-double-right' : 'bi-chevron-double-left')}`}></i>
           </button>
           <div className="flex-grow-1"></div>
         </div>
