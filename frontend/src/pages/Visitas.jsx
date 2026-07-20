@@ -36,9 +36,9 @@ function Visitas() {
     setVisitas(prev => prev.filter(v => v.id !== id));
   }
 
-  async function borrarLocales() {
-    if (!confirm('¿Borrar TODAS las visitas desde IPs locales?')) return;
-    await api.post('/visitas/clear-locales').catch(() => {});
+  async function borrarTodas() {
+    if (!confirm('¿Borrar TODAS las visitas?')) return;
+    await api.delete('/visitas').catch(() => {});
     setPage(1);
     setTipo('todas');
   }
@@ -54,8 +54,8 @@ function Visitas() {
     <div>
       <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
         <h4 className="mb-0">Visitas al catálogo</h4>
-        <button className="btn btn-outline-danger btn-sm" onClick={borrarLocales}>
-          <i className="bi bi-trash me-1"></i>Borrar IPs locales
+        <button className="btn btn-outline-danger btn-sm" onClick={borrarTodas}>
+          <i className="bi bi-trash me-1"></i>Borrar todas
         </button>
       </div>
 

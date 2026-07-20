@@ -83,18 +83,15 @@ async function deleteVisita(req, res) {
   }
 }
 
-async function clearLocales(req, res) {
+async function clearVisitas(req, res) {
   try {
     const tenantId = req.tenant?.id;
-    await pool.query(
-      `DELETE FROM visitas WHERE tenant_id = $1 AND (ip LIKE $2 OR ip LIKE $3 OR ip LIKE $4 OR ip LIKE $5 OR ip = $6 OR ip = $7)`,
-      [tenantId, '10.%', '172.1%', '172.2%', '172.3%', '::1', '127.0.0.1']
-    );
+    await pool.query('DELETE FROM visitas WHERE tenant_id = $1', [tenantId]);
     res.json({ ok: true });
   } catch (err) {
-    console.error('Error clearLocales:', err);
+    console.error('Error clearVisitas:', err);
     res.status(500).json({ ok: false, error: 'Error interno' });
   }
 }
 
-module.exports = { registrarVisita, listarVisitas, deleteVisita, clearLocales };
+module.exports = { registrarVisita, listarVisitas, deleteVisita, clearVisitas };
