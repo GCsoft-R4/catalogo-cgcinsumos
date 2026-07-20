@@ -108,45 +108,82 @@ function Imagenes() {
           <p className="text-muted">Subí imágenes para usar en los productos.</p>
         </div>
       ) : (
-        <div className="row g-3">
-          {images.map(img => {
-            const date = new Date(img.mtime);
-            const isToday = new Date().toDateString() === date.toDateString();
-            const dateLabel = isToday
-              ? date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
-              : date.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
-            return (
-              <div className="col-6 col-sm-4 col-md-3 col-lg-2" key={img.name} style={{ position: 'relative' }}>
-                <img
-                  src={imageUrl(img.name)}
-                  alt={img.name}
-                  className="w-100"
-                  style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }}
-                />
-                <div
-                  className="position-absolute start-0 bottom-0 w-100 px-2 py-1"
-                  style={{
-                    background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
-                    borderRadius: '0 0 8px 8px',
-                    color: '#fff',
-                    fontSize: '0.65rem',
-                    pointerEvents: 'none',
-                  }}
-                >
-                  {dateLabel}
+        (() => {
+          const now = new Date();
+          const startOfWeek = new Date(now);
+          startOfWeek.setDate(now.getDate() - now.getDay() + 1);
+          startOfWeek.setHours(0,0,0,0);
+          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+          const groups = { hoy: [], semana: [], mes: [], anterior: [] };
+
+          images.forEach(img => {
+            const d = new Date(img.mtime);
+            if (d.toDateString() === now.toDateString()) {
+              groups.hoy.push(img);
+            } else if (d >= startOfWeek) {
+              groups.semana.push(img);
+            } else if (d >= startOfMonth) {
+              groups.mes.push(img);
+            } else {
+              groups.anterior.push(img);
+            }
+          });
+
+          const sections = [
+            { key: 'hoy', label: 'Hoy' },
+            { key: 'semana', label: 'Esta semana' },
+            { key: 'mes', label: 'Este mes' },
+            { key: 'anterior', label: 'Anterior' },
+          ];
+
+          const dateLabel = (mtime) => {
+            const d = new Date(mtime);
+            const isToday = d.toDateString() === now.toDateString();
+            if (isToday) return d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+            return d.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' });
+          };
+
+          return sections.map(section =>
+            groups[section.key].length > 0 && (
+              <div key={section.key} className="mb-4">
+                <h6 className="text-muted fw-semibold mb-3 border-bottom pb-2">{section.label} — {groups[section.key].length}</h6>
+                <div className="row g-3">
+                  {groups[section.key].map(img => (
+                    <div className="col-6 col-sm-4 col-md-3 col-lg-2" key={img.name} style={{ position: 'relative' }}>
+                      <img
+                        src={imageUrl(img.name)}
+                        alt={img.name}
+                        className="w-100"
+                        style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }}
+                      />
+                      <div
+                        className="position-absolute start-0 bottom-0 w-100 px-2 py-1"
+                        style={{
+                          background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+                          borderRadius: '0 0 8px 8px',
+                          color: '#fff',
+                          fontSize: '0.65rem',
+                          pointerEvents: 'none',
+                        }}
+                      >
+                        {dateLabel(img.mtime)}
+                      </div>
+                      <button
+                        className="btn btn-sm position-absolute top-0 end-0 m-1 d-flex align-items-center justify-content-center"
+                        style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: '0.7rem', padding: 0 }}
+                        onClick={() => tryDelete(img.name)}
+                        title="Eliminar"
+                      >
+                        <i className="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  ))}
                 </div>
-                <button
-                  className="btn btn-sm position-absolute top-0 end-0 m-1 d-flex align-items-center justify-content-center"
-                  style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: '0.7rem', padding: 0 }}
-                  onClick={() => tryDelete(img.name)}
-                  title="Eliminar"
-                >
-                  <i className="bi bi-trash"></i>
-                </button>
               </div>
-            );
-          })}
-        </div>
+            )
+          );
+        })()
       )}
 
       <ConfirmModal
