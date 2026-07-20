@@ -8,6 +8,7 @@ function Imagenes() {
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteWarn, setDeleteWarn] = useState(null);
 
   const fetchImages = () => {
     api.get('/uploads')
@@ -40,11 +41,25 @@ function Imagenes() {
     }
   };
 
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    try {
-      await api.delete(`/uploads/${deleteTarget}`);
+  const tryDelete = async filename => {
+    const res = await api.delete(`/uploads/${filename}`);
+    const data = res.data;
+
+    if (!data.ok && data.usedBy) {
       setDeleteTarget(null);
+      setDeleteWarn({ filename, productos: data.usedBy });
+      return;
+    }
+
+    setDeleteTarget(null);
+    fetchImages();
+  };
+
+  const forceDelete = async () => {
+    if (!deleteWarn) return;
+    try {
+      await api.delete(`/uploads/${deleteWarn.filename}?force=true`);
+      setDeleteWarn(null);
       fetchImages();
     } catch (err) {
       console.error('Error al eliminar:', err);
@@ -123,7 +138,7 @@ function Imagenes() {
                 <button
                   className="btn btn-sm position-absolute top-0 end-0 m-1 d-flex align-items-center justify-content-center"
                   style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: '0.7rem', padding: 0 }}
-                  onClick={() => setDeleteTarget(img.name)}
+                  onClick={() => tryDelete(img.name)}
                   title="Eliminar"
                 >
                   <i className="bi bi-trash"></i>
@@ -139,8 +154,27 @@ function Imagenes() {
         title="Eliminar imagen"
         message="¿Seguro que querés eliminar esta imagen? Esta acción no se puede deshacer."
         confirmLabel="Eliminar"
-        onConfirm={handleDelete}
+        onConfirm={() => tryDelete(deleteTarget)}
         onCancel={() => setDeleteTarget(null)}
+      />
+
+      <ConfirmModal
+        show={!!deleteWarn}
+        title="Imagen en uso"
+        message={
+          <>
+            <p>Esta imagen está siendo usada en los siguientes productos:</p>
+            <ul>
+              {deleteWarn?.productos?.map(p => (
+                <li key={p.id}>{p.nombre}</li>
+              ))}
+            </ul>
+            <p className="mb-0 text-danger fw-semibold">Si la eliminás, se va a borrar de esos productos. ¿Eliminar igual?</p>
+          </>
+        }
+        confirmLabel="Eliminar igual"
+        onConfirm={forceDelete}
+        onCancel={() => setDeleteWarn(null)}
       />
     </div>
   );

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { pool } = require('../config/db');
 
 const uploadsDir = path.join(__dirname, '..', 'uploads');
 
@@ -19,7 +20,7 @@ function uploadMultiple(req, res) {
   res.json({ ok: true, data: files });
 }
 
-function deleteImage(req, res) {
+async function deleteImage(req, res) {
   try {
     const { filename } = req.params;
     const filePath = path.join(uploadsDir, filename);
@@ -28,7 +29,30 @@ function deleteImage(req, res) {
       return res.status(404).json({ ok: false, error: 'Imagen no encontrada' });
     }
 
+    // Verificar si está siendo usada por algún producto
+    const usage = await pool.query(
+      `SELECT DISTINCT p.id, p.nombre
+       FROM producto_imagenes pi
+       JOIN productos p ON p.id = pi.producto_id
+       WHERE pi.filename = $1`,
+      [filename]
+    );
+
+    if (usage.rows.length > 0 && !req.query.force) {
+      return res.json({
+        ok: false,
+        error: 'Imagen en uso',
+        usedBy: usage.rows.map(r => ({ id: r.id, nombre: r.nombre })),
+      });
+    }
+
     fs.unlinkSync(filePath);
+
+    // Limpiar referencias si se forzó
+    if (usage.rows.length > 0) {
+      await pool.query('DELETE FROM producto_imagenes WHERE filename = $1', [filename]);
+    }
+
     res.json({ ok: true });
   } catch (err) {
     console.error('Error deleteImage:', err);
