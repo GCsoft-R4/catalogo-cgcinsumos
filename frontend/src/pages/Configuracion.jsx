@@ -3,21 +3,31 @@ import api from '../services/api';
 
 function Configuracion() {
   const [form, setForm] = useState({ telefono: '', direccion: '', horarios: '', marquesina: '' });
-  const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [msg, setMsg] = useState('');
+  const [msgType, setMsgType] = useState('');
 
   useEffect(() => {
     api.get('/config').then(res => {
       const d = res.data?.data;
       if (d) setForm({ telefono: d.telefono || '', direccion: d.direccion || '', horarios: d.horarios || '', marquesina: d.marquesina || '' });
+    }).catch(() => {
+      setMsg('Error al cargar la configuración');
+      setMsgType('danger');
     }).finally(() => setLoading(false));
   }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    await api.put('/config', form);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    try {
+      await api.put('/config', form);
+      setMsg('Guardado');
+      setMsgType('success');
+    } catch {
+      setMsg('Error al guardar');
+      setMsgType('danger');
+    }
+    setTimeout(() => setMsg(''), 2500);
   }
 
   if (loading) return <p className="text-muted">Cargando...</p>;
@@ -74,7 +84,7 @@ function Configuracion() {
         <button type="submit" className="btn btn-primary">
           Guardar
         </button>
-        {saved && <span className="text-success ms-3">Guardado</span>}
+        {msg && <span className={`text-${msgType} ms-3`}>{msg}</span>}
       </form>
     </div>
   );

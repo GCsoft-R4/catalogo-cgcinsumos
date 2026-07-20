@@ -66,7 +66,7 @@ async function resetPassword(req, res) {
     }
 
     const tokenData = tokenResult.rows[0];
-    const hashed = bcrypt.hashSync(newPassword, 10);
+    const hashed = await bcrypt.hash(newPassword, 10);
 
     await pool.query('UPDATE usuarios SET password = $1 WHERE id = $2', [hashed, tokenData.usuario_id]);
     await pool.query('UPDATE password_reset_tokens SET usado = TRUE WHERE id = $1', [tokenData.id]);

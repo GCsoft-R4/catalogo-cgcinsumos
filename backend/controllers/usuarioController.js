@@ -19,7 +19,7 @@ async function create(req, res, next) {
     const tenantId = req.user?.tenant_id;
     const { password, email } = req.body;
     const username = req.body.username.toLowerCase().trim();
-    const hashed = bcrypt.hashSync(password, 10);
+    const hashed = await bcrypt.hash(password, 10);
     const result = await pool.query(
       'INSERT INTO usuarios (tenant_id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING id, username, email',
       [tenantId, username, email || null, hashed]
@@ -66,7 +66,7 @@ async function update(req, res, next) {
     let result;
 
     if (password && password.trim() !== '') {
-      const hashed = bcrypt.hashSync(password, 10);
+      const hashed = await bcrypt.hash(password, 10);
       result = await pool.query(
         'UPDATE usuarios SET username = $1, email = $2, password = $3 WHERE id = $4 AND tenant_id = $5 RETURNING id, username, email',
         [username, email || null, hashed, id, tenantId]

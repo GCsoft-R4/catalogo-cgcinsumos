@@ -75,7 +75,7 @@ function CartPanel({ show, onClose }) {
             <button
               className="btn w-100 d-flex align-items-center justify-content-center gap-2"
               style={{ background: '#25D366', color: '#fff', fontWeight: 600, borderRadius: 8, padding: '0.6rem' }}
-              onClick={() => { sendWhatsApp(); clearCart(); onClose(); }}
+              onClick={() => { sendWhatsApp(); setTimeout(() => { clearCart(); onClose(); }, 500); }}
             >
               <i className="bi bi-whatsapp"></i>
               Enviar pedido por WhatsApp

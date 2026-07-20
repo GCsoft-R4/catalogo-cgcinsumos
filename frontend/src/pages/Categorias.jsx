@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import ConfirmModal from '../components/ConfirmModal';
 
 function Categorias() {
+  const navigate = useNavigate();
   const [list, setList] = useState([]);
   const [nombre, setNombre] = useState('');
   const [editing, setEditing] = useState(null);
@@ -87,7 +89,7 @@ function Categorias() {
   return (
     <div>
       <div className="d-flex align-items-center gap-3 mb-4">
-        <button className="btn p-0 border-0 fs-4 lh-1" onClick={() => window.history.back()} style={{ color: 'var(--text)' }}>
+        <button className="btn p-0 border-0 fs-4 lh-1" onClick={() => navigate(-1)} style={{ color: 'var(--text)' }}>
           <i className="bi bi-arrow-left"></i>
         </button>
         <h2 className="page-title mb-0">Categorías</h2>

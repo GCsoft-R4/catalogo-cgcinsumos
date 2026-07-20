@@ -38,7 +38,7 @@ const corsOrigins = process.env.CORS_ORIGINS
 app.use(cors({
   origin: (origin, cb) => {
     if (!origin || corsOrigins.includes(origin)) return cb(null, true);
-    cb(null, true);
+    cb(null, false);
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -53,7 +53,17 @@ app.options('*', cors());
 // Seguridad: headers HTTP
 // =======================
 
-app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+const cspDirectives = {
+  defaultSrc: ["'self'"],
+  scriptSrc: ["'self'", "'unsafe-inline'"],
+  styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+  imgSrc: ["'self'", 'data:', 'https://placehold.co', ...corsOrigins],
+  fontSrc: ["'self'", 'https://cdn.jsdelivr.net'],
+  connectSrc: ["'self'", ...corsOrigins],
+  frameAncestors: ["'none'"],
+};
+
+app.use(helmet({ contentSecurityPolicy: { directives: cspDirectives }, crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
 
 // =======================
@@ -95,15 +105,18 @@ app.use(
 
 
 // =======================
-// Rutas API — todas pasan por tenantMiddleware
+// Rate limiting — ANTES de tenantMiddleware para no pegar a la DB al pedo
 // =======================
-
-app.use('/api', tenantMiddleware);
 
 app.use('/api/login', authLimiter);
 app.use('/api/forgot-password', authLimiter);
-
 app.use('/api', apiLimiter);
+
+// =======================
+// Tenant middleware
+// =======================
+
+app.use('/api', tenantMiddleware);
 
 app.use('/api', authRoutes);
 

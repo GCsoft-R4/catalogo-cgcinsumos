@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { imageUrl as getImgUrl } from "../services/api";
 import { useCart } from "../context/CartContext";
-
-const WHATSAPP = '5493586546525';
+import { WHATSAPP_NUMBER } from '../utils/constants';
 
 function ProductCard({ producto, viewMode = 'grid' }) {
   const navigate = useNavigate();
@@ -77,7 +76,7 @@ function ProductCard({ producto, viewMode = 'grid' }) {
                 Agregar
               </button>
               <a
-                href={`https://wa.me/${WHATSAPP}?text=${msg}`}
+                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn d-inline-flex align-items-center justify-content-center gap-1"
@@ -152,7 +151,7 @@ function ProductCard({ producto, viewMode = 'grid' }) {
               Agregar
             </button>
             <a
-              href={`https://wa.me/${WHATSAPP}?text=${msg}`}
+              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`}
               target="_blank"
               rel="noopener noreferrer"
               className="btn flex-grow-1 d-flex align-items-center justify-content-center gap-1"

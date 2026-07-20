@@ -289,7 +289,10 @@ async function initDatabase() {
     // Seed: usuario admin del tenant por defecto
     // =====================================
     const adminUser = (process.env.ADMIN_USER || 'admin').toLowerCase().trim();
-    const adminPass = process.env.ADMIN_PASS || 'admin123';
+    const adminPass = process.env.ADMIN_PASS;
+    if (!adminPass) {
+      console.warn('⚠ ADMIN_PASS no configurado. Se usará la contraseña por defecto "admin123". Cambiala en producción.');
+    }
 
     const existing = await pool.query(
       'SELECT id FROM usuarios WHERE LOWER(username) = LOWER($1) AND tenant_id = $2',
@@ -297,7 +300,7 @@ async function initDatabase() {
     );
 
     if (existing.rows.length === 0) {
-      const hashed = bcrypt.hashSync(adminPass, 10);
+      const hashed = await bcrypt.hash(adminPass || 'admin123', 10);
 
       await pool.query(
         'INSERT INTO usuarios (tenant_id, username, password) VALUES ($1, $2, $3)',

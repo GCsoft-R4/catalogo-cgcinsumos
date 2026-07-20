@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api, { imageUrl } from '../services/api';
 import ConfirmModal from '../components/ConfirmModal';
 
 function Imagenes() {
+  const navigate = useNavigate();
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -82,7 +84,7 @@ function Imagenes() {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div className="d-flex align-items-center gap-3">
-          <button className="btn p-0 border-0 fs-4 lh-1" onClick={() => window.history.back()} style={{ color: 'var(--text)' }}>
+          <button className="btn p-0 border-0 fs-4 lh-1" onClick={() => navigate(-1)} style={{ color: 'var(--text)' }}>
             <i className="bi bi-arrow-left"></i>
           </button>
           <h2 className="page-title mb-0">Imágenes</h2>

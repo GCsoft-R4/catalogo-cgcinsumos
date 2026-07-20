@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import api from '../services/api';
 import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
@@ -20,7 +20,7 @@ function Catalogo() {
   const [sort, setSort] = useState('newest');
   const [viewMode, setViewMode] = useState('grid');
 
-  const fetchProductos = (cat = categoriaActiva, pg = page, search = searchQuery, sortBy = sort) => {
+  const fetchProductos = useCallback((cat = categoriaActiva, pg = page, search = searchQuery, sortBy = sort) => {
     setLoading(true);
     const params = { page: pg, limit: 12, sort: sortBy };
     if (cat) params.categoria = cat;
@@ -32,7 +32,7 @@ function Catalogo() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  };
+  }, [categoriaActiva, page, searchQuery, sort]);
 
   useEffect(() => {
     api.get('/categorias').then(res => setCategorias(res.data.data || [])).catch(() => {});
@@ -40,7 +40,7 @@ function Catalogo() {
 
   useEffect(() => {
     fetchProductos(categoriaActiva, page, searchQuery, sort);
-  }, [categoriaActiva, page, searchQuery, sort]);
+  }, [categoriaActiva, page, searchQuery, sort, fetchProductos]);
 
   useEffect(() => {
     const el = carouselRef.current;
@@ -81,13 +81,6 @@ function Catalogo() {
   };
 
   const list = Array.isArray(productos) ? productos : [];
-  const filtered = searchQuery
-    ? list.filter(p =>
-        p.nombre.toLowerCase().includes(searchQuery) ||
-        (p.descripcion && p.descripcion.toLowerCase().includes(searchQuery)) ||
-        (p.categoria_nombre && p.categoria_nombre.toLowerCase().includes(searchQuery))
-      )
-    : list;
 
   if (loading && (!Array.isArray(productos) || productos.length === 0)) {
     return (
@@ -203,7 +196,7 @@ function Catalogo() {
         </div>
       )}
 
-      {filtered.length === 0 ? (
+      {list.length === 0 ? (
         <div className="empty-state">
           {!searchQuery ? (
             <>
@@ -223,7 +216,7 @@ function Catalogo() {
         <>
           {viewMode === 'grid' ? (
             <div className="row g-4">
-              {filtered.map(p => (
+              {list.map(p => (
                 <div className="col-6 col-md-4 col-lg-3" key={p.id}>
                   <ProductCard producto={p} />
                 </div>
@@ -231,7 +224,7 @@ function Catalogo() {
             </div>
           ) : (
             <div className="d-flex flex-column gap-3">
-              {filtered.map(p => (
+              {list.map(p => (
                 <ProductCard key={p.id} producto={p} viewMode="list" />
               ))}
             </div>

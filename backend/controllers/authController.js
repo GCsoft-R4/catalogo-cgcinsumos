@@ -19,11 +19,12 @@ async function login(req, res) {
 
     const user = result.rows[0];
 
-    if (!user || !bcrypt.compareSync(password, user.password)) {
-      return res.status(401).json({
-        ok: false,
-        error: 'Credenciales inválidas'
-      });
+    if (!user) {
+      return res.status(401).json({ ok: false, error: 'Credenciales inválidas' });
+    }
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.status(401).json({ ok: false, error: 'Credenciales inválidas' });
     }
 
     await pool.query(
@@ -37,10 +38,8 @@ async function login(req, res) {
         username: user.username,
         tenant_id: tenantId
       },
-      process.env.JWT_SECRET || 'secretkey',
-      {
-        expiresIn: '24h'
-      }
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
     );
 
     res.json({

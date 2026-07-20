@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api, { imageUrl } from '../services/api';
 import SEOHead from '../components/SEOHead';
+import { WHATSAPP_NUMBER } from '../utils/constants';
 
 function ProductoDetalle() {
   const { id } = useParams();
@@ -114,7 +115,7 @@ function ProductoDetalle() {
             })}
           </p>
           <a
-            href={`https://wa.me/5493586546525?text=${encodeURIComponent(
+            href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
               `Hola, me interesa ${producto.nombre}${producto.precio > 0 ? ` ($${parseFloat(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})` : ''}`
             )}`}
             target="_blank"

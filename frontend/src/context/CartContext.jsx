@@ -1,8 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { WHATSAPP_NUMBER } from '../utils/constants';
 
 const CartContext = createContext();
-
-const WHATSAPP = '5493586546525';
 
 function CartProvider({ children }) {
   const [items, setItems] = useState(() => {
@@ -61,7 +60,7 @@ function CartProvider({ children }) {
     const text = encodeURIComponent(
       `Hola, quiero hacer un pedido:\n\n${lines.join('\n')}\n\n*Total: $${totalFmt}*\n\n¿Me confirmás si tenés stock?`
     );
-    window.open(`https://wa.me/${WHATSAPP}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, '_blank');
   };
 
   return (
