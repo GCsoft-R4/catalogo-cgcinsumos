@@ -145,7 +145,7 @@ function Catalogo() {
       </div>
 
       {Array.isArray(categorias) && categorias.length > 0 && (
-        <div className="d-flex gap-2 mb-4 pb-1" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}>
+        <div className="d-flex flex-wrap gap-2 justify-content-center mb-4">
 
             <button
               className={`btn btn-sm rounded-pill flex-shrink-0 ${!categoriaActiva ? 'btn-accent' : 'btn-outline'}`}
