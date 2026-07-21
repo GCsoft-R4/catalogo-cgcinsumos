@@ -30,31 +30,31 @@ function Sidebar({ collapsed }) {
         )}
       </div>
       <nav className="nav flex-column mb-auto">
-        <NavLink to="/admin/productos" end className={linkCls}>
+        <NavLink to="/admin/productos" end className={linkCls} title={collapsed ? 'Productos' : ''}>
           <i className="bi bi-box-seam fs-5"></i>
           {!collapsed && <span>Productos</span>}
         </NavLink>
-        <NavLink to="/admin/productos/nuevo" className={linkCls}>
+        <NavLink to="/admin/productos/nuevo" className={linkCls} title={collapsed ? 'Agregar producto' : ''}>
           <i className="bi bi-plus-circle fs-5"></i>
           {!collapsed && <span>Agregar producto</span>}
         </NavLink>
-        <NavLink to="/admin/categorias" className={linkCls}>
+        <NavLink to="/admin/categorias" className={linkCls} title={collapsed ? 'Categorías' : ''}>
           <i className="bi bi-tags fs-5"></i>
           {!collapsed && <span>Categorías</span>}
         </NavLink>
-        <NavLink to="/admin/imagenes" className={linkCls}>
+        <NavLink to="/admin/imagenes" className={linkCls} title={collapsed ? 'Imágenes' : ''}>
           <i className="bi bi-images fs-5"></i>
           {!collapsed && <span>Imágenes</span>}
         </NavLink>
-        <NavLink to="/admin/usuarios" className={linkCls}>
+        <NavLink to="/admin/usuarios" className={linkCls} title={collapsed ? 'Usuarios' : ''}>
           <i className="bi bi-people fs-5"></i>
           {!collapsed && <span>Usuarios</span>}
         </NavLink>
-        <NavLink to="/admin/visitas" className={linkCls}>
+        <NavLink to="/admin/visitas" className={linkCls} title={collapsed ? 'Visitas' : ''}>
           <i className="bi bi-bar-chart fs-5"></i>
           {!collapsed && <span>Visitas</span>}
         </NavLink>
-        <NavLink to="/admin/configuracion" className={linkCls}>
+        <NavLink to="/admin/configuracion" className={linkCls} title={collapsed ? 'Configuración' : ''}>
           <i className="bi bi-gear fs-5"></i>
           {!collapsed && <span>Configuración</span>}
         </NavLink>
