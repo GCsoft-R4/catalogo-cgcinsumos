@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { imageUrl as getImgUrl } from "../services/api";
 import { useCart } from "../context/CartContext";
@@ -6,6 +7,7 @@ import { WHATSAPP_NUMBER } from '../utils/constants';
 function ProductCard({ producto, viewMode = 'grid' }) {
   const navigate = useNavigate();
   const { addItem } = useCart();
+  const [added, setAdded] = useState(false);
 
   const imageUrl = getImgUrl(producto.imagen);
   const precio = producto.precio > 0
@@ -21,6 +23,8 @@ function ProductCard({ producto, viewMode = 'grid' }) {
   const handleAddToCart = (e) => {
     e.stopPropagation();
     addItem(producto);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1000);
   };
 
   if (viewMode === 'list') {
@@ -69,11 +73,11 @@ function ProductCard({ producto, viewMode = 'grid' }) {
             <div className="d-flex gap-2 mt-1">
               <button
                 className="btn d-inline-flex align-items-center justify-content-center gap-1"
-                style={{ background: 'var(--accent)', color: '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                style={{ background: added ? '#198754' : 'var(--accent)', color: '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem', transition: 'background 0.15s' }}
                 onClick={handleAddToCart}
               >
-                <i className="bi bi-cart-plus" style={{ fontSize: '0.75rem' }}></i>
-                Agregar
+                <i className={`bi ${added ? 'bi-check-lg' : 'bi-cart-plus'}`} style={{ fontSize: '0.75rem' }}></i>
+                {added ? 'Agregado' : 'Agregar'}
               </button>
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`}
@@ -144,11 +148,11 @@ function ProductCard({ producto, viewMode = 'grid' }) {
           <div className="d-flex gap-2 mt-1">
             <button
               className="btn flex-grow-1 d-flex align-items-center justify-content-center gap-1"
-              style={{ background: 'var(--accent)', color: '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+              style={{ background: added ? '#198754' : 'var(--accent)', color: '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem', transition: 'background 0.15s' }}
               onClick={handleAddToCart}
             >
-              <i className="bi bi-cart-plus" style={{ fontSize: '0.75rem' }}></i>
-              Agregar
+              <i className={`bi ${added ? 'bi-check-lg' : 'bi-cart-plus'}`} style={{ fontSize: '0.75rem' }}></i>
+              {added ? 'Agregado' : 'Agregar'}
             </button>
             <a
               href={`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`}
