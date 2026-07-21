@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { WHATSAPP_NUMBER } from '../utils/constants';
 
 const CartContext = createContext();
@@ -20,8 +21,10 @@ function CartProvider({ children }) {
     setItems(prev => {
       const existing = prev.find(i => i.id === producto.id);
       if (existing) {
+        toast.success(`${producto.nombre} +${cantidad}`, { id: `cart-${producto.id}` });
         return prev.map(i => i.id === producto.id ? { ...i, cantidad: i.cantidad + cantidad } : i);
       }
+      toast.success(`${producto.nombre} agregado`, { id: `cart-${producto.id}` });
       return [...prev, {
         id: producto.id,
         nombre: producto.nombre,

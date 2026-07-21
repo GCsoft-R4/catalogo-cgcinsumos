@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { HelmetProvider } from 'react-helmet-async';
 import { CartProvider } from './context/CartContext';
 import { setNavigate } from './services/navigation';
@@ -56,6 +57,7 @@ function AppInner() {
 function App() {
   return (
     <HelmetProvider>
+    <Toaster position="bottom-center" toastOptions={{ duration: 2000, style: { fontSize: '0.9rem' } }} />
     <CartProvider>
     <BrowserRouter>
       <AppInner />
