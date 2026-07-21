@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
@@ -10,8 +10,6 @@ function Catalogo() {
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [categoriaActiva, setCategoriaActiva] = useState('');
-  const carouselRef = useRef(null);
-  const intervalRef = useRef(null);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -42,33 +40,11 @@ function Catalogo() {
     fetchProductos(categoriaActiva, page, searchQuery, sort);
   }, [categoriaActiva, page, searchQuery, sort, fetchProductos]);
 
-  useEffect(() => {
-    const el = carouselRef.current;
-    if (!el || !Array.isArray(categorias) || categorias.length < 3) return;
-    intervalRef.current = setInterval(() => {
-      const maxScroll = el.scrollWidth - el.clientWidth;
-      if (el.scrollLeft >= maxScroll - 10) {
-        el.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        el.scrollBy({ left: 130, behavior: 'smooth' });
-      }
-    }, 3000);
-    return () => clearInterval(intervalRef.current);
-  }, [categorias]);
-
-  const scrollCarousel = (dir) => {
-    clearInterval(intervalRef.current);
-    const el = carouselRef.current;
-    if (!el) return;
-    el.scrollBy({ left: dir * 200, behavior: 'smooth' });
-  };
-
   const cambiarCategoria = slug => {
     setCategoriaActiva(slug);
     setPage(1);
     setSearchInput('');
     setSearchQuery('');
-    clearInterval(intervalRef.current);
   };
 
   const handleSearch = () => {
@@ -169,13 +145,10 @@ function Catalogo() {
       </div>
 
       {Array.isArray(categorias) && categorias.length > 0 && (
-        <div className="categoria-carousel-wrapper mb-4" onMouseEnter={() => clearInterval(intervalRef.current)}>
-          <button className="carousel-arrow" onClick={() => scrollCarousel(-1)} aria-label="Anterior">
-            <i className="bi bi-chevron-left"></i>
-          </button>
-          <div className="categoria-carousel" ref={carouselRef}>
+        <div className="d-flex gap-2 mb-4 pb-1" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}>
+
             <button
-              className={`btn btn-sm ${!categoriaActiva ? 'btn-accent' : 'btn-outline'}`}
+              className={`btn btn-sm rounded-pill flex-shrink-0 ${!categoriaActiva ? 'btn-accent' : 'btn-outline'}`}
               onClick={() => cambiarCategoria('')}
             >
               Todas
@@ -183,16 +156,13 @@ function Catalogo() {
             {categorias.map(c => (
               <button
                 key={c.id}
-                className={`btn btn-sm ${categoriaActiva === c.slug ? 'btn-accent' : 'btn-outline'}`}
+                className={`btn btn-sm rounded-pill flex-shrink-0 ${categoriaActiva === c.slug ? 'btn-accent' : 'btn-outline'}`}
                 onClick={() => cambiarCategoria(c.slug)}
               >
                 {c.nombre}
               </button>
             ))}
-          </div>
-          <button className="carousel-arrow" onClick={() => scrollCarousel(1)} aria-label="Siguiente">
-            <i className="bi bi-chevron-right"></i>
-          </button>
+
         </div>
       )}
 
