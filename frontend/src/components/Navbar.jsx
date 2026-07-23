@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import CartPanel from './CartPanel';
 
 function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const { totalItems } = useCart();
+  const { pathname } = useLocation();
+  const esNosotros = pathname === '/nosotros';
 
   return (
     <>
@@ -13,9 +15,11 @@ function Navbar() {
       <div className="container d-flex align-items-center justify-content-between flex-wrap gap-2">
         
         <div className="d-flex align-items-center gap-3">
-          <Link to="/admin/login" className="text-decoration-none d-flex" title="Administrador">
-            <img src="/gclogo.png" alt="Admin" style={{ height: 50, width: 'auto' }} />
-          </Link>
+          {!esNosotros && (
+            <Link to="/admin/login" className="text-decoration-none d-flex" title="Administrador">
+              <img src="/gclogo.png" alt="Admin" style={{ height: 50, width: 'auto' }} />
+            </Link>
+          )}
 
           <Link to="/" className="text-decoration-none text-nowrap" style={{ fontWeight: 700, fontSize: '1.25rem', color: 'var(--text)' }}>
             GCinsumos
