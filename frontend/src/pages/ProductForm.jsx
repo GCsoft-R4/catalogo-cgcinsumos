@@ -213,7 +213,7 @@ function ProductForm() {
                 groups[key].push(img);
               });
               const labelFor = key =>
-                key === '__hoy__' ? 'Hoy' : key === '__ayer__' ? 'Ayer' : key;
+                key === '__hoy__' ? 'Agregadas hoy' : key === '__ayer__' ? 'Agregadas ayer' : `Agregadas el ${key}`;
               return order.map(key => groups[key].length > 0 && (
                 <div key={key} className="mb-3">
                   <small className="text-muted fw-semibold d-block mb-2">{labelFor(key)} — {groups[key].length}</small>
