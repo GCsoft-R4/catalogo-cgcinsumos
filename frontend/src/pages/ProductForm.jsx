@@ -19,6 +19,7 @@ function ProductForm() {
   const [categoriaId, setCategoriaId] = useState('');
   const [disponible, setDisponible] = useState(true);
   const [showGallery, setShowGallery] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState({});
   const [error, setError] = useState('');
   const fileRef = useRef(null);
 
@@ -214,75 +215,88 @@ function ProductForm() {
               });
               const labelFor = key =>
                 key === '__hoy__' ? 'Agregadas hoy' : key === '__ayer__' ? 'Agregadas ayer' : `Agregadas el ${key}`;
+              const toggleGroup = key => setExpandedGroups(prev => ({ ...prev, [key]: !prev[key] }));
               return order.map(key => groups[key].length > 0 && (
-                <div key={key} className="mb-3">
-                  <small className="text-muted fw-semibold d-block mb-2">{labelFor(key)} — {groups[key].length}</small>
-                  <div className="row g-2">
-                    {groups[key].map(img => {
-                      const name = typeof img === 'string' ? img : img.name;
-                      const enGaleria = galeria.includes(name) || imagenExistente === name;
-                      const esPrincipal = imagenExistente === name;
-                      return (
-                        <div className="col-4 col-sm-3 col-md-2" key={name}>
-                          <div
-                            className={`p-1 border rounded ${esPrincipal ? 'border-primary' : enGaleria ? 'border-success' : ''}`}
-                            style={{
-                              cursor: 'pointer',
-                              borderWidth: esPrincipal || enGaleria ? 2 : 1,
-                              position: 'relative',
-                            }}
-                            onClick={() => toggleGaleria(name)}
-                          >
-                            {esPrincipal && (
-                              <span
-                                className="position-absolute start-50 translate-middle-x"
-                                style={{
-                                  top: -1,
-                                  background: 'var(--accent)',
-                                  color: '#fff',
-                                  borderRadius: 4,
-                                  fontSize: 9,
-                                  fontWeight: 600,
-                                  padding: '0 5px',
-                                  lineHeight: '16px',
-                                  textTransform: 'uppercase',
-                                  letterSpacing: '0.04em',
-                                  whiteSpace: 'nowrap',
-                                  zIndex: 1,
-                                }}
-                              >
-                                Principal
-                              </span>
-                            )}
-                            {enGaleria && !esPrincipal && (
-                              <span
-                                className="position-absolute top-0 end-0"
-                                style={{
-                                  background: '#198754',
-                                  color: '#fff',
-                                  borderRadius: '50%',
-                                  width: 18,
-                                  height: 18,
-                                  fontSize: 11,
-                                  lineHeight: '18px',
-                                  textAlign: 'center',
-                                  margin: 2,
-                                }}
-                              >
-                                <i className="bi bi-check"></i>
-                              </span>
-                            )}
-                            <img
-                              src={imageUrl(name)}
-                              alt={name}
-                              className="w-100"
-                              style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 4 }}
-                            />
+                <div key={key} className="mb-2">
+                  <button
+                    type="button"
+                    className="d-flex align-items-center gap-2 w-100 border-0 bg-transparent p-2 text-start"
+                    style={{ borderRadius: 8, background: 'rgba(128,128,128,0.06)' }}
+                    onClick={() => toggleGroup(key)}
+                  >
+                    <i className={`bi bi-chevron-${expandedGroups[key] ? 'down' : 'right'}`} style={{ fontSize: 12, color: 'var(--text-secondary)', transition: 'transform 0.2s' }}></i>
+                    <span className="fw-semibold" style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{labelFor(key)}</span>
+                    <span className="ms-auto badge bg-secondary bg-opacity-10 text-secondary" style={{ fontSize: 11, fontWeight: 500 }}>{groups[key].length}</span>
+                  </button>
+                  {expandedGroups[key] && (
+                    <div className="row g-2 mt-1 px-2" style={{ animation: 'fadeIn 0.2s ease' }}>
+                      {groups[key].map(img => {
+                        const name = typeof img === 'string' ? img : img.name;
+                        const enGaleria = galeria.includes(name) || imagenExistente === name;
+                        const esPrincipal = imagenExistente === name;
+                        return (
+                          <div className="col-4 col-sm-3 col-md-2" key={name}>
+                            <div
+                              className={`p-1 border rounded ${esPrincipal ? 'border-primary' : enGaleria ? 'border-success' : ''}`}
+                              style={{
+                                cursor: 'pointer',
+                                borderWidth: esPrincipal || enGaleria ? 2 : 1,
+                                position: 'relative',
+                                transition: 'border-color 0.15s',
+                              }}
+                              onClick={() => toggleGaleria(name)}
+                            >
+                              {esPrincipal && (
+                                <span
+                                  className="position-absolute start-50 translate-middle-x"
+                                  style={{
+                                    top: -1,
+                                    background: 'var(--accent)',
+                                    color: '#fff',
+                                    borderRadius: 4,
+                                    fontSize: 9,
+                                    fontWeight: 600,
+                                    padding: '0 5px',
+                                    lineHeight: '16px',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.04em',
+                                    whiteSpace: 'nowrap',
+                                    zIndex: 1,
+                                  }}
+                                >
+                                  Principal
+                                </span>
+                              )}
+                              {enGaleria && !esPrincipal && (
+                                <span
+                                  className="position-absolute top-0 end-0"
+                                  style={{
+                                    background: '#198754',
+                                    color: '#fff',
+                                    borderRadius: '50%',
+                                    width: 18,
+                                    height: 18,
+                                    fontSize: 11,
+                                    lineHeight: '18px',
+                                    textAlign: 'center',
+                                    margin: 2,
+                                  }}
+                                >
+                                  <i className="bi bi-check"></i>
+                                </span>
+                              )}
+                              <img
+                                src={imageUrl(name)}
+                                alt={name}
+                                className="w-100"
+                                style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 4 }}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               ));
             })()}
