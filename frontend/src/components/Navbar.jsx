@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useFavoritos } from '../context/FavoritosContext';
+import { WHATSAPP_NUMBER } from '../utils/constants';
 import CartPanel from './CartPanel';
 
 function Navbar() {
