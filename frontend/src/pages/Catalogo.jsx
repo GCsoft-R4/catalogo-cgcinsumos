@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
+import { useFavoritos } from '../context/FavoritosContext';
 
 function Catalogo() {
   useEffect(() => {
     api.post('/visitas', { pagina: window.location.pathname }).catch(() => {});
   }, []);
+  const [searchParams] = useSearchParams();
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [categoriaActiva, setCategoriaActiva] = useState('');
@@ -17,9 +20,31 @@ function Catalogo() {
   const [totalPages, setTotalPages] = useState(1);
   const [sort, setSort] = useState('newest');
   const [viewMode, setViewMode] = useState('grid');
+  const { ids: favoritoIds } = useFavoritos();
+  const [verFavoritos, setVerFavoritos] = useState(() => searchParams.get('favoritos') === '1');
 
-  const fetchProductos = useCallback((cat = categoriaActiva, pg = page, search = searchQuery, sortBy = sort) => {
+  useEffect(() => {
+    if (searchParams.get('favoritos') === '1') {
+      setVerFavoritos(true);
+    }
+  }, [searchParams]);
+
+  const fetchProductos = useCallback((cat = categoriaActiva, pg = page, search = searchQuery, sortBy = sort, favs = verFavoritos) => {
     setLoading(true);
+
+    if (favs) {
+      api.get('/productos', { params: { page: 1, limit: 500, sort: sortBy } })
+        .then(res => {
+          const all = res.data.data || [];
+          const filtered = all.filter(p => favoritoIds.includes(p.id));
+          setProductos(filtered);
+          setTotalPages(1);
+        })
+        .catch(console.error)
+        .finally(() => setLoading(false));
+      return;
+    }
+
     const params = { page: pg, limit: 12, sort: sortBy };
     if (cat) params.categoria = cat;
     if (search) params.search = search;
@@ -30,21 +55,30 @@ function Catalogo() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [categoriaActiva, page, searchQuery, sort]);
+  }, [categoriaActiva, page, searchQuery, sort, favoritoIds]);
 
   useEffect(() => {
     api.get('/categorias').then(res => setCategorias(res.data.data || [])).catch(() => {});
   }, []);
 
   useEffect(() => {
-    fetchProductos(categoriaActiva, page, searchQuery, sort);
-  }, [categoriaActiva, page, searchQuery, sort, fetchProductos]);
+    fetchProductos(categoriaActiva, page, searchQuery, sort, verFavoritos);
+  }, [categoriaActiva, page, searchQuery, sort, verFavoritos, fetchProductos]);
 
   const cambiarCategoria = slug => {
     setCategoriaActiva(slug);
     setPage(1);
     setSearchInput('');
     setSearchQuery('');
+    setVerFavoritos(false);
+  };
+
+  const toggleVerFavoritos = () => {
+    setVerFavoritos(prev => !prev);
+    setPage(1);
+    setSearchInput('');
+    setSearchQuery('');
+    setCategoriaActiva('');
   };
 
   const handleSearch = () => {
@@ -148,10 +182,17 @@ function Catalogo() {
         <div className="d-flex flex-wrap gap-2 justify-content-center mb-4">
 
             <button
-              className={`btn btn-sm rounded-pill flex-shrink-0 ${!categoriaActiva ? 'btn-accent' : 'btn-outline'}`}
-              onClick={() => cambiarCategoria('')}
+              className={`btn btn-sm rounded-pill flex-shrink-0 ${!categoriaActiva && !verFavoritos ? 'btn-accent' : 'btn-outline'}`}
+              onClick={() => { setVerFavoritos(false); cambiarCategoria(''); }}
             >
               Todas
+            </button>
+            <button
+              className={`btn btn-sm rounded-pill flex-shrink-0 ${verFavoritos ? 'btn-accent' : 'btn-outline'}`}
+              onClick={toggleVerFavoritos}
+            >
+              <i className={`bi ${verFavoritos ? 'bi-heart-fill' : 'bi-heart'} me-1`}></i>
+              Favoritos {favoritoIds.length > 0 && `(${favoritoIds.length})`}
             </button>
             {categorias.map(c => (
               <button

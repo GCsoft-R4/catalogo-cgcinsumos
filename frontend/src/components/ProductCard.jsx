@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { imageUrl as getImgUrl } from "../services/api";
 import { useCart } from "../context/CartContext";
+import { useFavoritos } from "../context/FavoritosContext";
 import { WHATSAPP_NUMBER } from '../utils/constants';
 
 function ProductCard({ producto, viewMode = 'grid' }) {
   const navigate = useNavigate();
   const { addItem } = useCart();
+  const { isFavorito, toggle } = useFavoritos();
   const [added, setAdded] = useState(false);
+  const favorito = isFavorito(producto.id);
 
   const imageUrl = getImgUrl(producto.imagen);
   const precio = producto.precio > 0
@@ -25,6 +28,11 @@ function ProductCard({ producto, viewMode = 'grid' }) {
     addItem(producto);
     setAdded(true);
     setTimeout(() => setAdded(false), 1000);
+  };
+
+  const handleToggleFavorito = (e) => {
+    e.stopPropagation();
+    toggle(producto.id);
   };
 
   if (viewMode === 'list') {
@@ -51,6 +59,13 @@ function ProductCard({ producto, viewMode = 'grid' }) {
           {sinStock && (
             <span className="sin-stock-badge">Sin stock</span>
           )}
+          <button
+            onClick={handleToggleFavorito}
+            style={{ position: 'absolute', top: 8, right: 8, width: 32, height: 32, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+            title={favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+          >
+            <i className={`bi ${favorito ? 'bi-heart-fill' : 'bi-heart'}`} style={{ fontSize: '0.85rem', color: favorito ? '#e74c3c' : '#999' }}></i>
+          </button>
         </div>
 
         <div className="card-body d-flex flex-column flex-grow-1">
@@ -121,6 +136,13 @@ function ProductCard({ producto, viewMode = 'grid' }) {
         {sinStock && (
           <span className="sin-stock-badge">Sin stock</span>
         )}
+        <button
+          onClick={handleToggleFavorito}
+          style={{ position: 'absolute', top: 8, right: 8, width: 32, height: 32, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+          title={favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+        >
+          <i className={`bi ${favorito ? 'bi-heart-fill' : 'bi-heart'}`} style={{ fontSize: '0.85rem', color: favorito ? '#e74c3c' : '#999' }}></i>
+        </button>
       </div>
 
       <div className="card-body d-flex flex-column">
