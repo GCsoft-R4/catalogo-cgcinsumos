@@ -23,7 +23,10 @@ function ProductForm() {
   const fileRef = useRef(null);
 
   useEffect(() => {
-    api.get('/uploads').then(res => setAllImages(res.data.data || [])).catch(() => {});
+    api.get('/uploads').then(res => {
+      const data = res.data.data || [];
+      setAllImages(data.map(f => typeof f === 'string' ? f : f.name));
+    }).catch(() => {});
     api.get('/categorias').then(res => setCategorias(res.data.data || [])).catch(() => {});
   }, []);
 

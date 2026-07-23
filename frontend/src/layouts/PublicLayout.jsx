@@ -23,13 +23,6 @@ function PublicLayout() {
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  useEffect(() => {
-    api.get('/config').then(res => {
-      const text = res.data?.data?.marquesina || '';
-      setMarquesina(text);
-    }).catch(() => {});
-  }, []);
-
   return (
     <>
       <div className="sticky-top-wrapper">
