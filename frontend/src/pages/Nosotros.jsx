@@ -19,8 +19,8 @@ const VALUES = [
 const TIMELINE = [
   { year: '2015', title: 'Los inicios', text: 'Comenzamos vendiendo accesorios de celulares con una idea simple: ofrecer calidad a buenos precios.' },
   { year: '2018', title: 'Crecimiento', text: 'Ampliamos nuestro catálogo con parlantes, smartwatches y toda la tecnología que necesitás.' },
-  { year: '2022', title: 'Presencia digital', text: 'Lanzamos nuestro catálogo online para que puedas comprar desde donde estés, las 24 horas.' },
-  { year: 'Hoy', title: 'Seguimos creciendo', text: 'Miles de clientes confían en nosotros para equipar su tecnología todos los días.' },
+  { year: '2022', title: 'Presencia digital', text: 'Expandimos nuestra presencia a Facebook e Instagram, acercándonos a más clientes todos los días.' },
+  { year: 'Hoy', title: 'Seguimos creciendo', text: 'Contamos con catálogo online, redes sociales y miles de clientes que confían en nosotros para equipar su tecnología.' },
 ];
 
 function useCountUp(target, duration = 1500, inView = true) {
