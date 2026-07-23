@@ -46,7 +46,7 @@ function Nosotros() {
         </div>
       )}
 
-      {(config.telefono || config.direccion || config.horarios) && (
+      {(config.telefono || config.horarios) && (
         <div
           className="p-4"
           style={{
@@ -57,15 +57,6 @@ function Nosotros() {
         >
           <h5 style={{ fontWeight: 700, marginBottom: 16, color: 'var(--text)' }}>Información de contacto</h5>
           <div className="d-flex flex-column gap-3">
-            {config.direccion && (
-              <div className="d-flex align-items-start gap-3">
-                <i className="bi bi-geo-alt" style={{ fontSize: 20, color: 'var(--accent)', marginTop: 2, minWidth: 24 }}></i>
-                <div>
-                  <small className="text-muted d-block" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Dirección</small>
-                  <span style={{ color: 'var(--text)' }}>{config.direccion}</span>
-                </div>
-              </div>
-            )}
             {config.horarios && (
               <div className="d-flex align-items-start gap-3">
                 <i className="bi bi-clock" style={{ fontSize: 20, color: 'var(--accent)', marginTop: 2, minWidth: 24 }}></i>
@@ -88,7 +79,7 @@ function Nosotros() {
         </div>
       )}
 
-      <div className="text-center mt-5">
+      <div className="text-center mt-5 d-flex flex-column align-items-center gap-3">
         <a
           href={`https://wa.me/${WHATSAPP_NUMBER}`}
           target="_blank"
@@ -99,6 +90,10 @@ function Nosotros() {
           <i className="bi bi-whatsapp"></i>
           Consultanos por WhatsApp
         </a>
+        <Link to="/" className="btn btn-outline">
+          <i className="bi bi-arrow-left me-1"></i>
+          Volver al catálogo
+        </Link>
       </div>
     </div>
   );

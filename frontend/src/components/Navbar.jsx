@@ -26,9 +26,11 @@ function Navbar() {
           </Link>
         </div>
 
-        <span className="d-none d-md-inline fw-bold" style={{ fontSize: '3rem', color: 'var(--text)' }}>
-          Catálogo
-        </span>
+        {!esNosotros && (
+          <span className="d-none d-md-inline fw-bold" style={{ fontSize: '3rem', color: 'var(--text)' }}>
+            Catálogo
+          </span>
+        )}
 
         <div className="d-flex flex-column align-items-end gap-1">
           <div className="d-flex align-items-center gap-3">
