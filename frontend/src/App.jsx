@@ -18,6 +18,7 @@ import Imagenes from './pages/Imagenes';
 import Usuarios from './pages/Usuarios';
 import Configuracion from './pages/Configuracion';
 import Visitas from './pages/Visitas';
+import Nosotros from './pages/Nosotros';
 import NotFound from './pages/NotFound';
 
 function AppInner() {
@@ -32,6 +33,7 @@ function AppInner() {
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Catalogo />} />
         <Route path="/producto/:id" element={<ProductoDetalle />} />
+        <Route path="/nosotros" element={<Nosotros />} />
       </Route>
 
       <Route path="/admin/login" element={<Login />} />

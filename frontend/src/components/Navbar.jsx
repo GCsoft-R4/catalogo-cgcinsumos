@@ -20,6 +20,10 @@ function Navbar() {
           <Link to="/" className="text-decoration-none text-nowrap" style={{ fontWeight: 700, fontSize: '1.25rem', color: 'var(--text)' }}>
             GCinsumos
           </Link>
+
+          <Link to="/nosotros" className="text-decoration-none" style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-secondary)', marginLeft: 4 }}>
+            Nosotros
+          </Link>
         </div>
 
         <span className="d-none d-md-inline fw-bold" style={{ fontSize: '3rem', color: 'var(--text)' }}>

@@ -231,6 +231,19 @@ async function initDatabase() {
       END $$;
     `);
 
+    // Migrar columna nosotros en configuracion
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='configuracion' AND column_name='nosotros'
+        ) THEN
+          ALTER TABLE configuracion ADD COLUMN nosotros TEXT NOT NULL DEFAULT '';
+        END IF;
+      END $$;
+    `);
+
     // Migrar categoria_id
     await pool.query(`
       DO $$

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../services/api';
 
 function Configuracion() {
-  const [form, setForm] = useState({ telefono: '', direccion: '', horarios: '', marquesina: '' });
+  const [form, setForm] = useState({ telefono: '', direccion: '', horarios: '', marquesina: '', nosotros: '' });
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
   const [msgType, setMsgType] = useState('');
@@ -10,7 +10,7 @@ function Configuracion() {
   useEffect(() => {
     api.get('/config').then(res => {
       const d = res.data?.data;
-      if (d) setForm({ telefono: d.telefono || '', direccion: d.direccion || '', horarios: d.horarios || '', marquesina: d.marquesina || '' });
+      if (d) setForm({ telefono: d.telefono || '', direccion: d.direccion || '', horarios: d.horarios || '', marquesina: d.marquesina || '', nosotros: d.nosotros || '' });
     }).catch(() => {
       setMsg('Error al cargar la configuración');
       setMsgType('danger');
@@ -80,6 +80,17 @@ function Configuracion() {
             placeholder="Ej: Envíos a toda la ciudad · Consultanos por WhatsApp · Los mejores precios"
           />
           <div className="form-text">Separá los mensajes con "·". Se mostrará como texto deslizante en el catálogo público.</div>
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Página Nosotros</label>
+          <textarea
+            className="form-control"
+            rows={6}
+            value={form.nosotros}
+            onChange={e => setForm({ ...form, nosotros: e.target.value })}
+            placeholder="Contá sobre tu negocio: quiénes son, qué hacen, hace cuánto trabajan, etc."
+          />
+          <div className="form-text">Se muestra en la página pública "Nosotros" del catálogo.</div>
         </div>
         <button type="submit" className="btn btn-primary">
           Guardar
