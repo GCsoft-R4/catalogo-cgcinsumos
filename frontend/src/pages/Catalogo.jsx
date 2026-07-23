@@ -224,9 +224,6 @@ function Catalogo() {
         </>
       )}
     </div>
-    <footer style={{ textAlign: 'left', padding: '1rem 1.5rem', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
-      &copy; {new Date().getFullYear()} GCsoft &mdash; Todos los derechos reservados
-    </footer>
     </>
   );
 }

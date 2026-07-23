@@ -23,6 +23,7 @@ function Nosotros() {
   return (
     <div className="container py-5" style={{ maxWidth: 800 }}>
       <div className="text-center mb-5">
+        <img src="/gclogo.png" alt="Logo" style={{ height: 70, marginBottom: 16 }} />
         <h1 style={{ fontWeight: 800, fontSize: '2rem', color: 'var(--text)' }}>Nosotros</h1>
         <div style={{ width: 60, height: 3, background: 'var(--accent)', borderRadius: 2, margin: '12px auto 0' }} />
       </div>

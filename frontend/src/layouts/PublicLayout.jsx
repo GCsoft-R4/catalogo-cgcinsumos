@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../services/api';
 
@@ -40,6 +40,11 @@ function PublicLayout() {
       <main>
         <Outlet />
       </main>
+
+      <footer style={{ textAlign: 'left', padding: '1rem 1.5rem', color: 'var(--text-secondary)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+        <span>&copy; {new Date().getFullYear()} GCsoft &mdash; Todos los derechos reservados</span>
+        <Link to="/nosotros" style={{ color: 'var(--text-secondary)', textDecoration: 'underline', fontSize: '0.75rem' }}>Nosotros</Link>
+      </footer>
 
       {showScroll && (
         <button
