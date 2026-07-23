@@ -23,10 +23,7 @@ function ProductForm() {
   const fileRef = useRef(null);
 
   useEffect(() => {
-    api.get('/uploads').then(res => {
-      const data = res.data.data || [];
-      setAllImages(data.map(f => typeof f === 'string' ? f : f.name));
-    }).catch(() => {});
+    api.get('/uploads').then(res => setAllImages(res.data.data || [])).catch(() => {});
     api.get('/categorias').then(res => setCategorias(res.data.data || [])).catch(() => {});
   }, []);
 
@@ -198,73 +195,97 @@ function ProductForm() {
                 Imágenes ({allImages.length})
               </label>
             </div>
-            {showGallery && (
-              <div className="row g-2">
-                {allImages.map(img => {
-                  const enGaleria = galeria.includes(img) || imagenExistente === img;
-                  const esPrincipal = imagenExistente === img;
-                  return (
-                    <div className="col-4 col-sm-3 col-md-2" key={img}>
-                      <div
-                        className={`p-1 border rounded ${esPrincipal ? 'border-primary' : enGaleria ? 'border-success' : ''}`}
-                        style={{
-                          cursor: 'pointer',
-                          borderWidth: esPrincipal || enGaleria ? 2 : 1,
-                          position: 'relative',
-                        }}
-                        onClick={() => toggleGaleria(img)}
-                      >
-                        {esPrincipal && (
-                          <span
-                            className="position-absolute start-50 translate-middle-x"
+            {showGallery && (() => {
+              const now = new Date();
+              const yesterday = new Date(now);
+              yesterday.setDate(yesterday.getDate() - 1);
+              const fmtDay = d => d.toLocaleDateString('es-AR', { day: 'numeric', month: 'numeric' });
+              const groups = {};
+              const order = [];
+              allImages.forEach(img => {
+                const ts = img.mtime || 0;
+                const d = new Date(ts);
+                const dayStr = d.toDateString();
+                const key = dayStr === now.toDateString() ? '__hoy__'
+                  : dayStr === yesterday.toDateString() ? '__ayer__'
+                  : fmtDay(d);
+                if (!groups[key]) { groups[key] = []; order.push(key); }
+                groups[key].push(img);
+              });
+              const labelFor = key =>
+                key === '__hoy__' ? 'Hoy' : key === '__ayer__' ? 'Ayer' : key;
+              return order.map(key => groups[key].length > 0 && (
+                <div key={key} className="mb-3">
+                  <small className="text-muted fw-semibold d-block mb-2">{labelFor(key)} — {groups[key].length}</small>
+                  <div className="row g-2">
+                    {groups[key].map(img => {
+                      const name = typeof img === 'string' ? img : img.name;
+                      const enGaleria = galeria.includes(name) || imagenExistente === name;
+                      const esPrincipal = imagenExistente === name;
+                      return (
+                        <div className="col-4 col-sm-3 col-md-2" key={name}>
+                          <div
+                            className={`p-1 border rounded ${esPrincipal ? 'border-primary' : enGaleria ? 'border-success' : ''}`}
                             style={{
-                              top: -1,
-                              background: 'var(--accent)',
-                              color: '#fff',
-                              borderRadius: 4,
-                              fontSize: 9,
-                              fontWeight: 600,
-                              padding: '0 5px',
-                              lineHeight: '16px',
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.04em',
-                              whiteSpace: 'nowrap',
-                              zIndex: 1,
+                              cursor: 'pointer',
+                              borderWidth: esPrincipal || enGaleria ? 2 : 1,
+                              position: 'relative',
                             }}
+                            onClick={() => toggleGaleria(name)}
                           >
-                            Principal
-                          </span>
-                        )}
-                        {enGaleria && !esPrincipal && (
-                          <span
-                            className="position-absolute top-0 end-0"
-                            style={{
-                              background: '#198754',
-                              color: '#fff',
-                              borderRadius: '50%',
-                              width: 18,
-                              height: 18,
-                              fontSize: 11,
-                              lineHeight: '18px',
-                              textAlign: 'center',
-                              margin: 2,
-                            }}
-                          >
-                            <i className="bi bi-check"></i>
-                          </span>
-                        )}
-                        <img
-                          src={imageUrl(img)}
-                          alt={img}
-                          className="w-100"
-                          style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 4 }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                            {esPrincipal && (
+                              <span
+                                className="position-absolute start-50 translate-middle-x"
+                                style={{
+                                  top: -1,
+                                  background: 'var(--accent)',
+                                  color: '#fff',
+                                  borderRadius: 4,
+                                  fontSize: 9,
+                                  fontWeight: 600,
+                                  padding: '0 5px',
+                                  lineHeight: '16px',
+                                  textTransform: 'uppercase',
+                                  letterSpacing: '0.04em',
+                                  whiteSpace: 'nowrap',
+                                  zIndex: 1,
+                                }}
+                              >
+                                Principal
+                              </span>
+                            )}
+                            {enGaleria && !esPrincipal && (
+                              <span
+                                className="position-absolute top-0 end-0"
+                                style={{
+                                  background: '#198754',
+                                  color: '#fff',
+                                  borderRadius: '50%',
+                                  width: 18,
+                                  height: 18,
+                                  fontSize: 11,
+                                  lineHeight: '18px',
+                                  textAlign: 'center',
+                                  margin: 2,
+                                }}
+                              >
+                                <i className="bi bi-check"></i>
+                              </span>
+                            )}
+                            <img
+                              src={imageUrl(name)}
+                              alt={name}
+                              className="w-100"
+                              style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 4 }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ));
+            })()}
           </div>
         )}
         <div className="d-flex gap-2">
