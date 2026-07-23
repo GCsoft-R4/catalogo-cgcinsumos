@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, Suspense, lazy } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { HelmetProvider } from 'react-helmet-async';
 import { CartProvider } from './context/CartContext';
@@ -7,20 +7,22 @@ import { FavoritosProvider } from './context/FavoritosContext';
 import { setNavigate } from './services/navigation';
 import PublicLayout from './layouts/PublicLayout';
 import AdminLayout from './layouts/AdminLayout';
-import Catalogo from './pages/Catalogo';
-import ProductoDetalle from './pages/ProductoDetalle';
-import Login from './pages/Login';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import Dashboard from './pages/Dashboard';
-import ProductForm from './pages/ProductForm';
-import Categorias from './pages/Categorias';
-import Imagenes from './pages/Imagenes';
-import Usuarios from './pages/Usuarios';
-import Configuracion from './pages/Configuracion';
-import Visitas from './pages/Visitas';
-import Nosotros from './pages/Nosotros';
-import NotFound from './pages/NotFound';
+import Spinner from './components/Spinner';
+
+const Catalogo = lazy(() => import('./pages/Catalogo'));
+const ProductoDetalle = lazy(() => import('./pages/ProductoDetalle'));
+const Nosotros = lazy(() => import('./pages/Nosotros'));
+const Login = lazy(() => import('./pages/Login'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const ProductForm = lazy(() => import('./pages/ProductForm'));
+const Categorias = lazy(() => import('./pages/Categorias'));
+const Imagenes = lazy(() => import('./pages/Imagenes'));
+const Usuarios = lazy(() => import('./pages/Usuarios'));
+const Configuracion = lazy(() => import('./pages/Configuracion'));
+const Visitas = lazy(() => import('./pages/Visitas'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 function AppInner() {
   const navigate = useNavigate();
@@ -30,6 +32,7 @@ function AppInner() {
   }, [navigate]);
 
   return (
+    <Suspense fallback={<Spinner />}>
     <Routes>
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Catalogo />} />
@@ -54,6 +57,7 @@ function AppInner() {
 
       <Route path="*" element={<NotFound />} />
     </Routes>
+    </Suspense>
   );
 }
 

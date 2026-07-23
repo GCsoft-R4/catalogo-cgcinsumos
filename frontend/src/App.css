@@ -214,6 +214,10 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .skeleton-card {
   border: none;
   border-radius: var(--radius);
