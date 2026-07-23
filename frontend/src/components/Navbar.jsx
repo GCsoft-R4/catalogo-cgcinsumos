@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import CartPanel from './CartPanel';
@@ -8,6 +8,15 @@ function Navbar() {
   const { totalItems } = useCart();
   const { pathname } = useLocation();
   const esNosotros = pathname === '/nosotros';
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const fecha = now.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const hora = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
 
   return (
     <>
@@ -81,6 +90,12 @@ function Navbar() {
                 </span>
               )}
             </button>
+          </div>
+          <div className="d-none d-md-flex align-items-center gap-2" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+            <i className="bi bi-clock" style={{ fontSize: '0.7rem' }}></i>
+            <span style={{ textTransform: 'capitalize' }}>{fecha}</span>
+            <span>&middot;</span>
+            <span className="fw-semibold">{hora}</span>
           </div>
         </div>
 
