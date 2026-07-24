@@ -212,6 +212,14 @@ function Catalogo() {
         <ProductosNuevos productos={productos} />
       )}
 
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '6px 0 20px' }}>
+        <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500, whiteSpace: 'nowrap' }}>
+          Todos los productos
+        </span>
+        <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      </div>
+
       {list.length === 0 ? (
         <div className="empty-state">
           {!searchQuery ? (
