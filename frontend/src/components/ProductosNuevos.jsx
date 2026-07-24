@@ -12,6 +12,7 @@ function ProductosNuevos({ productos }) {
   const scrolling = useRef(false);
 
   const nuevos = productos.filter((p) => {
+    if (p.oferta === true) return true;
     if (!p.fecha_creacion) return false;
     const diff = Date.now() - new Date(p.fecha_creacion).getTime();
     return diff < DIAS_NUEVO * 24 * 60 * 60 * 1000;
@@ -124,6 +125,15 @@ function ProductosNuevos({ productos }) {
                   loading="lazy"
                 />
                 <div className="nuevos-card-overlay"></div>
+                {p.oferta && (
+                  <span style={{
+                    position: 'absolute', top: 10, left: 10,
+                    background: '#ef4444', color: '#fff',
+                    fontSize: '0.55rem', fontWeight: 700,
+                    padding: '3px 9px', borderRadius: 6,
+                    textTransform: 'uppercase', letterSpacing: '0.04em',
+                  }}>Oferta</span>
+                )}
               </div>
               <div className="nuevos-card-body">
                 <span className="nuevos-card-name">{p.nombre}</span>
