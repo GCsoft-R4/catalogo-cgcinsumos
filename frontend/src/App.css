@@ -534,9 +534,7 @@ body {
   position: relative;
   margin-bottom: 32px;
   padding: 24px 20px 20px;
-  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #f0f9ff 100%);
   border-radius: 16px;
-  border: 1px solid rgba(16, 185, 129, 0.12);
 }
 
 .nuevos-header {
