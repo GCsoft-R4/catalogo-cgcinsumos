@@ -153,13 +153,6 @@ function ProductosNuevos({ productos }) {
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   loading="lazy"
                 />
-                <span style={{
-                  position: 'absolute', top: 6, left: 6,
-                  background: '#10b981', color: '#fff',
-                  fontSize: '0.55rem', fontWeight: 700,
-                  padding: '2px 6px', borderRadius: 3,
-                  textTransform: 'uppercase',
-                }}>Nuevo</span>
               </div>
               <div style={{ padding: '10px 12px' }}>
                 <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#1a1a1a', lineHeight: 1.3, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
