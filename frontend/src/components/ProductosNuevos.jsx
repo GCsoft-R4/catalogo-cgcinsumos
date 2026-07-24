@@ -1,19 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { imageUrl as getImgUrl } from '../services/api';
-import { useCart } from '../context/CartContext';
-import { WHATSAPP_NUMBER } from '../utils/constants';
 
 const DIAS_NUEVO = 3;
 const AUTO_INTERVAL = 4000;
 
 function ProductosNuevos({ productos }) {
   const navigate = useNavigate();
-  const { addItem } = useCart();
   const scrollRef = useRef(null);
   const [paused, setPaused] = useState(false);
-  const [canLeft, setCanLeft] = useState(false);
-  const [canRight, setCanRight] = useState(true);
+  const scrolling = useRef(false);
 
   const nuevos = productos.filter((p) => {
     if (!p.fecha_creacion) return false;
@@ -21,49 +17,73 @@ function ProductosNuevos({ productos }) {
     return diff < DIAS_NUEVO * 24 * 60 * 60 * 1000;
   });
 
-  const updateArrows = useCallback(() => {
+  const cardW = 200;
+  const gap = 12;
+  const step = cardW + gap;
+
+  const snapToNearest = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
-    setCanLeft(el.scrollLeft > 5);
-    setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 5);
-  }, []);
+    const idx = Math.round(el.scrollLeft / step);
+    el.scrollTo({ left: idx * step, behavior: 'smooth' });
+  }, [step]);
+
+  const checkLoop = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el || scrolling.current) return;
+    const mid = nuevos.length * step;
+    if (el.scrollLeft >= mid - 5) {
+      scrolling.current = true;
+      el.style.scrollBehavior = 'auto';
+      el.scrollLeft -= mid;
+      el.style.scrollBehavior = 'smooth';
+      requestAnimationFrame(() => { scrolling.current = false; });
+    } else if (el.scrollLeft <= -5) {
+      scrolling.current = true;
+      el.style.scrollBehavior = 'auto';
+      el.scrollLeft += mid;
+      el.style.scrollBehavior = 'smooth';
+      requestAnimationFrame(() => { scrolling.current = false; });
+    }
+  }, [nuevos.length, step]);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || nuevos.length === 0) return;
+    const mid = nuevos.length * step;
+    el.scrollLeft = mid;
+  }, [nuevos.length, step]);
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    updateArrows();
-    el.addEventListener('scroll', updateArrows, { passive: true });
-    window.addEventListener('resize', updateArrows);
+    el.addEventListener('scroll', checkLoop, { passive: true });
+    el.addEventListener('scrollend', snapToNearest, { passive: true });
     return () => {
-      el.removeEventListener('scroll', updateArrows);
-      window.removeEventListener('resize', updateArrows);
+      el.removeEventListener('scroll', checkLoop);
+      el.removeEventListener('scrollend', snapToNearest);
     };
-  }, [updateArrows, nuevos.length]);
+  }, [checkLoop, snapToNearest]);
 
   useEffect(() => {
     if (paused || nuevos.length <= 1) return;
     const id = setInterval(() => {
       const el = scrollRef.current;
       if (!el) return;
-      const cardW = el.querySelector('div')?.offsetWidth || 220;
-      const gap = 12;
-      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10) {
-        el.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        el.scrollBy({ left: cardW + gap, behavior: 'smooth' });
-      }
+      el.scrollBy({ left: step, behavior: 'smooth' });
     }, AUTO_INTERVAL);
     return () => clearInterval(id);
-  }, [paused, nuevos.length]);
+  }, [paused, nuevos.length, step]);
 
   const scroll = (dir) => {
     const el = scrollRef.current;
     if (!el) return;
-    const cardW = el.querySelector('div')?.offsetWidth || 220;
-    el.scrollBy({ left: dir * (cardW + 12), behavior: 'smooth' });
+    el.scrollBy({ left: dir * step, behavior: 'smooth' });
   };
 
   if (nuevos.length === 0) return null;
+
+  const items = [...nuevos, ...nuevos];
 
   return (
     <div style={{ marginBottom: 28 }}>
@@ -80,54 +100,48 @@ function ProductosNuevos({ productos }) {
       </div>
 
       <div style={{ position: 'relative' }}>
-        {canLeft && (
-          <button
-            onClick={() => scroll(-1)}
-            style={{
-              position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)', zIndex: 3,
-              width: 36, height: 36, borderRadius: '50%', border: 'none',
-              background: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', transition: 'opacity 0.2s',
-            }}
-          >
-            <i className="bi bi-chevron-left" style={{ fontSize: '1rem', color: '#333' }}></i>
-          </button>
-        )}
-        {canRight && (
-          <button
-            onClick={() => scroll(1)}
-            style={{
-              position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', zIndex: 3,
-              width: 36, height: 36, borderRadius: '50%', border: 'none',
-              background: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', transition: 'opacity 0.2s',
-            }}
-          >
-            <i className="bi bi-chevron-right" style={{ fontSize: '1rem', color: '#333' }}></i>
-          </button>
-        )}
+        <button
+          onClick={() => scroll(-1)}
+          style={{
+            position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)', zIndex: 3,
+            width: 36, height: 36, borderRadius: '50%', border: 'none',
+            background: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer',
+          }}
+        >
+          <i className="bi bi-chevron-left" style={{ fontSize: '1rem', color: '#333' }}></i>
+        </button>
+        <button
+          onClick={() => scroll(1)}
+          style={{
+            position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', zIndex: 3,
+            width: 36, height: 36, borderRadius: '50%', border: 'none',
+            background: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer',
+          }}
+        >
+          <i className="bi bi-chevron-right" style={{ fontSize: '1rem', color: '#333' }}></i>
+        </button>
 
         <div
           ref={scrollRef}
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           style={{
-            display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory',
-            scrollBehavior: 'smooth', paddingBottom: 4,
-            scrollbarWidth: 'none', msOverflowStyle: 'none',
+            display: 'flex', gap, overflowX: 'auto', scrollSnapType: 'x mandatory',
+            paddingBottom: 4, scrollbarWidth: 'none', msOverflowStyle: 'none',
           }}
           className="hide-scrollbar"
         >
-          {nuevos.map((p) => (
+          {items.map((p, i) => (
             <div
-              key={p.id}
+              key={`${p.id}-${i}`}
               style={{
-                flex: '0 0 200px', scrollSnapAlign: 'start',
+                flex: `0 0 ${cardW}px`, scrollSnapAlign: 'start',
                 background: '#fff', borderRadius: 10, overflow: 'hidden',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.08)', cursor: 'pointer',
-                transition: 'transform 0.2s, box-shadow 0.2s',
               }}
               className="carousel-card"
               onClick={() => navigate(`/producto/${p.id}`)}
