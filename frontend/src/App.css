@@ -525,3 +525,15 @@ body {
   flex-shrink: 0;
   background: var(--bg);
 }
+
+/* Carousel productos nuevos */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.carousel-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.carousel-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
+}

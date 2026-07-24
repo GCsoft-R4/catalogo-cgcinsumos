@@ -12,6 +12,12 @@ function ProductCard({ producto, viewMode = 'grid' }) {
   const [added, setAdded] = useState(false);
   const favorito = isFavorito(producto.id);
 
+  const esNuevo = (() => {
+    if (!producto.fecha_creacion) return false;
+    const diff = Date.now() - new Date(producto.fecha_creacion).getTime();
+    return diff < 3 * 24 * 60 * 60 * 1000;
+  })();
+
   const imageUrl = getImgUrl(producto.imagen);
   const precio = producto.precio > 0
     ? `$${parseFloat(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
@@ -58,6 +64,9 @@ function ProductCard({ producto, viewMode = 'grid' }) {
           />
           {sinStock && (
             <span className="sin-stock-badge">Sin stock</span>
+          )}
+          {esNuevo && !sinStock && (
+            <span style={{ position: 'absolute', top: 8, left: 8, background: '#10b981', color: '#fff', fontSize: '0.6rem', fontWeight: 700, padding: '2px 6px', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Nuevo</span>
           )}
           <button
             onClick={handleToggleFavorito}
@@ -135,6 +144,9 @@ function ProductCard({ producto, viewMode = 'grid' }) {
         />
         {sinStock && (
           <span className="sin-stock-badge">Sin stock</span>
+        )}
+        {esNuevo && !sinStock && (
+          <span style={{ position: 'absolute', top: 8, left: 8, background: '#10b981', color: '#fff', fontSize: '0.65rem', fontWeight: 700, padding: '3px 8px', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Nuevo</span>
         )}
         <button
           onClick={handleToggleFavorito}

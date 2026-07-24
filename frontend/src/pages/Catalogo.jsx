@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
+import ProductosNuevos from '../components/ProductosNuevos';
 import { useFavoritos } from '../context/FavoritosContext';
 
 function Catalogo() {
@@ -205,6 +206,10 @@ function Catalogo() {
             ))}
 
         </div>
+      )}
+
+      {!searchQuery && !verFavoritos && (
+        <ProductosNuevos productos={productos} />
       )}
 
       {list.length === 0 ? (
