@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import ProductCard from '../components/ProductCard';
@@ -10,6 +10,17 @@ function Catalogo() {
   useEffect(() => {
     api.post('/visitas', { pagina: window.location.pathname }).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuCategoriasOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const [searchParams] = useSearchParams();
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -23,6 +34,8 @@ function Catalogo() {
   const [viewMode, setViewMode] = useState('grid');
   const { ids: favoritoIds } = useFavoritos();
   const [verFavoritos, setVerFavoritos] = useState(() => searchParams.get('favoritos') === '1');
+  const [menuCategoriasOpen, setMenuCategoriasOpen] = useState(false);
+  const menuRef = useRef(null);
 
   useEffect(() => {
     if (searchParams.get('favoritos') === '1') {
@@ -172,8 +185,9 @@ function Catalogo() {
       </div>
 
       {Array.isArray(categorias) && categorias.length > 0 && (
-        <div className="d-flex flex-wrap gap-2 justify-content-center mb-4">
-
+        <>
+          {/* Desktop: chips */}
+          <div className="d-none d-md-flex flex-wrap gap-2 justify-content-center mb-4">
             <button
               className={`btn btn-sm rounded-pill flex-shrink-0 ${!categoriaActiva ? 'btn-accent' : 'btn-outline'}`}
               onClick={() => { setVerFavoritos(false); cambiarCategoria(''); }}
@@ -189,8 +203,52 @@ function Catalogo() {
                 {c.nombre}
               </button>
             ))}
+          </div>
 
-        </div>
+          {/* Mobile: hamburger dropdown */}
+          <div className="d-md-none mb-3" ref={menuRef}>
+            <div className="dropdown" style={{ position: 'relative' }}>
+              <button
+                className="btn btn-outline w-100 d-flex align-items-center justify-content-between"
+                onClick={() => setMenuCategoriasOpen(prev => !prev)}
+                style={{ borderRadius: 10, padding: '10px 14px' }}
+              >
+                <span className="d-flex align-items-center gap-2">
+                  <i className="bi bi-list"></i>
+                  {categoriaActiva
+                    ? categorias.find(c => c.slug === categoriaActiva)?.nombre || 'Categorías'
+                    : 'Categorías'}
+                </span>
+                <i className={`bi ${menuCategoriasOpen ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
+              </button>
+              {menuCategoriasOpen && (
+                <div style={{
+                  position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 20,
+                  background: '#fff', borderRadius: 10, marginTop: 4,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.12)', overflow: 'hidden',
+                }}>
+                  <button
+                    className={`btn w-100 text-start rounded-0 ${!categoriaActiva ? 'btn-accent' : 'btn-outline'}`}
+                    style={{ borderRadius: 0 }}
+                    onClick={() => { setVerFavoritos(false); cambiarCategoria(''); setMenuCategoriasOpen(false); }}
+                  >
+                    Todas
+                  </button>
+                  {categorias.map(c => (
+                    <button
+                      key={c.id}
+                      className={`btn w-100 text-start rounded-0 ${categoriaActiva === c.slug ? 'btn-accent' : 'btn-outline'}`}
+                      style={{ borderRadius: 0 }}
+                      onClick={() => { cambiarCategoria(c.slug); setMenuCategoriasOpen(false); }}
+                    >
+                      {c.nombre}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </>
       )}
 
       {!searchQuery && !verFavoritos && (
