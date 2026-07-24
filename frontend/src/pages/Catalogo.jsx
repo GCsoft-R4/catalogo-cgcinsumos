@@ -4,6 +4,7 @@ import api from '../services/api';
 import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
 import ProductosNuevos from '../components/ProductosNuevos';
+import ProductosOferta from '../components/ProductosOferta';
 import { useFavoritos } from '../context/FavoritosContext';
 
 function Catalogo() {
@@ -306,7 +307,10 @@ function Catalogo() {
       )}
 
       {!searchQuery && !verFavoritos && (
-        <ProductosNuevos productos={productos} />
+        <>
+          <ProductosOferta productos={productos} />
+          <ProductosNuevos productos={productos} />
+        </>
       )}
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '10px 0 24px', padding: '12px 0' }}>

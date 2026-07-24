@@ -47,6 +47,7 @@ async function initDatabase() {
         precio DECIMAL(10,2) NOT NULL DEFAULT 0,
         imagen TEXT,
         disponible BOOLEAN NOT NULL DEFAULT TRUE,
+        oferta BOOLEAN NOT NULL DEFAULT FALSE,
         fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
@@ -300,6 +301,19 @@ async function initDatabase() {
           WHERE table_name='visitas' AND column_name='created_at' AND data_type = 'timestamp without time zone'
         ) THEN
           ALTER TABLE visitas ALTER COLUMN created_at TYPE TIMESTAMPTZ USING created_at AT TIME ZONE 'UTC';
+        END IF;
+      END $$;
+    `);
+
+    // Migrar columna oferta en productos
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='productos' AND column_name='oferta'
+        ) THEN
+          ALTER TABLE productos ADD COLUMN oferta BOOLEAN NOT NULL DEFAULT FALSE;
         END IF;
       END $$;
     `);

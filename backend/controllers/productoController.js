@@ -102,7 +102,7 @@ async function getById(req, res) {
 async function create(req, res) {
   try {
     const tenantId = req.user?.tenant_id || req.tenant?.id;
-    const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id, disponible } = req.body;
+    const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id, disponible, oferta } = req.body;
 
     const imagen = req.file
       ? req.file.filename
@@ -110,10 +110,11 @@ async function create(req, res) {
 
     const catId = categoria_id ? parseInt(categoria_id) : null;
     const disp = disponible !== undefined ? (disponible === '1' || disponible === true) : true;
+    const ofert = oferta !== undefined ? (oferta === '1' || oferta === true) : false;
 
     const result = await pool.query(
-      `INSERT INTO productos (tenant_id, nombre, descripcion, precio, imagen, categoria_id, disponible)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO productos (tenant_id, nombre, descripcion, precio, imagen, categoria_id, disponible, oferta)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
       [
         tenantId,
@@ -122,7 +123,8 @@ async function create(req, res) {
         precio || 0,
         imagen,
         catId,
-        disp
+        disp,
+        ofert
       ]
     );
 
@@ -151,7 +153,7 @@ async function create(req, res) {
 async function update(req, res) {
   try {
     const tenantId = req.user?.tenant_id || req.tenant?.id;
-    const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id, disponible } = req.body;
+    const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id, disponible, oferta } = req.body;
 
     const existing = await pool.query(
       'SELECT * FROM productos WHERE id = $1 AND tenant_id = $2',
@@ -173,6 +175,7 @@ async function update(req, res) {
 
     const catId = categoria_id !== undefined ? (categoria_id ? parseInt(categoria_id) : null) : productoActual.categoria_id;
     const disp = disponible !== undefined ? (disponible === '1' || disponible === true) : productoActual.disponible;
+    const ofert = oferta !== undefined ? (oferta === '1' || oferta === true) : productoActual.oferta;
 
     const result = await pool.query(
       `UPDATE productos
@@ -182,8 +185,9 @@ async function update(req, res) {
            imagen = $4,
            categoria_id = $5,
            disponible = $6,
+           oferta = $7,
            fecha_actualizacion = CURRENT_TIMESTAMP
-       WHERE id = $7 AND tenant_id = $8
+       WHERE id = $8 AND tenant_id = $9
        RETURNING *`,
       [
         nombre,
@@ -192,6 +196,7 @@ async function update(req, res) {
         imagen,
         catId,
         disp,
+        ofert,
         req.params.id,
         tenantId
       ]
