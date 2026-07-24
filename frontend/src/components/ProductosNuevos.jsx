@@ -124,7 +124,6 @@ function ProductosNuevos({ productos }) {
                   loading="lazy"
                 />
                 <div className="nuevos-card-overlay"></div>
-                <span className="nuevos-card-tag">Nuevo</span>
               </div>
               <div className="nuevos-card-body">
                 <span className="nuevos-card-name">{p.nombre}</span>
