@@ -608,6 +608,16 @@ body {
   .nuevos-track {
     padding-left: calc(50vw - 110px);
     padding-right: calc(50vw - 110px);
+    scroll-padding-left: calc(50vw - 110px);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+  }
+
+  .nuevos-arrow-left { left: 4px; }
+  .nuevos-arrow-right { right: 4px; }
+
+  .nuevos-card {
+    flex: 0 0 220px;
   }
 }
 
