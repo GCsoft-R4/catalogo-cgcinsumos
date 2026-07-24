@@ -190,24 +190,20 @@ function Catalogo() {
           </div>
         </div>
 
-        {/* Mobile: compact sort dropdown */}
+        {/* Mobile: icon sort + view toggle */}
         <div className="col-auto d-md-none d-flex align-items-center gap-2 mt-2">
           <div className="dropdown" ref={sortMenuRef}>
             <button
-              className="btn btn-sm btn-outline d-flex align-items-center gap-2"
+              className="btn btn-sm btn-outline"
               onClick={() => setSortMenuOpen(prev => !prev)}
-              style={{ borderRadius: 8, padding: '6px 12px', fontSize: '0.8rem' }}
+              style={{ borderRadius: 8, padding: '6px 10px' }}
+              title="Ordenar"
             >
               <i className="bi bi-funnel"></i>
-              {sort === 'newest' && 'Nuevos'}
-              {sort === 'nombre_asc' && 'A-Z'}
-              {sort === 'nombre_desc' && 'Z-A'}
-              {sort === 'precio_desc' && 'Mayor $'}
-              {sort === 'precio_asc' && 'Menor $'}
             </button>
             {sortMenuOpen && (
               <div style={{
-                position: 'absolute', top: '100%', left: 0, zIndex: 20,
+                position: 'absolute', top: '100%', right: 40, zIndex: 20,
                 background: '#fff', borderRadius: 8, marginTop: 4, minWidth: 150,
                 boxShadow: '0 4px 16px rgba(0,0,0,0.12)', overflow: 'hidden',
               }}>
