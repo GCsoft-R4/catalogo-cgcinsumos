@@ -604,6 +604,13 @@ body {
   padding: 4px 2px 8px;
 }
 
+@media (max-width: 767.98px) {
+  .nuevos-track {
+    padding-left: calc(50vw - 110px);
+    padding-right: calc(50vw - 110px);
+  }
+}
+
 .nuevos-arrow {
   position: absolute;
   top: 50%;
