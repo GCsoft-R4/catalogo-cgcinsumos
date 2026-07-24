@@ -212,12 +212,13 @@ function Catalogo() {
         <ProductosNuevos productos={productos} />
       )}
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '6px 0 20px' }}>
-        <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500, whiteSpace: 'nowrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '10px 0 24px', padding: '12px 0' }}>
+        <div style={{ flex: 1, height: 2, background: 'linear-gradient(90deg, transparent, var(--border), transparent)' }} />
+        <span style={{ fontSize: '0.8rem', color: 'var(--text)', fontWeight: 600, whiteSpace: 'nowrap', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+          <i className="bi bi-grid-3x3-gap me-2" style={{ fontSize: '0.9rem' }}></i>
           Todos los productos
         </span>
-        <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        <div style={{ flex: 1, height: 2, background: 'linear-gradient(90deg, transparent, var(--border), transparent)' }} />
       </div>
 
       {list.length === 0 ? (
