@@ -16,6 +16,9 @@ function Catalogo() {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setMenuCategoriasOpen(false);
       }
+      if (sortMenuRef.current && !sortMenuRef.current.contains(e.target)) {
+        setSortMenuOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -35,7 +38,9 @@ function Catalogo() {
   const { ids: favoritoIds } = useFavoritos();
   const [verFavoritos, setVerFavoritos] = useState(() => searchParams.get('favoritos') === '1');
   const [menuCategoriasOpen, setMenuCategoriasOpen] = useState(false);
+  const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const sortMenuRef = useRef(null);
 
   useEffect(() => {
     if (searchParams.get('favoritos') === '1') {
@@ -150,7 +155,9 @@ function Catalogo() {
             </button>
           </div>
         </div>
-        <div className="col-auto d-flex align-items-center">
+
+        {/* Desktop: sort select + view toggle */}
+        <div className="col-auto d-none d-md-flex align-items-center">
           <select
             className="form-select form-select-sm"
             value={sort}
@@ -181,6 +188,57 @@ function Catalogo() {
               <i className="bi bi-list"></i>
             </button>
           </div>
+        </div>
+
+        {/* Mobile: compact sort dropdown */}
+        <div className="col-auto d-md-none d-flex align-items-center gap-2 mt-2">
+          <div className="dropdown" ref={sortMenuRef}>
+            <button
+              className="btn btn-sm btn-outline d-flex align-items-center gap-2"
+              onClick={() => setSortMenuOpen(prev => !prev)}
+              style={{ borderRadius: 8, padding: '6px 12px', fontSize: '0.8rem' }}
+            >
+              <i className="bi bi-funnel"></i>
+              {sort === 'newest' && 'Nuevos'}
+              {sort === 'nombre_asc' && 'A-Z'}
+              {sort === 'nombre_desc' && 'Z-A'}
+              {sort === 'precio_desc' && 'Mayor $'}
+              {sort === 'precio_asc' && 'Menor $'}
+            </button>
+            {sortMenuOpen && (
+              <div style={{
+                position: 'absolute', top: '100%', left: 0, zIndex: 20,
+                background: '#fff', borderRadius: 8, marginTop: 4, minWidth: 150,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.12)', overflow: 'hidden',
+              }}>
+                {[
+                  { value: 'newest', label: 'Más nuevos', icon: 'bi-clock' },
+                  { value: 'nombre_asc', label: 'Alfabético A-Z', icon: 'bi-sort-alpha-down' },
+                  { value: 'nombre_desc', label: 'Alfabético Z-A', icon: 'bi-sort-alpha-up' },
+                  { value: 'precio_desc', label: 'Mayor precio', icon: 'bi-sort-down' },
+                  { value: 'precio_asc', label: 'Menor precio', icon: 'bi-sort-up' },
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    className={`btn w-100 text-start rounded-0 d-flex align-items-center gap-2 ${sort === opt.value ? 'btn-accent' : 'btn-outline'}`}
+                    style={{ borderRadius: 0, fontSize: '0.8rem', padding: '8px 12px' }}
+                    onClick={() => { setSort(opt.value); setPage(1); setSortMenuOpen(false); }}
+                  >
+                    <i className={`bi ${opt.icon}`} style={{ width: 16 }}></i>
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <button
+            className="btn btn-sm btn-outline"
+            onClick={() => setViewMode(prev => prev === 'grid' ? 'list' : 'grid')}
+            style={{ borderRadius: 8, padding: '6px 10px' }}
+            title={viewMode === 'grid' ? 'Vista lista' : 'Vista cuadrícula'}
+          >
+            <i className={`bi ${viewMode === 'grid' ? 'bi-list' : 'bi-grid-3x3-gap'}`}></i>
+          </button>
         </div>
       </div>
 
