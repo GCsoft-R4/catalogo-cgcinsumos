@@ -74,14 +74,6 @@ function Catalogo() {
     setVerFavoritos(false);
   };
 
-  const toggleVerFavoritos = () => {
-    setVerFavoritos(prev => !prev);
-    setPage(1);
-    setSearchInput('');
-    setSearchQuery('');
-    setCategoriaActiva('');
-  };
-
   const handleSearch = () => {
     setPage(1);
     setSearchQuery(searchInput.trim().toLowerCase());
@@ -183,17 +175,10 @@ function Catalogo() {
         <div className="d-flex flex-wrap gap-2 justify-content-center mb-4">
 
             <button
-              className={`btn btn-sm rounded-pill flex-shrink-0 ${!categoriaActiva && !verFavoritos ? 'btn-accent' : 'btn-outline'}`}
+              className={`btn btn-sm rounded-pill flex-shrink-0 ${!categoriaActiva ? 'btn-accent' : 'btn-outline'}`}
               onClick={() => { setVerFavoritos(false); cambiarCategoria(''); }}
             >
               Todas
-            </button>
-            <button
-              className={`btn btn-sm rounded-pill flex-shrink-0 ${verFavoritos ? 'btn-accent' : 'btn-outline'}`}
-              onClick={toggleVerFavoritos}
-            >
-              <i className={`bi ${verFavoritos ? 'bi-heart-fill' : 'bi-heart'} me-1`}></i>
-              Favoritos {favoritoIds.length > 0 && `(${favoritoIds.length})`}
             </button>
             {categorias.map(c => (
               <button
