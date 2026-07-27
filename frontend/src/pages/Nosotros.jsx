@@ -208,10 +208,11 @@ function Nosotros() {
         </div>
 
         {/* Contacto */}
-        {(config.telefono || config.horarios) && (
+        {(config.direccion || config.telefono || config.horarios) && (
           <div style={{ marginBottom: '2.5rem' }}>
             <h3 style={{ fontWeight: 700, textAlign: 'center', marginBottom: 20, color: 'var(--text)' }}>Contacto</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+              {config.direccion && <ContactCard icon="bi-geo-alt" label="Dirección" value={config.direccion} />}
               {config.horarios && <ContactCard icon="bi-clock" label="Horarios" value={config.horarios} />}
               {config.telefono && <ContactCard icon="bi-telephone" label="Teléfono" value={config.telefono} />}
             </div>
