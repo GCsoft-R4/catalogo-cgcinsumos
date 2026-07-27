@@ -37,7 +37,7 @@ function AdminLayout() {
       )}
 
       <div
-        className="d-lg-none position-fixed top-0 start-0 h-100"
+        className="d-lg-none position-fixed top-0 start-0 h-100 admin-sidebar-mobile"
         style={{
           width: 280,
           zIndex: 1050,

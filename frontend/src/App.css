@@ -432,9 +432,9 @@ body {
   .navbar-custom [style*="font-size: 1.25rem"] {
     font-size: 1rem !important;
   }
-  .navbar-custom img[alt="Admin"],
-  .navbar-custom img[alt="GC"] {
+  .navbar-custom img {
     height: 36px !important;
+    max-height: 36px !important;
   }
   .table th,
   .table td {
@@ -462,6 +462,32 @@ body {
   .skeleton-card-img {
     height: 180px;
   }
+  /* ProductoDetalle thumbnails */
+  .detail-thumbs {
+    flex-direction: row !important;
+    gap: 8px !important;
+    flex-wrap: wrap;
+  }
+  .detail-thumbs img {
+    width: 48px !important;
+    height: 48px !important;
+  }
+  /* Nosotros hero */
+  .nosotros-hero {
+    padding: 3rem 1rem 2rem !important;
+  }
+  .nosotros-hero h1 {
+    font-size: 1.8rem !important;
+  }
+  .nosotros-hero img {
+    max-height: 80px !important;
+    width: auto !important;
+  }
+  /* Admin sidebar mobile */
+  .admin-sidebar-mobile {
+    width: 260px !important;
+    max-width: 85vw;
+  }
 }
 
 @media (min-width: 576px) and (max-width: 767.98px) {
@@ -483,6 +509,10 @@ body {
   .card-product.card-product-list > div:first-child {
     flex: 0 0 180px !important;
     width: 100%;
+  }
+  .admin-sidebar-mobile {
+    width: 260px !important;
+    max-width: 85vw;
   }
 }
 

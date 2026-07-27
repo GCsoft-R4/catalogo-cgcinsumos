@@ -75,7 +75,7 @@ function ProductoDetalle() {
         <div className="col-lg-7">
           <div className="d-flex gap-3">
             {todasLasImagenes.length > 1 && (
-              <div className="d-flex flex-column gap-2" style={{ flexShrink: 0 }}>
+              <div className="d-flex flex-column gap-2 detail-thumbs" style={{ flexShrink: 0 }}>
                 {todasLasImagenes.map((f, i) => (
                   <div
                     key={f}

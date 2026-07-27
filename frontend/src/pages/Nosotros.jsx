@@ -142,7 +142,7 @@ function Nosotros() {
   return (
     <>
       {/* Hero */}
-      <div style={{ background: 'linear-gradient(135deg, #f5c87c 0%, #e5a84c 100%)', padding: '5rem 1.5rem 4rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <div className="nosotros-hero" style={{ background: 'linear-gradient(135deg, #f5c87c 0%, #e5a84c 100%)', padding: '5rem 1.5rem 4rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -80, right: -80, width: 260, height: 260, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
         <div style={{ position: 'absolute', bottom: -50, left: -50, width: 180, height: 180, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
         <div style={{ position: 'absolute', top: 30, left: '20%', width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.03)' }} />
