@@ -287,7 +287,7 @@ function Catalogo() {
         </>
       )}
 
-      {!searchQuery && (
+      {!searchQuery && page === 1 && (
         <ProductosNuevos productos={productos} />
       )}
 
