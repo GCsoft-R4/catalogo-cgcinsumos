@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useConfig } from '../context/ConfigContext';
+import { imageUrl } from '../services/api';
 import { WHATSAPP_NUMBER } from '../utils/constants';
 import CartPanel from './CartPanel';
 
 function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const { totalItems } = useCart();
+  const { nombre_negocio, logo } = useConfig();
   const { pathname } = useLocation();
   const esNosotros = pathname === '/nosotros';
   const [now, setNow] = useState(new Date());
@@ -27,12 +30,12 @@ function Navbar() {
         <div className="d-flex align-items-center gap-3">
           {!esNosotros && (
             <Link to="/admin/login" className="text-decoration-none d-flex" title="Administrador">
-              <img src="/gclogo.png" alt="Admin" style={{ height: 50, width: 'auto' }} />
+              <img src={logo ? imageUrl(logo) : '/gclogo.png'} alt="Admin" style={{ height: 50, width: 'auto' }} />
             </Link>
           )}
 
           <Link to="/" className="text-decoration-none text-nowrap" style={{ fontWeight: 700, fontSize: '1.25rem', color: 'var(--text)' }}>
-            GCinsumos
+            {nombre_negocio || 'Mi Negocio'}
           </Link>
         </div>
 

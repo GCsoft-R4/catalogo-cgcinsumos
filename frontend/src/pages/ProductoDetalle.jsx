@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api, { imageUrl } from '../services/api';
+import { useConfig } from '../context/ConfigContext';
 import SEOHead from '../components/SEOHead';
 import { WHATSAPP_NUMBER } from '../utils/constants';
 
 function ProductoDetalle() {
   const { id } = useParams();
+  const { nombre_negocio } = useConfig();
   const [producto, setProducto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImg, setSelectedImg] = useState('');
@@ -64,7 +66,7 @@ function ProductoDetalle() {
     <>
     <SEOHead
       title={producto.nombre}
-      description={producto.descripcion ? producto.descripcion.slice(0, 160) : `Comprá ${producto.nombre} en GCinsumos.`}
+      description={producto.descripcion ? producto.descripcion.slice(0, 160) : `Comprá ${producto.nombre} en ${nombre_negocio || 'nuestro negocio'}.`}
       image={ogImage}
     />
     <div className="container py-5">

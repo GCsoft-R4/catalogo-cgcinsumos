@@ -1,8 +1,11 @@
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useConfig } from '../context/ConfigContext';
+import { imageUrl } from '../services/api';
 
 function Sidebar({ collapsed }) {
   const { logout } = useAuth();
+  const { nombre_negocio, logo } = useConfig();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -17,8 +20,8 @@ function Sidebar({ collapsed }) {
     <>
       <div className={`mb-3 ${cls}`}>
         <Link to="/" className="text-decoration-none d-flex align-items-center gap-2 mb-1 justify-content-center">
-          <img src="/gclogo.png" alt="GC" style={{ height: 32, width: 'auto' }} />
-          {!collapsed && <span style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text)' }}>GCinsumos</span>}
+          <img src={logo ? imageUrl(logo) : '/gclogo.png'} alt="GC" style={{ height: 32, width: 'auto' }} />
+          {!collapsed && <span style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text)' }}>{nombre_negocio || 'Mi Negocio'}</span>}
         </Link>
         {!collapsed && (
           <div className="d-flex align-items-center justify-content-between">

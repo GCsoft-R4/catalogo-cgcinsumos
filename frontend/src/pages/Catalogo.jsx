@@ -1,10 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import api from '../services/api';
+import { useConfig } from '../context/ConfigContext';
 import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
 import ProductosNuevos from '../components/ProductosNuevos';
 
 function Catalogo() {
+  const { nombre_negocio } = useConfig();
+
   useEffect(() => {
     api.post('/visitas', { pagina: window.location.pathname }).catch(() => {});
   }, []);
@@ -106,7 +109,7 @@ function Catalogo() {
     <>
     <SEOHead
       title="Catálogo"
-      description="Parlantes, cargadores, auriculares y accesorios electrónicos. Comprá online en GCinsumos, General Cabrera."
+      description={`Parlantes, cargadores, auriculares y accesorios electrónicos. Comprá online en ${nombre_negocio || 'nuestro negocio'}.`}
     />
     <div className="container py-5">
       <div className="row justify-content-center mb-4">
