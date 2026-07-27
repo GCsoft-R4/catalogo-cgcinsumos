@@ -330,6 +330,31 @@ async function initDatabase() {
       END $$;
     `);
 
+    // Migrar columnas de redes sociales en configuracion
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='configuracion' AND column_name='facebook_url'
+        ) THEN
+          ALTER TABLE configuracion ADD COLUMN facebook_url VARCHAR(500) NOT NULL DEFAULT '';
+        END IF;
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='configuracion' AND column_name='instagram_url'
+        ) THEN
+          ALTER TABLE configuracion ADD COLUMN instagram_url VARCHAR(500) NOT NULL DEFAULT '';
+        END IF;
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='configuracion' AND column_name='whatsapp_number'
+        ) THEN
+          ALTER TABLE configuracion ADD COLUMN whatsapp_number VARCHAR(50) NOT NULL DEFAULT '';
+        END IF;
+      END $$;
+    `);
+
     // Migrar columna oferta en productos
     await pool.query(`
       DO $$

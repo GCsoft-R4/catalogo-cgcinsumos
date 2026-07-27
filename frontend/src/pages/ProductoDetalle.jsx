@@ -3,11 +3,10 @@ import { useParams, Link } from 'react-router-dom';
 import api, { imageUrl } from '../services/api';
 import { useConfig } from '../context/ConfigContext';
 import SEOHead from '../components/SEOHead';
-import { WHATSAPP_NUMBER } from '../utils/constants';
 
 function ProductoDetalle() {
   const { id } = useParams();
-  const { nombre_negocio } = useConfig();
+  const { nombre_negocio, whatsapp_number } = useConfig();
   const [producto, setProducto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImg, setSelectedImg] = useState('');
@@ -116,8 +115,9 @@ function ProductoDetalle() {
               year: 'numeric', month: 'long', day: 'numeric'
             })}
           </p>
+          {whatsapp_number && (
           <a
-            href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+            href={`https://wa.me/${whatsapp_number}?text=${encodeURIComponent(
               `Hola, me interesa ${producto.nombre}${producto.precio > 0 ? ` ($${parseFloat(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})` : ''}`
             )}`}
             target="_blank"
@@ -128,6 +128,7 @@ function ProductoDetalle() {
             <i className="bi bi-whatsapp fs-5"></i>
             Consultar por WhatsApp
           </a>
+          )}
         </div>
       </div>
     </div>

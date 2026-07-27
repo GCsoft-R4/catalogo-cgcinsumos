@@ -4,7 +4,7 @@ import { useConfig } from '../context/ConfigContext';
 
 function Configuracion() {
   const { refreshConfig } = useConfig();
-  const [form, setForm] = useState({ nombre_negocio: '', logo: '', logo_size: 50, telefono: '', direccion: '', horarios: '', marquesina: '', nosotros: '' });
+  const [form, setForm] = useState({ nombre_negocio: '', logo: '', logo_size: 50, telefono: '', direccion: '', horarios: '', marquesina: '', nosotros: '', facebook_url: '', instagram_url: '', whatsapp_number: '' });
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
   const [msgType, setMsgType] = useState('');
@@ -22,6 +22,9 @@ function Configuracion() {
         horarios: d.horarios || '',
         marquesina: d.marquesina || '',
         nosotros: d.nosotros || '',
+        facebook_url: d.facebook_url || '',
+        instagram_url: d.instagram_url || '',
+        whatsapp_number: d.whatsapp_number || '',
       });
     }).catch(() => {
       setMsg('Error al cargar la configuración');
@@ -197,6 +200,42 @@ function Configuracion() {
           />
           <div className="form-text">Se muestra en la página pública "Nosotros" del catálogo.</div>
         </div>
+
+        <hr className="my-4" />
+        <h6 className="fw-bold mb-3">Redes sociales</h6>
+
+        <div className="mb-3">
+          <label className="form-label">Facebook URL</label>
+          <input
+            type="url"
+            className="form-control"
+            value={form.facebook_url}
+            onChange={e => setForm({ ...form, facebook_url: e.target.value })}
+            placeholder="https://facebook.com/tupagina"
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Instagram URL</label>
+          <input
+            type="url"
+            className="form-control"
+            value={form.instagram_url}
+            onChange={e => setForm({ ...form, instagram_url: e.target.value })}
+            placeholder="https://instagram.com/tuusuario"
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">WhatsApp (número completo, ej: 5493586546525)</label>
+          <input
+            type="text"
+            className="form-control"
+            value={form.whatsapp_number}
+            onChange={e => setForm({ ...form, whatsapp_number: e.target.value })}
+            placeholder="5493586546525"
+          />
+          <div className="form-text">Sin + ni espacios. Se usa en los botones de WhatsApp del catálogo.</div>
+        </div>
+
         <button type="submit" className="btn btn-primary">
           Guardar
         </button>

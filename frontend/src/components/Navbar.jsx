@@ -3,13 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useConfig } from '../context/ConfigContext';
 import { imageUrl } from '../services/api';
-import { WHATSAPP_NUMBER } from '../utils/constants';
 import CartPanel from './CartPanel';
 
 function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const { totalItems } = useCart();
-  const { nombre_negocio, logo, logo_size } = useConfig();
+  const { nombre_negocio, logo, logo_size, facebook_url, instagram_url, whatsapp_number } = useConfig();
   const { pathname } = useLocation();
   const esNosotros = pathname === '/nosotros';
   const [now, setNow] = useState(new Date());
@@ -51,8 +50,9 @@ function Navbar() {
               Nuestras redes:
             </span>
 
+            {facebook_url && (
             <a 
-              href="https://www.facebook.com/share/1BPSR6MTCm/" 
+              href={facebook_url}
               target="_blank"
               rel="noopener noreferrer"
               className="text-decoration-none text-muted fs-5" 
@@ -60,9 +60,11 @@ function Navbar() {
             >
               <i className="bi bi-facebook"></i>
             </a>
+            )}
 
+            {instagram_url && (
             <a 
-              href="https://www.instagram.com/gcinsumos?igsh=MXRscmd3OXN1aXFlOQ==" 
+              href={instagram_url}
               target="_blank"
               rel="noopener noreferrer"
               className="text-decoration-none text-muted fs-5" 
@@ -70,9 +72,11 @@ function Navbar() {
             >
               <i className="bi bi-instagram"></i>
             </a>
+            )}
 
+            {whatsapp_number && (
             <a
-              href={`https://wa.me/${WHATSAPP_NUMBER}`}
+              href={`https://wa.me/${whatsapp_number}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-decoration-none text-muted fs-5"
@@ -80,6 +84,7 @@ function Navbar() {
             >
               <i className="bi bi-whatsapp"></i>
             </a>
+            )}
 
             <button
               className="btn p-0 border-0 position-relative"

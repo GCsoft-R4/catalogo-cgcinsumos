@@ -13,6 +13,9 @@ function ConfigProvider({ children }) {
     horarios: '',
     marquesina: '',
     nosotros: '',
+    facebook_url: '',
+    instagram_url: '',
+    whatsapp_number: '',
   });
 
   const fetchConfig = useCallback(() => {
@@ -28,6 +31,9 @@ function ConfigProvider({ children }) {
           horarios: d.horarios || '',
           marquesina: d.marquesina || '',
           nosotros: d.nosotros || '',
+          facebook_url: d.facebook_url || '',
+          instagram_url: d.instagram_url || '',
+          whatsapp_number: d.whatsapp_number || '',
         });
       })
       .catch(() => {});

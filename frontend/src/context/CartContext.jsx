@@ -1,10 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { WHATSAPP_NUMBER } from '../utils/constants';
+import { useConfig } from './ConfigContext';
 
 const CartContext = createContext();
 
 function CartProvider({ children }) {
+  const { whatsapp_number } = useConfig();
   const [items, setItems] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('cart')) || [];
@@ -54,7 +55,7 @@ function CartProvider({ children }) {
   const total = items.reduce((acc, i) => acc + (parseFloat(i.precio) * i.cantidad), 0);
 
   const sendWhatsApp = () => {
-    if (items.length === 0) return;
+    if (items.length === 0 || !whatsapp_number) return;
     const lines = items.map(i => {
       const precio = parseFloat(i.precio).toLocaleString('es-AR', { minimumFractionDigits: 2 });
       return `- ${i.nombre} x${i.cantidad} — $${precio}`;
@@ -63,7 +64,7 @@ function CartProvider({ children }) {
     const text = encodeURIComponent(
       `Hola, quiero hacer un pedido:\n\n${lines.join('\n')}\n\n*Total: $${totalFmt}*\n\n¿Me confirmás si tenés stock?`
     );
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${whatsapp_number}?text=${text}`, '_blank');
   };
 
   return (

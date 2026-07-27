@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { imageUrl as getImgUrl } from "../services/api";
 import { useCart } from "../context/CartContext";
-import { WHATSAPP_NUMBER } from '../utils/constants';
+import { useConfig } from "../context/ConfigContext";
 
 function ProductCard({ producto, viewMode = 'grid' }) {
   const navigate = useNavigate();
   const { addItem } = useCart();
+  const { whatsapp_number } = useConfig();
   const [added, setAdded] = useState(false);
 
   const esNuevo = (() => {
@@ -93,8 +94,8 @@ function ProductCard({ producto, viewMode = 'grid' }) {
                 <i className={`bi ${added ? 'bi-check-lg' : 'bi-cart-plus'}`} style={{ fontSize: '0.75rem' }}></i>
                 {added ? 'Agregado' : 'Agregar'}
               </button>
-              <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`}
+              {whatsapp_number && (<a
+                href={`https://wa.me/${whatsapp_number}?text=${msg}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn d-inline-flex align-items-center justify-content-center gap-1"
@@ -104,6 +105,7 @@ function ProductCard({ producto, viewMode = 'grid' }) {
                 <i className="bi bi-whatsapp" style={{ fontSize: '0.75rem' }}></i>
                 Consultar
               </a>
+              )}
             </div>
           ) : (
             <span className="btn mt-1 d-inline-flex align-items-center justify-content-center gap-1 align-self-start"
@@ -174,8 +176,8 @@ function ProductCard({ producto, viewMode = 'grid' }) {
               <i className={`bi ${added ? 'bi-check-lg' : 'bi-cart-plus'}`} style={{ fontSize: '0.75rem' }}></i>
               {added ? 'Agregado' : 'Agregar'}
             </button>
-            <a
-              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`}
+            {whatsapp_number && (<a
+              href={`https://wa.me/${whatsapp_number}?text=${msg}`}
               target="_blank"
               rel="noopener noreferrer"
               className="btn flex-grow-1 d-flex align-items-center justify-content-center gap-1"
@@ -185,6 +187,7 @@ function ProductCard({ producto, viewMode = 'grid' }) {
               <i className="bi bi-whatsapp" style={{ fontSize: '0.75rem' }}></i>
               Consultar
             </a>
+            )}
           </div>
         )}
       </div>

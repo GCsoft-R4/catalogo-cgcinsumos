@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useConfig } from '../context/ConfigContext';
 import { imageUrl } from '../services/api';
-import { WHATSAPP_NUMBER } from '../utils/constants';
 
 const STATS = [
   { icon: 'bi-calendar-check', target: 10, suffix: '+', label: 'Años de experiencia' },
@@ -127,7 +126,7 @@ function ContactCard({ icon, label, value }) {
 
 function Nosotros() {
   const config = useConfig();
-  const { nombre_negocio, logo, logo_size } = config;
+  const { nombre_negocio, logo, logo_size, facebook_url, instagram_url, whatsapp_number } = config;
 
   if (!config) {
     return (
@@ -223,33 +222,41 @@ function Nosotros() {
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <h3 style={{ fontWeight: 700, marginBottom: 16, color: 'var(--text)' }}>Seguinos</h3>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
-            <a href="https://www.facebook.com/share/1BPSR6MTCm/" target="_blank" rel="noopener noreferrer" style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(245,200,124,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e5a84c', fontSize: '1.3rem', textDecoration: 'none', transition: 'background 0.2s' }}
+            {facebook_url && (
+            <a href={facebook_url} target="_blank" rel="noopener noreferrer" style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(245,200,124,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e5a84c', fontSize: '1.3rem', textDecoration: 'none', transition: 'background 0.2s' }}
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(245,200,124,0.25)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(245,200,124,0.12)'}
             >
               <i className="bi bi-facebook"></i>
             </a>
-            <a href="https://www.instagram.com/gcinsumos?igsh=MXRscmd3OXN1aXFlOQ==" target="_blank" rel="noopener noreferrer" style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(245,200,124,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e5a84c', fontSize: '1.3rem', textDecoration: 'none', transition: 'background 0.2s' }}
+            )}
+            {instagram_url && (
+            <a href={instagram_url} target="_blank" rel="noopener noreferrer" style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(245,200,124,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e5a84c', fontSize: '1.3rem', textDecoration: 'none', transition: 'background 0.2s' }}
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(245,200,124,0.25)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(245,200,124,0.12)'}
             >
               <i className="bi bi-instagram"></i>
             </a>
-            <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(245,200,124,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e5a84c', fontSize: '1.3rem', textDecoration: 'none', transition: 'background 0.2s' }}
+            )}
+            {whatsapp_number && (
+            <a href={`https://wa.me/${whatsapp_number}`} target="_blank" rel="noopener noreferrer" style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(245,200,124,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e5a84c', fontSize: '1.3rem', textDecoration: 'none', transition: 'background 0.2s' }}
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(245,200,124,0.25)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(245,200,124,0.12)'}
             >
               <i className="bi bi-whatsapp"></i>
             </a>
+            )}
           </div>
         </div>
 
         {/* Botones */}
         <div className="d-flex flex-column align-items-center gap-3 pb-5 pt-3">
-          <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="btn btn-accent" style={{ gap: 8, padding: '14px 32px', fontWeight: 600, fontSize: '1rem' }}>
+          {whatsapp_number && (
+          <a href={`https://wa.me/${whatsapp_number}`} target="_blank" rel="noopener noreferrer" className="btn btn-accent" style={{ gap: 8, padding: '14px 32px', fontWeight: 600, fontSize: '1rem' }}>
             <i className="bi bi-whatsapp" style={{ fontSize: 20 }}></i>
             Consultanos por WhatsApp
           </a>
+          )}
           <Link to="/" className="btn btn-outline" style={{ padding: '10px 24px' }}>
             <i className="bi bi-arrow-left me-1"></i>
             Volver al catálogo
