@@ -12,19 +12,6 @@ function Catalogo() {
     api.post('/visitas', { pagina: window.location.pathname }).catch(() => {});
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setMenuCategoriasOpen(false);
-      }
-      if (sortMenuRef.current && !sortMenuRef.current.contains(e.target)) {
-        setSortMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [categoriaActiva, setCategoriaActiva] = useState('');
@@ -39,6 +26,23 @@ function Catalogo() {
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const sortMenuRef = useRef(null);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [page]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuCategoriasOpen(false);
+      }
+      if (sortMenuRef.current && !sortMenuRef.current.contains(e.target)) {
+        setSortMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const fetchProductos = useCallback((cat = categoriaActiva, pg = page, search = searchQuery, sortBy = sort) => {
     setLoading(true);
