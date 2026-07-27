@@ -245,6 +245,25 @@ async function initDatabase() {
       END $$;
     `);
 
+    // Migrar columnas nombre_negocio y logo en configuracion
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='configuracion' AND column_name='nombre_negocio'
+        ) THEN
+          ALTER TABLE configuracion ADD COLUMN nombre_negocio VARCHAR(255) NOT NULL DEFAULT '';
+        END IF;
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='configuracion' AND column_name='logo'
+        ) THEN
+          ALTER TABLE configuracion ADD COLUMN logo TEXT NOT NULL DEFAULT '';
+        END IF;
+      END $$;
+    `);
+
     // Migrar categoria_id
     await pool.query(`
       DO $$
