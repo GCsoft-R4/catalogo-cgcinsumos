@@ -36,6 +36,12 @@ function Navbar() {
           <Link to="/" className="text-decoration-none text-nowrap" style={{ fontWeight: 700, fontSize: '1.25rem', color: 'var(--text)' }}>
             {nombre_negocio || 'Mi Negocio'}
           </Link>
+
+          {!esNosotros && (
+            <Link to="/nosotros" className="text-decoration-none text-muted" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+              Nosotros
+            </Link>
+          )}
         </div>
 
         {!esNosotros && (
@@ -84,12 +90,6 @@ function Navbar() {
             >
               <i className="bi bi-whatsapp"></i>
             </a>
-            )}
-
-            {!esNosotros && (
-            <Link to="/nosotros" className="text-decoration-none text-muted" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
-              Nosotros
-            </Link>
             )}
 
             <button
