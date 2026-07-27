@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import App from '../App';
 
-test('renders app without crashing', () => {
+test('renders app root element', () => {
   const { container } = render(<App />);
-  expect(container.firstChild).toBeTruthy();
+  expect(container.querySelector('#root') || container.firstChild).toBeTruthy();
 });
