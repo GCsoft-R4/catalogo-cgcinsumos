@@ -86,6 +86,12 @@ function Navbar() {
             </a>
             )}
 
+            {!esNosotros && (
+            <Link to="/nosotros" className="text-decoration-none text-muted" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+              Nosotros
+            </Link>
+            )}
+
             <button
               className="btn p-0 border-0 position-relative"
               style={{ color: 'var(--text)', fontSize: '1.25rem' }}
