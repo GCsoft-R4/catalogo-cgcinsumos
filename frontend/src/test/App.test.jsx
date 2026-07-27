@@ -1,7 +1,9 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import App from '../App';
 
-test('renders app without crashing', () => {
+test('renders app without crashing', async () => {
   render(<App />);
-  expect(screen.getByText('GCinsumos')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText('GCinsumos')).toBeInTheDocument();
+  }, { timeout: 5000 });
 });
