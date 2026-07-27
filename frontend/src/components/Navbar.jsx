@@ -9,7 +9,7 @@ import CartPanel from './CartPanel';
 function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const { totalItems } = useCart();
-  const { nombre_negocio, logo } = useConfig();
+  const { nombre_negocio, logo, logo_size } = useConfig();
   const { pathname } = useLocation();
   const esNosotros = pathname === '/nosotros';
   const [now, setNow] = useState(new Date());
@@ -30,7 +30,7 @@ function Navbar() {
         <div className="d-flex align-items-center gap-3">
           {!esNosotros && (
             <Link to="/admin/login" className="text-decoration-none d-flex" title="Administrador">
-              <img src={logo ? imageUrl(logo) : '/gclogo.png'} alt="Admin" style={{ height: 50, width: 'auto' }} />
+              <img src={logo ? imageUrl(logo) : '/gclogo.png'} alt="Admin" style={{ height: logo_size || 50, width: 'auto' }} />
             </Link>
           )}
 

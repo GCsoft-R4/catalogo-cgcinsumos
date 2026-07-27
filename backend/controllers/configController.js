@@ -6,10 +6,10 @@ async function getConfig(req, res, next) {
   try {
     const tenantId = req.tenant?.id;
     const result = await pool.query(
-      'SELECT nombre_negocio, logo, telefono, direccion, horarios, marquesina, nosotros FROM configuracion WHERE tenant_id = $1',
+      'SELECT nombre_negocio, logo, logo_size, telefono, direccion, horarios, marquesina, nosotros FROM configuracion WHERE tenant_id = $1',
       [tenantId]
     );
-    const config = result.rows[0] || { nombre_negocio: '', logo: '', telefono: '', direccion: '', horarios: '', marquesina: '', nosotros: '' };
+    const config = result.rows[0] || { nombre_negocio: '', logo: '', logo_size: 50, telefono: '', direccion: '', horarios: '', marquesina: '', nosotros: '' };
     res.json({ ok: true, data: config });
   } catch (err) { next(err); }
 }
@@ -17,11 +17,11 @@ async function getConfig(req, res, next) {
 async function updateConfig(req, res, next) {
   try {
     const tenantId = req.tenant?.id;
-    const { nombre_negocio, logo, telefono, direccion, horarios, marquesina, nosotros } = req.body;
+    const { nombre_negocio, logo, logo_size, telefono, direccion, horarios, marquesina, nosotros } = req.body;
 
     await pool.query(
-      `UPDATE configuracion SET nombre_negocio = $1, logo = $2, telefono = $3, direccion = $4, horarios = $5, marquesina = $6, nosotros = $7, updated_at = CURRENT_TIMESTAMP WHERE tenant_id = $8`,
-      [nombre_negocio || '', logo || '', telefono || '', direccion || '', horarios || '', marquesina || '', nosotros || '', tenantId]
+      `UPDATE configuracion SET nombre_negocio = $1, logo = $2, logo_size = $3, telefono = $4, direccion = $5, horarios = $6, marquesina = $7, nosotros = $8, updated_at = CURRENT_TIMESTAMP WHERE tenant_id = $9`,
+      [nombre_negocio || '', logo || '', logo_size || 50, telefono || '', direccion || '', horarios || '', marquesina || '', nosotros || '', tenantId]
     );
 
     res.json({ ok: true });

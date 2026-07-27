@@ -7,7 +7,7 @@ import SEOHead from '../components/SEOHead';
 
 function Login() {
   const { isAuthenticated, login } = useAuth();
-  const { nombre_negocio, logo } = useConfig();
+  const { nombre_negocio, logo, logo_size } = useConfig();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -36,7 +36,7 @@ function Login() {
     <div className="login-container">
       <div className="login-card">
         <div className="text-center mb-4">
-          <img src={logo ? imageUrl(logo) : '/gclogo.png'} alt={nombre_negocio || 'Mi Negocio'} style={{ height: 56, marginBottom: 8 }} />
+          <img src={logo ? imageUrl(logo) : '/gclogo.png'} alt={nombre_negocio || 'Mi Negocio'} style={{ height: logo_size || 56, marginBottom: 8 }} />
           <h2>Iniciar sesión</h2>
           <p className="text-muted">Administrador de catálogo</p>
         </div>

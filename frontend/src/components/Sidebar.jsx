@@ -5,7 +5,7 @@ import { imageUrl } from '../services/api';
 
 function Sidebar({ collapsed }) {
   const { logout } = useAuth();
-  const { nombre_negocio, logo } = useConfig();
+  const { nombre_negocio, logo, logo_size } = useConfig();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -20,7 +20,7 @@ function Sidebar({ collapsed }) {
     <>
       <div className={`mb-3 ${cls}`}>
         <Link to="/" className="text-decoration-none d-flex align-items-center gap-2 mb-1 justify-content-center">
-          <img src={logo ? imageUrl(logo) : '/gclogo.png'} alt="GC" style={{ height: 32, width: 'auto' }} />
+          <img src={logo ? imageUrl(logo) : '/gclogo.png'} alt="GC" style={{ height: Math.min(logo_size || 32, 40), width: 'auto' }} />
           {!collapsed && <span style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text)' }}>{nombre_negocio || 'Mi Negocio'}</span>}
         </Link>
         {!collapsed && (

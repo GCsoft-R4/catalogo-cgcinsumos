@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api, { imageUrl } from '../services/api';
 
 function Configuracion() {
-  const [form, setForm] = useState({ nombre_negocio: '', logo: '', telefono: '', direccion: '', horarios: '', marquesina: '', nosotros: '' });
+  const [form, setForm] = useState({ nombre_negocio: '', logo: '', logo_size: 50, telefono: '', direccion: '', horarios: '', marquesina: '', nosotros: '' });
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
   const [msgType, setMsgType] = useState('');
@@ -14,6 +14,7 @@ function Configuracion() {
       if (d) setForm({
         nombre_negocio: d.nombre_negocio || '',
         logo: d.logo || '',
+        logo_size: d.logo_size || 50,
         telefono: d.telefono || '',
         direccion: d.direccion || '',
         horarios: d.horarios || '',
@@ -88,7 +89,7 @@ function Configuracion() {
                 <i className="bi bi-image text-muted" style={{ fontSize: '1.5rem' }}></i>
               )}
             </div>
-            <div>
+            <div className="flex-grow-1">
               <label
                 className="btn btn-outline btn-sm mb-0"
                 style={{ cursor: uploading ? 'wait' : 'pointer', opacity: uploading ? 0.6 : 1 }}
@@ -100,6 +101,30 @@ function Configuracion() {
               <div className="form-text mt-1">JPG, PNG o WebP. Máx 5 MB.</div>
             </div>
           </div>
+
+          {form.logo && (
+            <div className="mt-3">
+              <label className="form-label small mb-1">
+                Tamaño del logo: <span className="fw-bold">{form.logo_size}px</span>
+              </label>
+              <input
+                type="range"
+                className="form-range"
+                min={20}
+                max={120}
+                step={2}
+                value={form.logo_size}
+                onChange={e => setForm({ ...form, logo_size: parseInt(e.target.value) })}
+              />
+              <div className="d-flex justify-content-between" style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
+                <span>Chico</span>
+                <span>Grande</span>
+              </div>
+              <div className="mt-2 p-2 rounded text-center" style={{ background: '#fff', border: '1px solid var(--border)' }}>
+                <img src={imageUrl(form.logo)} alt="Preview" style={{ height: form.logo_size, objectFit: 'contain' }} />
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="mb-3">
@@ -109,7 +134,7 @@ function Configuracion() {
             className="form-control"
             value={form.nombre_negocio}
             onChange={e => setForm({ ...form, nombre_negocio: e.target.value })}
-            placeholder="Ej: GCinsumos"
+            placeholder="Ej: Mi Negocio"
           />
           <div className="form-text">Aparece en el navbar, sidebar y páginas del catálogo.</div>
         </div>

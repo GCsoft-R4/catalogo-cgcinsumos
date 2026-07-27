@@ -261,6 +261,12 @@ async function initDatabase() {
         ) THEN
           ALTER TABLE configuracion ADD COLUMN logo TEXT NOT NULL DEFAULT '';
         END IF;
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='configuracion' AND column_name='logo_size'
+        ) THEN
+          ALTER TABLE configuracion ADD COLUMN logo_size INTEGER NOT NULL DEFAULT 50;
+        END IF;
       END $$;
     `);
 

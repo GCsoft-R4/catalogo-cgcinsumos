@@ -7,6 +7,7 @@ function ConfigProvider({ children }) {
   const [config, setConfig] = useState({
     nombre_negocio: '',
     logo: '',
+    logo_size: 50,
     telefono: '',
     direccion: '',
     horarios: '',
@@ -21,6 +22,7 @@ function ConfigProvider({ children }) {
         if (d) setConfig({
           nombre_negocio: d.nombre_negocio || '',
           logo: d.logo || '',
+          logo_size: d.logo_size || 50,
           telefono: d.telefono || '',
           direccion: d.direccion || '',
           horarios: d.horarios || '',

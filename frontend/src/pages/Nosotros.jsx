@@ -127,7 +127,7 @@ function ContactCard({ icon, label, value }) {
 
 function Nosotros() {
   const config = useConfig();
-  const { nombre_negocio, logo } = config;
+  const { nombre_negocio, logo, logo_size } = config;
 
   if (!config) {
     return (
@@ -147,7 +147,7 @@ function Nosotros() {
         <div style={{ position: 'absolute', bottom: -50, left: -50, width: 180, height: 180, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
         <div style={{ position: 'absolute', top: 30, left: '20%', width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.03)' }} />
 
-        <img src={logo ? imageUrl(logo) : '/gclogo.png'} alt="Logo" style={{ height: 120, marginBottom: 24, filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))', position: 'relative' }} />
+        <img src={logo ? imageUrl(logo) : '/gclogo.png'} alt="Logo" style={{ height: (logo_size || 120) * 1.5, marginBottom: 24, filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))', position: 'relative' }} />
         <h1 style={{ fontWeight: 800, fontSize: '2.6rem', color: '#292524', margin: 0, position: 'relative' }}>
           Sobre nosotros
         </h1>
