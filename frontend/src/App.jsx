@@ -3,7 +3,6 @@ import { useEffect, Suspense, lazy } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { HelmetProvider } from 'react-helmet-async';
 import { CartProvider } from './context/CartContext';
-import { FavoritosProvider } from './context/FavoritosContext';
 import { setNavigate } from './services/navigation';
 import PublicLayout from './layouts/PublicLayout';
 import AdminLayout from './layouts/AdminLayout';
@@ -82,11 +81,9 @@ function App() {
       }}
     />
     <CartProvider>
-    <FavoritosProvider>
     <BrowserRouter>
       <AppInner />
     </BrowserRouter>
-    </FavoritosProvider>
     </CartProvider>
     </HelmetProvider>
   );

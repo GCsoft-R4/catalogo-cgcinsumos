@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { useFavoritos } from '../context/FavoritosContext';
 import { WHATSAPP_NUMBER } from '../utils/constants';
 import CartPanel from './CartPanel';
 
 function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const { totalItems } = useCart();
-  const { totalFavoritos } = useFavoritos();
   const { pathname } = useLocation();
   const esNosotros = pathname === '/nosotros';
   const [now, setNow] = useState(new Date());
@@ -79,20 +77,6 @@ function Navbar() {
             >
               <i className="bi bi-whatsapp"></i>
             </a>
-
-            <Link
-              to="/?favoritos=1"
-              className="text-decoration-none position-relative"
-              style={{ color: 'var(--text)', fontSize: '1.15rem' }}
-              title="Favoritos"
-            >
-              <i className="bi bi-heart"></i>
-              {totalFavoritos > 0 && (
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill" style={{ fontSize: '0.55rem', background: '#e74c3c', color: '#fff' }}>
-                  {totalFavoritos}
-                </span>
-              )}
-            </Link>
 
             <button
               className="btn p-0 border-0 position-relative"
