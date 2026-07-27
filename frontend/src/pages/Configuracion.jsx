@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import api, { imageUrl } from '../services/api';
+import { useConfig } from '../context/ConfigContext';
 
 function Configuracion() {
+  const { refreshConfig } = useConfig();
   const [form, setForm] = useState({ nombre_negocio: '', logo: '', logo_size: 50, telefono: '', direccion: '', horarios: '', marquesina: '', nosotros: '' });
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
@@ -33,6 +35,7 @@ function Configuracion() {
       await api.put('/config', form);
       setMsg('Guardado');
       setMsgType('success');
+      refreshConfig();
     } catch {
       setMsg('Error al guardar');
       setMsgType('danger');
@@ -53,6 +56,7 @@ function Configuracion() {
         setForm(prev => ({ ...prev, logo: res.data.data.filename }));
         setMsg('Logo actualizado');
         setMsgType('success');
+        refreshConfig();
       }
     } catch {
       setMsg('Error al subir logo');

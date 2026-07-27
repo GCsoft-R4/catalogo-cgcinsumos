@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 
 const ConfigContext = createContext();
@@ -15,7 +15,7 @@ function ConfigProvider({ children }) {
     nosotros: '',
   });
 
-  useEffect(() => {
+  const fetchConfig = useCallback(() => {
     api.get('/config')
       .then(res => {
         const d = res.data?.data;
@@ -33,8 +33,12 @@ function ConfigProvider({ children }) {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    fetchConfig();
+  }, [fetchConfig]);
+
   return (
-    <ConfigContext.Provider value={config}>
+    <ConfigContext.Provider value={{ ...config, refreshConfig: fetchConfig }}>
       {children}
     </ConfigContext.Provider>
   );
