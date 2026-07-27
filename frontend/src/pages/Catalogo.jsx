@@ -287,8 +287,8 @@ function Catalogo() {
         </>
       )}
 
-      {!searchQuery && page === 1 && (
-        <ProductosNuevos productos={productos} />
+      {!searchQuery && (
+        <ProductosNuevos />
       )}
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '10px 0 24px', padding: '12px 0' }}>

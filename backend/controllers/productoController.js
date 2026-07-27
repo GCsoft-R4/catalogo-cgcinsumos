@@ -8,10 +8,15 @@ async function getAll(req, res) {
     const offset = (page - 1) * limit;
     const categoria = req.query.categoria;
     const search = req.query.search;
+    const nuevos = req.query.nuevos === 'true';
 
     const conditions = ['p.tenant_id = $1'];
     const params = [tenantId];
     let idx = 1;
+
+    if (nuevos) {
+      conditions.push(`(p.oferta = true OR p.fecha_creacion >= NOW() - INTERVAL '3 days')`);
+    }
 
     if (categoria) {
       params.push(categoria);

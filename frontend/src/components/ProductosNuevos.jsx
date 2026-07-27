@@ -1,22 +1,21 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { imageUrl as getImgUrl } from '../services/api';
+import api, { imageUrl as getImgUrl } from '../services/api';
 
-const DIAS_NUEVO = 3;
 const AUTO_INTERVAL = 4500;
 
-function ProductosNuevos({ productos }) {
+function ProductosNuevos() {
   const navigate = useNavigate();
   const scrollRef = useRef(null);
+  const [nuevos, setNuevos] = useState([]);
   const [paused, setPaused] = useState(false);
   const scrolling = useRef(false);
 
-  const nuevos = productos.filter((p) => {
-    if (p.oferta === true) return true;
-    if (!p.fecha_creacion) return false;
-    const diff = Date.now() - new Date(p.fecha_creacion).getTime();
-    return diff < DIAS_NUEVO * 24 * 60 * 60 * 1000;
-  });
+  useEffect(() => {
+    api.get('/productos?nuevos=true').then(res => {
+      setNuevos(res.data?.data || []);
+    }).catch(() => {});
+  }, []);
 
   const cardW = 220;
   const gap = 16;
@@ -94,7 +93,7 @@ function ProductosNuevos({ productos }) {
         </div>
         <div>
           <h2 className="nuevos-title">Recién llegados</h2>
-          <p className="nuevos-sub">Últimos {DIAS_NUEVO} días</p>
+          <p className="nuevos-sub">Novedades y ofertas</p>
         </div>
       </div>
 
