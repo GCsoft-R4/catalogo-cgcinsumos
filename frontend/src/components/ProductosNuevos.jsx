@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api, { imageUrl as getImgUrl } from '../services/api';
 
-const AUTO_INTERVAL = 4500;
+const AUTO_INTERVAL = 3000;
 
 function ProductosNuevos() {
   const navigate = useNavigate();
