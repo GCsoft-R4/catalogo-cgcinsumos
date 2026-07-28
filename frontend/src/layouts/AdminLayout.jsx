@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { useAuth } from '../hooks/useAuth';
+import { useTheme } from '../context/ThemeContext';
 
 function AdminLayout() {
   const { isAuthenticated, loading } = useAuth();
   const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const isMobile = () => window.innerWidth < 992;
+  const { theme, toggleTheme } = useTheme();
 
   if (loading) return null;
   if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
@@ -62,6 +64,14 @@ function AdminLayout() {
             <i className={`bi ${isMobile() ? (open ? 'bi-x-lg' : 'bi-list') : (collapsed ? 'bi-layout-sidebar-inset' : 'bi-layout-sidebar')}`}></i>
           </button>
           <div className="flex-grow-1"></div>
+          <button
+            className="btn p-0 border-0 fs-5 lh-1"
+            onClick={toggleTheme}
+            style={{ color: 'var(--text)' }}
+            title={theme === 'light' ? 'Modo oscuro' : 'Modo claro'}
+          >
+            <i className={`bi ${theme === 'light' ? 'bi-moon-stars' : 'bi-sun'}`}></i>
+          </button>
         </div>
         <Outlet />
       </main>
