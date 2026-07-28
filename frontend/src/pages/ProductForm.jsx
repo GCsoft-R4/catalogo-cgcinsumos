@@ -148,7 +148,7 @@ function ProductForm() {
         <div className="mb-3">
           <label htmlFor="descripcion" className="form-label">Descripción</label>
           <textarea id="descripcion" name="descripcion" className="form-control" rows={4} maxLength={500} value={form.descripcion} onChange={handleChange} />
-          <div className="text-end small mt-1" style={{ color: form.descripcion.length > 450 ? '#dc2626' : 'var(--text-secondary)' }}>
+          <div className="text-end small mt-1" style={{ color: form.descripcion.length > 450 ? 'var(--danger)' : 'var(--text-secondary)' }}>
             {form.descripcion.length}/500
           </div>
         </div>

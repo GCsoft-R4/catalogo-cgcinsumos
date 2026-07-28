@@ -23,7 +23,7 @@ function ConfirmModal({ show, title, message, confirmLabel, onConfirm, onCancel,
             </button>
             <button
               className="btn"
-              style={{ background: '#dc2626', color: '#fff', borderRadius: 'var(--radius-sm)', fontWeight: 500 }}
+              style={{ background: 'var(--danger)', color: '#fff', borderRadius: 'var(--radius-sm)', fontWeight: 500 }}
               onClick={onConfirm}
               disabled={loading}
             >

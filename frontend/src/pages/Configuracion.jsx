@@ -95,14 +95,14 @@ function Configuracion() {
       </p>
 
       <form onSubmit={handleSubmit}>
-        <div className="mb-4 p-3 rounded" style={{ background: '#f8f9fa', border: '1px solid var(--border)' }}>
+        <div className="mb-4 p-3 rounded" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
           <label className="form-label fw-semibold">Logo del negocio</label>
           <div className="d-flex align-items-center gap-3">
             <div
               style={{
                 width: 80, height: 80, borderRadius: 12, overflow: 'hidden',
                 border: '2px dashed var(--border)', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', flexShrink: 0, background: '#fff',
+                justifyContent: 'center', flexShrink: 0, background: 'var(--card-bg)',
               }}
             >
               {form.logo ? (
@@ -149,7 +149,7 @@ function Configuracion() {
                 <span>Chico</span>
                 <span>Grande</span>
               </div>
-              <div className="mt-2 p-2 rounded text-center" style={{ background: '#fff', border: '1px solid var(--border)' }}>
+              <div className="mt-2 p-2 rounded text-center" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
                 <img src={imageUrl(form.logo)} alt="Preview" style={{ height: form.logo_size, objectFit: 'contain' }} />
               </div>
             </div>

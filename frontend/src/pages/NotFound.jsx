@@ -5,7 +5,7 @@ function NotFound() {
   return (
     <>
     <SEOHead title="Página no encontrada" />
-    <section style={{ padding: '40px 0', background: '#fff', fontFamily: '"Arvo", serif', overflow: 'hidden', minHeight: '80vh', display: 'flex', alignItems: 'center' }}>
+    <section style={{ padding: '40px 0', background: 'var(--bg)', fontFamily: '"Arvo", serif', overflow: 'hidden', minHeight: '80vh', display: 'flex', alignItems: 'center' }}>
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-12 text-center">
