@@ -430,6 +430,11 @@ body {
   white-space: nowrap;
 }
 
+[data-theme="dark"] .marquee-wrapper {
+  background: #2a2a35;
+  color: #f1f1f1;
+}
+
 .marquee-track {
   display: flex;
   gap: 0;
