@@ -9,6 +9,7 @@ async function getAll(req, res) {
     const categoria = req.query.categoria;
     const search = req.query.search;
     const nuevos = req.query.nuevos === 'true';
+    const sinPaginacion = nuevos;
 
     const conditions = ['p.tenant_id = $1'];
     const params = [tenantId];
@@ -48,18 +49,26 @@ async function getAll(req, res) {
     );
 
     const total = countResult.rows[0].total;
-    params.push(limit);
-    params.push(offset);
 
-    const result = await pool.query(
-      `SELECT p.*, c.nombre AS categoria_nombre, c.slug AS categoria_slug
+    let queryStr;
+    if (sinPaginacion) {
+      queryStr = `SELECT p.*, c.nombre AS categoria_nombre, c.slug AS categoria_slug
+       FROM productos p
+       LEFT JOIN categorias c ON c.id = p.categoria_id
+       ${where}
+       ORDER BY ${orderBy}`;
+    } else {
+      params.push(limit);
+      params.push(offset);
+      queryStr = `SELECT p.*, c.nombre AS categoria_nombre, c.slug AS categoria_slug
        FROM productos p
        LEFT JOIN categorias c ON c.id = p.categoria_id
        ${where}
        ORDER BY ${orderBy}
-       LIMIT $${idx + 1} OFFSET $${idx + 2}`,
-      params
-    );
+       LIMIT $${idx + 1} OFFSET $${idx + 2}`;
+    }
+
+    const result = await pool.query(queryStr, params);
 
     res.json({
       ok: true,
