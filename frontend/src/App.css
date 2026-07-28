@@ -29,24 +29,24 @@
 }
 
 [data-theme="dark"] {
-  --accent: #3b82f6;
-  --accent-rgb: 59, 130, 246;
-  --accent-hover: #60a5fa;
+  --accent: #aaa;
+  --accent-rgb: 170, 170, 170;
+  --accent-hover: #ccc;
   --accent-secondary: #f59e0b;
   --accent-secondary-hover: #fbbf24;
   --accent-secondary-rgb: 245, 158, 11;
-  --bg: #0f0f1a;
-  --bg-secondary: #1a1a2e;
+  --bg: #000000;
+  --bg-secondary: #111111;
   --bg-overlay: rgba(0, 0, 0, 0.7);
-  --text: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border: #2a2a3e;
-  --card-bg: #1a1a2e;
-  --navbar-bg: #0f0f1a;
-  --table-bg: #1a1a2e;
-  --table-hover: #1e1e32;
-  --input-bg: #1a1a2e;
+  --text: #e5e5e0;
+  --text-secondary: #a0a0a0;
+  --text-muted: #808080;
+  --border: #2a2a2a;
+  --card-bg: #111111;
+  --navbar-bg: #000000;
+  --table-bg: #111111;
+  --table-hover: #1a1a1a;
+  --input-bg: #111111;
   --danger: #ef4444;
   --danger-bg: #2a1a1a;
   --success: #22c55e;
