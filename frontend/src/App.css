@@ -509,11 +509,6 @@ body {
     height: 180px;
   }
   /* ProductoDetalle thumbnails */
-  .detail-thumbs {
-    flex-direction: row !important;
-    gap: 8px !important;
-    flex-wrap: wrap;
-  }
   .detail-thumbs img {
     width: 48px !important;
     height: 48px !important;
