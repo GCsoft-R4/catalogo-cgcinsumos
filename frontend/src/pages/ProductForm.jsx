@@ -9,8 +9,9 @@ function ProductForm() {
 
   const [form, setForm] = useState({ nombre: '', descripcion: '', precio: '' });
   const [imagen, setImagen] = useState(null);
+  const [imagenes, setImagenes] = useState([]);
   const [imagenExistente, setImagenExistente] = useState('');
-  const [preview, setPreview] = useState('');
+  const [previews, setPreviews] = useState([]);
   const [galeria, setGaleria] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
@@ -40,7 +41,7 @@ function ProductForm() {
         if (p.oferta !== undefined) setOferta(p.oferta);
         if (p.imagen) {
           setImagenExistente(p.imagen);
-          setPreview(imageUrl(p.imagen));
+          setPreviews([imageUrl(p.imagen)]);
         }
         if (p.imagenes?.length) {
           setGaleria(p.imagenes.filter(f => f !== p.imagen));
@@ -53,15 +54,18 @@ function ProductForm() {
   const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleFile = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setImagen(file);
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    setImagen(files[0]);
     setImagenExistente('');
-    setPreview(URL.createObjectURL(file));
+    setImagenes(files);
+    setPreviews(files.map(f => URL.createObjectURL(f)));
   };
 
   const toggleGaleria = filename => {
     setImagen(null);
+    setImagenes([]);
+    setPreviews([]);
     if (fileRef.current) fileRef.current.value = '';
     setGaleria(prev => {
       const isIn = prev.includes(filename);
@@ -95,8 +99,8 @@ function ProductForm() {
     fd.append('disponible', disponible ? '1' : '0');
     fd.append('oferta', oferta ? '1' : '0');
     if (categoriaId) fd.append('categoria_id', categoriaId);
-    if (imagen) {
-      fd.append('imagen', imagen);
+    if (imagenes.length > 0) {
+      imagenes.forEach(f => fd.append('imagenes', f));
     } else if (imagenExistente) {
       fd.append('imagen_existente', imagenExistente);
     }
@@ -197,11 +201,18 @@ function ProductForm() {
           </div>
         </div>
         <div className="mb-3">
-          <label htmlFor="imagen" className="form-label">Subir imagen nueva</label>
-          <input ref={fileRef} type="file" id="imagen" className="form-control" accept="image/jpeg,image/png,image/webp" onChange={handleFile} />
-          {preview && (
-            <div className="mt-2">
-              <img src={preview} alt="Preview" className="w-100" style={{ maxWidth: 200, borderRadius: 8, maxHeight: 150, objectFit: 'contain' }} />
+          <label htmlFor="imagenes" className="form-label">Imágenes (primera = principal)</label>
+          <input ref={fileRef} type="file" id="imagenes" className="form-control" accept="image/jpeg,image/png,image/webp" onChange={handleFile} multiple />
+          {previews.length > 0 && (
+            <div className="d-flex flex-wrap gap-2 mt-2">
+              {previews.map((p, i) => (
+                <div key={i} className="position-relative">
+                  <img src={p} alt={`Preview ${i + 1}`} className="border rounded" style={{ width: 80, height: 80, objectFit: 'cover' }} />
+                  {i === 0 && (
+                    <span className="position-absolute top-0 start-0 badge bg-primary" style={{ fontSize: 9 }}>Principal</span>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>

@@ -109,9 +109,14 @@ async function create(req, res) {
     const tenantId = req.user?.tenant_id || req.tenant?.id;
     const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id, disponible, oferta } = req.body;
 
-    const imagen = req.file
-      ? req.file.filename
-      : (imagen_existente || null);
+    let imagen = null;
+    let files = [];
+    if (req.files && req.files.length > 0) {
+      imagen = req.files[0].filename;
+      files = req.files.slice(1).map(f => f.filename);
+    } else if (imagen_existente) {
+      imagen = imagen_existente;
+    }
 
     const catId = categoria_id ? parseInt(categoria_id) : null;
     const disp = disponible !== undefined ? (disponible === '1' || disponible === true) : true;
@@ -135,14 +140,18 @@ async function create(req, res) {
 
     const producto = result.rows[0];
 
+    const todasLasImagenes = [];
     if (galeria) {
       const lista = JSON.parse(galeria);
-      for (let i = 0; i < lista.length; i++) {
-        await pool.query(
-          'INSERT INTO producto_imagenes (producto_id, filename, orden) VALUES ($1, $2, $3)',
-          [producto.id, lista[i], i]
-        );
-      }
+      lista.forEach(f => { if (!todasLasImagenes.includes(f)) todasLasImagenes.push(f); });
+    }
+    files.forEach(f => { if (!todasLasImagenes.includes(f)) todasLasImagenes.push(f); });
+
+    for (let i = 0; i < todasLasImagenes.length; i++) {
+      await pool.query(
+        'INSERT INTO producto_imagenes (producto_id, filename, orden) VALUES ($1, $2, $3)',
+        [producto.id, todasLasImagenes[i], i]
+      );
     }
 
     res.status(201).json({
@@ -174,9 +183,14 @@ async function update(req, res) {
 
     const productoActual = existing.rows[0];
 
-    const imagen = req.file
-      ? req.file.filename
-      : (imagen_existente || productoActual.imagen);
+    let imagen = productoActual.imagen;
+    let files = [];
+    if (req.files && req.files.length > 0) {
+      imagen = req.files[0].filename;
+      files = req.files.slice(1).map(f => f.filename);
+    } else if (imagen_existente !== undefined) {
+      imagen = imagen_existente;
+    }
 
     const catId = categoria_id !== undefined ? (categoria_id ? parseInt(categoria_id) : null) : productoActual.categoria_id;
     const disp = disponible !== undefined ? (disponible === '1' || disponible === true) : productoActual.disponible;
@@ -207,13 +221,18 @@ async function update(req, res) {
       ]
     );
 
-    if (galeria) {
+    if (galeria || files.length > 0) {
       await pool.query('DELETE FROM producto_imagenes WHERE producto_id = $1', [req.params.id]);
-      const lista = JSON.parse(galeria);
-      for (let i = 0; i < lista.length; i++) {
+      const todasLasImagenes = [];
+      if (galeria) {
+        const lista = JSON.parse(galeria);
+        lista.forEach(f => { if (!todasLasImagenes.includes(f)) todasLasImagenes.push(f); });
+      }
+      files.forEach(f => { if (!todasLasImagenes.includes(f)) todasLasImagenes.push(f); });
+      for (let i = 0; i < todasLasImagenes.length; i++) {
         await pool.query(
           'INSERT INTO producto_imagenes (producto_id, filename, orden) VALUES ($1, $2, $3)',
-          [req.params.id, lista[i], i]
+          [req.params.id, todasLasImagenes[i], i]
         );
       }
     }

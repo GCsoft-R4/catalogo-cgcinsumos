@@ -12,8 +12,8 @@ const router = Router();
 router.get('/productos', getAll);
 router.get('/productos/:id', getById);
 
-router.post('/productos', authMiddleware, upload.single('imagen'), productoRules, validate, create);
-router.put('/productos/:id', authMiddleware, upload.single('imagen'), productoRules, validate, update);
+router.post('/productos', authMiddleware, upload.array('imagenes', 10), productoRules, validate, create);
+router.put('/productos/:id', authMiddleware, upload.array('imagenes', 10), productoRules, validate, update);
 router.delete('/productos/:id', authMiddleware, remove);
 router.post('/upload', authMiddleware, upload.single('imagen'), uploadImage);
 
