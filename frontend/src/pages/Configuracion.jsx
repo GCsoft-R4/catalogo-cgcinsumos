@@ -70,6 +70,21 @@ function Configuracion() {
     e.target.value = '';
   }
 
+  async function handleDeleteLogo() {
+    if (!confirm('¿Eliminar el logo?')) return;
+    try {
+      await api.delete('/config/logo');
+      setForm(prev => ({ ...prev, logo: '' }));
+      setMsg('Logo eliminado');
+      setMsgType('success');
+      refreshConfig();
+    } catch {
+      setMsg('Error al eliminar logo');
+      setMsgType('danger');
+    }
+    setTimeout(() => setMsg(''), 2500);
+  }
+
   if (loading) return <p className="text-muted">Cargando...</p>;
 
   return (
@@ -97,6 +112,7 @@ function Configuracion() {
               )}
             </div>
             <div className="flex-grow-1">
+              <div className="d-flex gap-2">
               <label
                 className="btn btn-outline btn-sm mb-0"
                 style={{ cursor: uploading ? 'wait' : 'pointer', opacity: uploading ? 0.6 : 1 }}
@@ -105,6 +121,12 @@ function Configuracion() {
                 {uploading ? 'Subiendo...' : 'Elegir imagen'}
                 <input type="file" accept="image/*" onChange={handleLogoUpload} hidden disabled={uploading} />
               </label>
+              {form.logo && (
+                <button type="button" className="btn btn-outline-danger btn-sm mb-0" onClick={handleDeleteLogo}>
+                  <i className="bi bi-trash me-1"></i>Eliminar
+                </button>
+              )}
+              </div>
               <div className="form-text mt-1">JPG, PNG o WebP. Máx 5 MB.</div>
             </div>
           </div>

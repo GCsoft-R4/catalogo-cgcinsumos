@@ -56,4 +56,23 @@ async function uploadLogo(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { getConfig, updateConfig, uploadLogo };
+async function deleteLogo(req, res, next) {
+  try {
+    const tenantId = req.tenant?.id;
+    const result = await pool.query('SELECT logo FROM configuracion WHERE tenant_id = $1', [tenantId]);
+    const oldLogo = result.rows[0]?.logo;
+    if (oldLogo) {
+      const oldPath = path.join(__dirname, '..', 'uploads', oldLogo);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+    }
+    await pool.query(
+      'UPDATE configuracion SET logo = $1, updated_at = CURRENT_TIMESTAMP WHERE tenant_id = $2',
+      ['', tenantId]
+    );
+    res.json({ ok: true });
+  } catch (err) { next(err); }
+}
+
+module.exports = { getConfig, updateConfig, uploadLogo, deleteLogo };
