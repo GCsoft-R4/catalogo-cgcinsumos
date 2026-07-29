@@ -50,7 +50,7 @@ function CartPanel({ show, onClose }) {
                         >+</button>
                         <button
                           className="btn btn-sm p-0 border-0 ms-auto"
-                          style={{ color: 'var(--danger)', fontSize: '0.8rem' }}
+                          style={{ color: '#dc3545', fontSize: '0.8rem' }}
                           onClick={() => removeItem(item.id)}
                         >
                           <i className="bi bi-trash"></i>

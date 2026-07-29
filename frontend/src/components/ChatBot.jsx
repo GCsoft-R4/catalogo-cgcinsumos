@@ -65,23 +65,23 @@ function ChatBot() {
             maxWidth: 'calc(100vw - 32px)',
             height: 480,
             zIndex: 1100,
-            background: 'var(--bg)',
-            border: '1px solid var(--border)',
+            background: '#fff',
+            border: '1px solid #dee2e6',
           }}
         >
           <div className="p-3 border-bottom fw-semibold" style={{ background: 'var(--accent, #0d6efd)', color: '#fff', borderRadius: '8px 8px 0 0' }}>
             Asistente
           </div>
 
-          <div className="flex-grow-1 p-3 overflow-auto" style={{ background: 'var(--bg-secondary)' }}>
+          <div className="flex-grow-1 p-3 overflow-auto" style={{ background: '#f8f9fa' }}>
             {messages.map((msg, i) => (
               <div key={i} className={`mb-2 d-flex ${msg.role === 'user' ? 'justify-content-end' : ''}`}>
                 <div
                   className="px-3 py-2 rounded-3"
                   style={{
                     maxWidth: '80%',
-                    background: msg.role === 'user' ? 'var(--accent, #0d6efd)' : 'var(--card-bg)',
-                    color: msg.role === 'user' ? '#fff' : 'var(--text)',
+                    background: msg.role === 'user' ? 'var(--accent, #0d6efd)' : '#e9ecef',
+                    color: msg.role === 'user' ? '#fff' : '#212529',
                     fontSize: 14,
                     lineHeight: 1.4,
                     whiteSpace: 'pre-wrap',
@@ -93,7 +93,7 @@ function ChatBot() {
             ))}
             {loading && (
               <div className="mb-2 d-flex">
-                <div className="px-3 py-2 rounded-3" style={{ background: 'var(--card-bg)', color: 'var(--text-secondary)', fontSize: 14 }}>
+                <div className="px-3 py-2 rounded-3" style={{ background: '#e9ecef', color: '#6c757d', fontSize: 14 }}>
                   Escribiendo...
                 </div>
               </div>

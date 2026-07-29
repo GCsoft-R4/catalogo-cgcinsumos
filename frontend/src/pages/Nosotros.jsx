@@ -62,7 +62,7 @@ function StatCard({ icon, target, suffix, label }) {
 
   return (
     <div ref={ref} style={{ textAlign: 'center', flex: '1 1 140px' }}>
-      <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--card-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', boxShadow: '0 6px 20px rgba(0,0,0,0.08)' }}>
+      <div style={{ width: 60, height: 60, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', boxShadow: '0 6px 20px rgba(0,0,0,0.08)' }}>
         <i className={`bi ${icon}`} style={{ fontSize: 26, color: '#e5a84c' }}></i>
       </div>
       <div style={{ fontWeight: 800, fontSize: '2rem', color: 'var(--text)', lineHeight: 1 }}>{count}{suffix}</div>
@@ -147,7 +147,7 @@ function Nosotros() {
         <div style={{ position: 'absolute', top: 30, left: '20%', width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.03)' }} />
 
         <img src={logo ? imageUrl(logo) : '/gclogo.png'} alt="Logo" style={{ height: (logo_size || 120) * 1.5, marginBottom: 24, filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))', position: 'relative' }} />
-        <h1 style={{ fontWeight: 800, fontSize: '2.6rem', color: 'var(--text)', margin: 0, position: 'relative' }}>
+        <h1 style={{ fontWeight: 800, fontSize: '2.6rem', color: '#292524', margin: 0, position: 'relative' }}>
           Sobre nosotros
         </h1>
         <p style={{ color: 'rgba(41,37,36,0.7)', fontSize: '1.1rem', marginTop: 12, maxWidth: 500, margin: '12px auto 0', position: 'relative' }}>
@@ -157,7 +157,7 @@ function Nosotros() {
 
       {/* Stats flotantes */}
       <div style={{ maxWidth: 780, margin: '-32px auto 0', padding: '0 1.5rem', position: 'relative', zIndex: 2 }}>
-        <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center', background: 'var(--card-bg)', borderRadius: 20, padding: '2rem 1.5rem', boxShadow: '0 12px 40px rgba(0,0,0,0.1)', border: '1px solid var(--border)' }}>
+        <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center', background: '#fff', borderRadius: 20, padding: '2rem 1.5rem', boxShadow: '0 12px 40px rgba(0,0,0,0.1)', border: '1px solid var(--border)' }}>
           {STATS.map((s, i) => <StatCard key={i} {...s} />)}
         </div>
       </div>
@@ -199,7 +199,7 @@ function Nosotros() {
         {/* CTA Banner */}
         <div style={{ background: 'linear-gradient(135deg, #f5c87c 0%, #e5a84c 100%)', borderRadius: 20, padding: '3rem 2rem', textAlign: 'center', marginBottom: '3rem', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
-          <h3 style={{ fontWeight: 800, color: 'var(--text)', margin: '0 0 8px', fontSize: '1.5rem', position: 'relative' }}>¿Listo para comprar?</h3>
+          <h3 style={{ fontWeight: 800, color: '#292524', margin: '0 0 8px', fontSize: '1.5rem', position: 'relative' }}>¿Listo para comprar?</h3>
           <p style={{ color: 'rgba(41,37,36,0.7)', margin: '0 0 20px', position: 'relative' }}>Elegí lo que necesitá y te lo enviamos a todo el país.</p>
           <Link to="/" className="btn" style={{ background: '#292524', color: '#f5c87c', fontWeight: 700, padding: '12px 28px', position: 'relative' }}>
             <i className="bi bi-bag me-1"></i>

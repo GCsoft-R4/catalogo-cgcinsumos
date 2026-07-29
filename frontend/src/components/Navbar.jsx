@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useConfig } from '../context/ConfigContext';
-import { useTheme } from '../context/ThemeContext';
 import { imageUrl } from '../services/api';
 import CartPanel from './CartPanel';
 
@@ -10,7 +9,6 @@ function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const { totalItems } = useCart();
   const { nombre_negocio, logo, logo_size, facebook_url, instagram_url, whatsapp_number } = useConfig();
-  const { theme, toggleTheme } = useTheme();
   const { pathname } = useLocation();
   const esNosotros = pathname === '/nosotros';
   const [now, setNow] = useState(new Date());
@@ -95,15 +93,7 @@ function Navbar() {
             )}
 
             <button
-              className="btn p-0 border-0 text-muted fs-5"
-              onClick={toggleTheme}
-              title={theme === 'light' ? 'Modo oscuro' : 'Modo claro'}
-            >
-              <i className={`bi ${theme === 'light' ? 'bi-moon-stars' : 'bi-sun'}`}></i>
-            </button>
-
-            <button
-              className="btn p-0 border-0 position-relative text-muted fs-5"
+              className="btn p-0 border-0 position-relative"
               style={{ color: 'var(--text)', fontSize: '1.25rem' }}
               onClick={() => setCartOpen(true)}
               title="Carrito"

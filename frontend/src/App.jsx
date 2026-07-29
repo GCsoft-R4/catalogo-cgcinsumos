@@ -4,7 +4,6 @@ import { Toaster } from 'react-hot-toast';
 import { HelmetProvider } from 'react-helmet-async';
 import { CartProvider } from './context/CartContext';
 import { ConfigProvider } from './context/ConfigContext';
-import { ThemeProvider } from './context/ThemeContext';
 import { setNavigate } from './services/navigation';
 import PublicLayout from './layouts/PublicLayout';
 import AdminLayout from './layouts/AdminLayout';
@@ -82,7 +81,6 @@ function App() {
         },
       }}
     />
-    <ThemeProvider>
     <ConfigProvider>
     <CartProvider>
     <BrowserRouter>
@@ -90,7 +88,6 @@ function App() {
     </BrowserRouter>
     </CartProvider>
     </ConfigProvider>
-    </ThemeProvider>
     </HelmetProvider>
   );
 }

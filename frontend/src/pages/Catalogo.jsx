@@ -150,7 +150,7 @@ function Catalogo() {
                 {sortMenuOpen && (
                   <div style={{
                     position: 'absolute', top: '100%', right: 40, zIndex: 20,
-                    background: 'var(--card-bg)', borderRadius: 8, marginTop: 4, minWidth: 150,
+                    background: '#fff', borderRadius: 8, marginTop: 4, minWidth: 150,
                     boxShadow: '0 4px 16px rgba(0,0,0,0.12)', overflow: 'hidden',
                   }}>
                     {[
@@ -260,7 +260,7 @@ function Catalogo() {
               {menuCategoriasOpen && (
                 <div style={{
                   position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 20,
-                  background: 'var(--card-bg)', borderRadius: 10, marginTop: 4,
+                  background: '#fff', borderRadius: 10, marginTop: 4,
                   boxShadow: '0 4px 16px rgba(0,0,0,0.12)', overflow: 'hidden',
                 }}>
                   <button
