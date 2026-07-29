@@ -75,7 +75,9 @@ body {
 .card-product .card-img-top {
   width: 100%;
   height: 260px;
-  object-fit: cover;
+  object-fit: contain;
+  background: #f8f9fa;
+  padding: 4px;
 }
 
 
@@ -707,12 +709,14 @@ body {
 .nuevos-card-img img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s;
+  object-fit: contain;
+  background: #f8f9fa;
+  padding: 4px;
+  transition: opacity 0.3s;
 }
 
 .nuevos-card:hover .nuevos-card-img img {
-  transform: scale(1.06);
+  opacity: 0.85;
 }
 
 .nuevos-card-overlay {

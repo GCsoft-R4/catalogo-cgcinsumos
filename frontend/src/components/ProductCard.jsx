@@ -55,7 +55,7 @@ function ProductCard({ producto, viewMode = 'grid' }) {
             className={`h-100 w-100${sinStock ? ' img-grayscale' : ''}`}
             alt={producto.nombre}
             loading="lazy"
-            style={{ objectFit: 'cover' }}
+            style={{ objectFit: 'contain', background: '#f8f9fa', padding: 2 }}
           />
           {sinStock && (
             <span className="sin-stock-badge">Sin stock</span>
