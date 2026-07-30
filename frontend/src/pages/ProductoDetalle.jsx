@@ -108,22 +108,17 @@ function ProductoDetalle() {
             </p>
           )}
           {producto.disponible === false && (
-            <span className="d-inline-block mb-3" style={{ background: '#fef2f2', color: '#dc2626', fontSize: '0.8rem', fontWeight: 600, padding: '3px 10px', borderRadius: 6 }}>
+            <span className="d-inline-block mb-3" style={{ background: '#fef2f2', color: '#dc2626', fontSize: '0.85rem', fontWeight: 600, padding: '4px 12px', borderRadius: 6 }}>
               Sin stock
             </span>
           )}
-          {producto.disponible !== false && (
-            <span className="d-inline-block mb-3" style={{ background: '#f0fdf4', color: '#16a34a', fontSize: '0.8rem', fontWeight: 600, padding: '3px 10px', borderRadius: 6 }}>
-              En stock
+          {producto.disponible !== false && producto.stock !== undefined && (
+            <span className="d-inline-block mb-3" style={{ background: '#f0fdf4', color: '#16a34a', fontSize: '0.85rem', fontWeight: 600, padding: '4px 12px', borderRadius: 6 }}>
+              {producto.stock > 0 ? `${producto.stock} en stock` : 'Sin stock'}
             </span>
           )}
           <p className="text-muted" style={{ fontSize: '1.1rem', lineHeight: 1.7 }}>
             {producto.descripcion}
-          </p>
-          <p className="text-muted small mt-4">
-            Agregado el {new Date(producto.fecha_creacion).toLocaleDateString('es-AR', {
-              year: 'numeric', month: 'long', day: 'numeric'
-            })}
           </p>
           {whatsapp_number && (
           <a
