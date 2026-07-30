@@ -410,7 +410,7 @@ body {
 
 @media (max-width: 575.98px) {
   .card-product .card-img-top {
-    height: 160px;
+    height: 140px;
   }
   .card-product .card-body {
     padding: 0.75rem;
