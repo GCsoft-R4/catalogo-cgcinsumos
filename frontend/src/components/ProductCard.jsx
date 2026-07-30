@@ -73,13 +73,12 @@ function ProductCard({ producto, viewMode = 'grid' }) {
           >
             <h5 className="card-title">{producto.nombre}</h5>
             {producto.precio > 0 && (
-              <p className="fw-bold fs-5 mb-2" style={{ color: 'var(--accent)' }}>
+              <p className="fw-bold fs-5 mb-0" style={{ color: 'var(--accent)' }}>
                 {precio}
               </p>
             )}
-            <p className="card-text">{producto.descripcion}</p>
           </div>
-          <div className="d-flex gap-2 mt-1">
+          <div className="d-flex gap-2 mt-2">
             <button
               className="btn d-inline-flex align-items-center justify-content-center gap-1"
               style={{ background: added ? '#198754' : 'var(--accent)', color: '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem', transition: 'background 0.15s' }}
