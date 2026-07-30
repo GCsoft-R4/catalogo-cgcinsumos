@@ -56,10 +56,10 @@ function ProductCard({ producto, viewMode = 'grid' }) {
             style={{ objectFit: 'contain', background: '#f8f9fa', padding: 2 }}
           />
           {esNuevo && (
-            <span style={{ position: 'absolute', top: 8, left: 8, background: '#10b981', color: '#fff', fontSize: '0.6rem', fontWeight: 700, padding: '2px 6px', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Nuevo</span>
+            <span style={{ position: 'absolute', top: 8, left: 8, background: '#d1fae5', color: '#065f46', fontSize: '0.55rem', fontWeight: 700, padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Nuevo</span>
           )}
           {esOferta && (
-            <span style={{ position: 'absolute', top: 8, left: esNuevo ? 52 : 8, background: '#ef4444', color: '#fff', fontSize: '0.6rem', fontWeight: 700, padding: '2px 6px', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Oferta</span>
+            <span style={{ position: 'absolute', top: 8, left: esNuevo ? 60 : 8, background: '#fee2e2', color: '#dc2626', fontSize: '0.55rem', fontWeight: 700, padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Oferta</span>
           )}
         </div>
 
@@ -122,10 +122,10 @@ function ProductCard({ producto, viewMode = 'grid' }) {
           loading="lazy"
         />
         {esNuevo && (
-          <span style={{ position: 'absolute', top: 8, left: 8, background: '#10b981', color: '#fff', fontSize: '0.65rem', fontWeight: 700, padding: '3px 8px', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Nuevo</span>
+          <span style={{ position: 'absolute', top: 8, left: 8, background: '#d1fae5', color: '#065f46', fontSize: '0.55rem', fontWeight: 700, padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Nuevo</span>
         )}
           {esOferta && (
-            <span style={{ position: 'absolute', top: 8, left: esNuevo ? 60 : 8, background: '#ef4444', color: '#fff', fontSize: '0.65rem', fontWeight: 700, padding: '3px 8px', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Oferta</span>
+            <span style={{ position: 'absolute', top: 8, left: esNuevo ? 60 : 8, background: '#fee2e2', color: '#dc2626', fontSize: '0.55rem', fontWeight: 700, padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Oferta</span>
           )}
         </div>
 
