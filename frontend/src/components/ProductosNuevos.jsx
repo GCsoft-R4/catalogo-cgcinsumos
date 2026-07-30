@@ -124,15 +124,33 @@ function ProductosNuevos() {
                   loading="lazy"
                 />
                 <div className="nuevos-card-overlay"></div>
-                {p.oferta && (
-                  <span style={{
-                    position: 'absolute', top: 10, left: 10,
-                    background: '#ef4444', color: '#fff',
-                    fontSize: '0.55rem', fontWeight: 700,
-                    padding: '3px 9px', borderRadius: 6,
-                    textTransform: 'uppercase', letterSpacing: '0.04em',
-                  }}>Oferta</span>
-                )}
+                {(() => {
+                  const esNuevo = p.fecha_creacion && (Date.now() - new Date(p.fecha_creacion).getTime()) < 3 * 24 * 60 * 60 * 1000;
+                  return (
+                    <>
+                      {esNuevo && (
+                        <span style={{
+                          position: 'absolute', top: 10, left: 10,
+                          background: '#d1fae5', color: '#065f46',
+                          fontSize: '0.55rem', fontWeight: 700,
+                          padding: '3px 9px', borderRadius: 6,
+                          textTransform: 'uppercase', letterSpacing: '0.04em',
+                          zIndex: 2
+                        }}>Nuevo</span>
+                      )}
+                      {p.oferta && (
+                        <span style={{
+                          position: 'absolute', top: 10, left: esNuevo ? 60 : 10,
+                          background: '#fee2e2', color: '#dc2626',
+                          fontSize: '0.55rem', fontWeight: 700,
+                          padding: '3px 9px', borderRadius: 6,
+                          textTransform: 'uppercase', letterSpacing: '0.04em',
+                          zIndex: 2
+                        }}>Oferta</span>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
               <div className="nuevos-card-body">
                 <span className="nuevos-card-name">{p.nombre}</span>
