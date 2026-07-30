@@ -64,6 +64,8 @@ function ProductForm() {
     setPreviews(files.map(f => URL.createObjectURL(f)));
   };
 
+  const openFilePicker = () => fileRef.current?.click();
+
   const toggleGaleria = filename => {
     setImagen(null);
     setImagenes([]);
@@ -75,16 +77,16 @@ function ProductForm() {
         const next = prev.filter(f => f !== filename);
         if (next.length > 0) {
           setImagenExistente(next[0]);
-          setPreview(imageUrl(next[0]));
+          setPreviews([imageUrl(next[0])]);
         } else {
           setImagenExistente('');
-          setPreview('');
+          setPreviews([]);
         }
         return next;
       } else {
         if (prev.length === 0) {
           setImagenExistente(filename);
-          setPreview(imageUrl(filename));
+          setPreviews([imageUrl(filename)]);
         }
         return [...prev, filename];
       }
@@ -131,6 +133,12 @@ function ProductForm() {
     }
   };
 
+  const previewUrl = previews.length > 0 ? previews[0] : null;
+  const previewNombre = form.nombre || 'Nombre del producto';
+  const previewPrecio = form.precio
+    ? `$${parseFloat(form.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : '$0.00';
+
   if (fetching) {
     return (
       <div className="text-center py-5">
@@ -140,103 +148,132 @@ function ProductForm() {
   }
 
   return (
-    <div className="mx-auto" style={{ maxWidth: 700 }}>
+    <div className="mx-auto" style={{ maxWidth: 800 }}>
       <h2 className="page-title mb-4">{isEdit ? 'Editar producto' : 'Nuevo producto'}</h2>
       {error && <div className="alert alert-danger py-2 small">{error}</div>}
       <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label htmlFor="nombre" className="form-label">Nombre</label>
-          <input type="text" id="nombre" name="nombre" className="form-control" value={form.nombre} onChange={handleChange} required />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="descripcion" className="form-label">Descripción</label>
-          <textarea id="descripcion" name="descripcion" className="form-control" rows={4} maxLength={500} value={form.descripcion} onChange={handleChange} />
-          <div className="text-end small mt-1" style={{ color: form.descripcion.length > 450 ? '#dc2626' : 'var(--text-secondary)' }}>
-            {form.descripcion.length}/500
-          </div>
-        </div>
-        <div className="mb-3">
-          <label htmlFor="precio" className="form-label">Precio</label>
-          <div className="input-group">
-            <span className="input-group-text">$</span>
-            <input type="number" id="precio" name="precio" className="form-control" step="0.01" min="0.01" value={form.precio} onChange={handleChange} placeholder="0.00" required />
-          </div>
-        </div>
-        {categorias.length > 0 && (
-          <div className="mb-3">
-            <label htmlFor="categoria" className="form-label">Categoría</label>
-            <select id="categoria" className="form-select" value={categoriaId} onChange={e => setCategoriaId(e.target.value)}>
-              <option value="">Sin categoría</option>
-              {categorias.map(c => (
-                <option key={c.id} value={c.id}>{c.nombre}</option>
-              ))}
-            </select>
-          </div>
-        )}
-        <div className="mb-3 d-flex align-items-center gap-3 flex-wrap">
-          <div className="form-check form-switch mb-0">
-            <input
-              type="checkbox"
-              id="disponible"
-              className="form-check-input"
-              role="switch"
-              checked={disponible}
-              onChange={e => setDisponible(e.target.checked)}
-              style={{ width: 40, height: 20, cursor: 'pointer' }}
-            />
-            <label htmlFor="disponible" className="form-check-label ms-2" style={{ cursor: 'pointer' }}>
-              {disponible ? 'Disponible' : 'Sin stock'}
-            </label>
-          </div>
-          <div className="form-check form-switch mb-0">
-            <input
-              type="checkbox"
-              id="oferta"
-              className="form-check-input"
-              role="switch"
-              checked={oferta}
-              onChange={e => setOferta(e.target.checked)}
-              style={{ width: 40, height: 20, cursor: 'pointer' }}
-            />
-            <label htmlFor="oferta" className="form-check-label ms-2" style={{ cursor: 'pointer' }}>
-              {oferta ? 'En oferta' : 'Sin oferta'}
-            </label>
-          </div>
-          <div className="input-group input-group-sm" style={{ width: 110 }}>
-            <span className="input-group-text" style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem' }}>Stock</span>
-            <input
-              type="number"
-              className="form-control"
-              value={stock}
-              onChange={e => setStock(Math.max(0, parseInt(e.target.value) || 0))}
-              min="0"
-              style={{ height: 32, fontSize: '0.85rem' }}
-            />
-          </div>
-        </div>
-        <div className="mb-3">
-          <label htmlFor="imagenes" className="form-label">Imágenes (primera = principal)</label>
-          <input ref={fileRef} type="file" id="imagenes" className="form-control" accept="image/jpeg,image/png,image/webp" onChange={handleFile} multiple />
-          {previews.length > 0 && (
-            <div className="d-flex flex-wrap gap-2 mt-2">
-              {previews.map((p, i) => (
-                <div key={i} className="position-relative">
-                  <img src={p} alt={`Preview ${i + 1}`} className="border rounded" style={{ width: 80, height: 80, objectFit: 'cover' }} />
-                  {i === 0 && (
-                    <span className="position-absolute top-0 start-0 badge bg-primary" style={{ fontSize: 9 }}>Principal</span>
+
+        <div className="card mb-4" style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)' }}>
+          <div className="card-body">
+            <h5 className="card-title mb-3" style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+              <i className="bi bi-info-circle me-2"></i>Información básica
+            </h5>
+            <div className="row g-3">
+              <div className="col-md-4">
+                <label className="form-label d-block" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                  Imagen principal
+                </label>
+                <div
+                  className="border rounded d-flex align-items-center justify-content-center flex-column"
+                  style={{ width: '100%', aspectRatio: '1', maxWidth: 200, background: '#f8f9fa', cursor: 'pointer' }}
+                  onClick={openFilePicker}
+                >
+                  {previewUrl ? (
+                    <img src={previewUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 4 }} />
+                  ) : (
+                    <>
+                      <i className="bi bi-image" style={{ fontSize: '2rem', color: 'var(--text-secondary)', opacity: 0.4 }}></i>
+                      <span className="small mt-1" style={{ color: 'var(--text-secondary)' }}>Sin imagen</span>
+                    </>
                   )}
                 </div>
-              ))}
+                <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFile} style={{ display: 'none' }} />
+                <button type="button" className="btn btn-sm btn-outline mt-2 w-100" onClick={openFilePicker}>
+                  <i className="bi bi-camera me-1"></i>{previewUrl ? 'Cambiar imagen' : 'Subir imagen'}
+                </button>
+              </div>
+              <div className="col-md-8">
+                <div className="mb-3">
+                  <label htmlFor="nombre" className="form-label" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>Nombre</label>
+                  <input type="text" id="nombre" name="nombre" className="form-control" value={form.nombre} onChange={handleChange} required />
+                </div>
+                {categorias.length > 0 && (
+                  <div className="mb-2">
+                    <label htmlFor="categoria" className="form-label" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>Categoría</label>
+                    <select id="categoria" className="form-select" value={categoriaId} onChange={e => setCategoriaId(e.target.value)}>
+                      <option value="">Sin categoría</option>
+                      {categorias.map(c => (
+                        <option key={c.id} value={c.id}>{c.nombre}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                <div className="mt-3 p-3 border rounded" style={{ background: '#faf5f0', maxWidth: 260 }}>
+                  <p className="small mb-1" style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>Vista previa en catálogo</p>
+                  <div className="bg-white rounded border" style={{ overflow: 'hidden' }}>
+                    <div style={{ width: '100%', height: 100, background: '#f8f9fa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {previewUrl ? (
+                        <img src={previewUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 4 }} />
+                      ) : (
+                        <i className="bi bi-image" style={{ fontSize: '1.5rem', color: '#ccc' }}></i>
+                      )}
+                    </div>
+                    <div style={{ padding: '6px 8px' }}>
+                      <p className="small mb-0" style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{previewNombre}</p>
+                      <p className="small mb-0" style={{ color: 'var(--accent)', fontWeight: 700 }}>{previewPrecio}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
+          </div>
         </div>
-        {allImages.length > 0 && (
-          <div className="mb-4">
-            <div className="d-flex align-items-center gap-2 mb-2">
-              <label className="form-label mb-0" style={{ cursor: 'pointer' }} onClick={() => setShowGallery(p => !p)}>
-                <i className={`bi bi-chevron-${showGallery ? 'down' : 'right'} me-1`}></i>
-                Imágenes ({allImages.length})
-              </label>
+
+        <div className="card mb-4" style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)' }}>
+          <div className="card-body">
+            <h5 className="card-title mb-3" style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+              <i className="bi bi-tags me-2"></i>Precio y stock
+            </h5>
+            <div className="row g-3">
+              <div className="col-sm-6">
+                <label htmlFor="precio" className="form-label" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>Precio</label>
+                <div className="input-group">
+                  <span className="input-group-text">$</span>
+                  <input type="number" id="precio" name="precio" className="form-control" step="0.01" min="0.01" value={form.precio} onChange={handleChange} placeholder="0.00" required />
+                </div>
+              </div>
+              <div className="col-sm-6">
+                <label htmlFor="stock" className="form-label" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>Stock</label>
+                <input type="number" id="stock" className="form-control" value={stock} onChange={e => setStock(Math.max(0, parseInt(e.target.value) || 0))} min="0" />
+              </div>
+            </div>
+            <div className="d-flex align-items-center gap-4 mt-3">
+              <div className="form-check form-switch mb-0">
+                <input type="checkbox" id="disponible" className="form-check-input" role="switch" checked={disponible} onChange={e => setDisponible(e.target.checked)} style={{ width: 40, height: 20, cursor: 'pointer' }} />
+                <label htmlFor="disponible" className="form-check-label ms-2" style={{ cursor: 'pointer', fontSize: '0.9rem' }}>
+                  {disponible ? 'Disponible' : 'Sin stock'}
+                </label>
+              </div>
+              <div className="form-check form-switch mb-0">
+                <input type="checkbox" id="oferta" className="form-check-input" role="switch" checked={oferta} onChange={e => setOferta(e.target.checked)} style={{ width: 40, height: 20, cursor: 'pointer' }} />
+                <label htmlFor="oferta" className="form-check-label ms-2" style={{ cursor: 'pointer', fontSize: '0.9rem' }}>
+                  {oferta ? 'En oferta' : 'Sin oferta'}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card mb-4" style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)' }}>
+          <div className="card-body">
+            <h5 className="card-title mb-3" style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+              <i className="bi bi-text-paragraph me-2"></i>Descripción
+            </h5>
+            <textarea id="descripcion" name="descripcion" className="form-control" rows={5} maxLength={500} value={form.descripcion} onChange={handleChange} placeholder='Usá "- " al inicio de cada línea para crear viñetas. Ej:&#10;- Característica 1&#10;- Característica 2&#10;- Característica 3' />
+            <div className="text-end small mt-1" style={{ color: form.descripcion.length > 450 ? '#dc2626' : 'var(--text-secondary)' }}>
+              {form.descripcion.length}/500
+            </div>
+          </div>
+        </div>
+
+        <div className="card mb-4" style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)' }}>
+          <div className="card-body">
+            <div className="d-flex align-items-center gap-2 mb-0" style={{ cursor: 'pointer' }} onClick={() => setShowGallery(p => !p)}>
+              <h5 className="card-title mb-0" style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                <i className="bi bi-images me-2"></i>Imágenes adicionales
+              </h5>
+              <i className={`bi bi-chevron-${showGallery ? 'down' : 'right'}`} style={{ fontSize: 12, color: 'var(--text-secondary)' }}></i>
+              <span className="badge bg-secondary bg-opacity-10 text-secondary ms-auto" style={{ fontSize: 11, fontWeight: 500 }}>{allImages.length}</span>
             </div>
             {showGallery && (() => {
               const now = new Date();
@@ -260,12 +297,7 @@ function ProductForm() {
               const toggleGroup = key => setExpandedGroups(prev => ({ ...prev, [key]: !prev[key] }));
               return order.map(key => groups[key].length > 0 && (
                 <div key={key} className="mb-2">
-                  <button
-                    type="button"
-                    className="d-flex align-items-center gap-2 w-100 border-0 bg-transparent p-2 text-start"
-                    style={{ borderRadius: 8, background: 'rgba(128,128,128,0.06)' }}
-                    onClick={() => toggleGroup(key)}
-                  >
+                  <button type="button" className="d-flex align-items-center gap-2 w-100 border-0 bg-transparent p-2 text-start" style={{ borderRadius: 8, background: 'rgba(128,128,128,0.06)' }} onClick={() => toggleGroup(key)}>
                     <i className={`bi bi-chevron-${expandedGroups[key] ? 'down' : 'right'}`} style={{ fontSize: 12, color: 'var(--text-secondary)', transition: 'transform 0.2s' }}></i>
                     <span className="fw-semibold" style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{labelFor(key)}</span>
                     <span className="ms-auto badge bg-secondary bg-opacity-10 text-secondary" style={{ fontSize: 11, fontWeight: 500 }}>{groups[key].length}</span>
@@ -278,61 +310,18 @@ function ProductForm() {
                         const esPrincipal = imagenExistente === name;
                         return (
                           <div className="col-4 col-sm-3 col-md-2" key={name}>
-                            <div
-                              className={`p-1 border rounded ${esPrincipal ? 'border-primary' : enGaleria ? 'border-success' : ''}`}
-                              style={{
-                                cursor: 'pointer',
-                                borderWidth: esPrincipal || enGaleria ? 2 : 1,
-                                position: 'relative',
-                                transition: 'border-color 0.15s',
-                              }}
-                              onClick={() => toggleGaleria(name)}
-                            >
+                            <div className={`p-1 border rounded ${esPrincipal ? 'border-primary' : enGaleria ? 'border-success' : ''}`} style={{ cursor: 'pointer', borderWidth: esPrincipal || enGaleria ? 2 : 1, position: 'relative', transition: 'border-color 0.15s' }} onClick={() => toggleGaleria(name)}>
                               {esPrincipal && (
-                                <span
-                                  className="position-absolute start-50 translate-middle-x"
-                                  style={{
-                                    top: -1,
-                                    background: 'var(--accent)',
-                                    color: '#fff',
-                                    borderRadius: 4,
-                                    fontSize: 9,
-                                    fontWeight: 600,
-                                    padding: '0 5px',
-                                    lineHeight: '16px',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.04em',
-                                    whiteSpace: 'nowrap',
-                                    zIndex: 1,
-                                  }}
-                                >
+                                <span className="position-absolute start-50 translate-middle-x" style={{ top: -1, background: 'var(--accent)', color: '#fff', borderRadius: 4, fontSize: 9, fontWeight: 600, padding: '0 5px', lineHeight: '16px', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap', zIndex: 1 }}>
                                   Principal
                                 </span>
                               )}
                               {enGaleria && !esPrincipal && (
-                                <span
-                                  className="position-absolute top-0 end-0"
-                                  style={{
-                                    background: '#198754',
-                                    color: '#fff',
-                                    borderRadius: '50%',
-                                    width: 18,
-                                    height: 18,
-                                    fontSize: 11,
-                                    lineHeight: '18px',
-                                    textAlign: 'center',
-                                    margin: 2,
-                                  }}
-                                >
+                                <span className="position-absolute top-0 end-0" style={{ background: '#198754', color: '#fff', borderRadius: '50%', width: 18, height: 18, fontSize: 11, lineHeight: '18px', textAlign: 'center', margin: 2 }}>
                                   <i className="bi bi-check"></i>
                                 </span>
                               )}
-                              <img
-                                src={imageUrl(name)}
-                                alt={name}
-                                className="w-100"
-                                style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 4 }}
-                              />
+                              <img src={imageUrl(name)} alt={name} className="w-100" style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 4 }} />
                             </div>
                           </div>
                         );
@@ -343,14 +332,17 @@ function ProductForm() {
               ));
             })()}
           </div>
-        )}
-        <div className="d-flex gap-2">
-          <button type="submit" className="btn btn-accent" disabled={loading}>
-            {loading ? 'Guardando...' : isEdit ? 'Actualizar' : 'Crear producto'}
-          </button>
-          <button type="button" className="btn btn-outline" onClick={() => navigate('/admin/productos')}>
-            Cancelar
-          </button>
+        </div>
+
+        <div className="card mb-4 sticky-bottom" style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', background: 'var(--bg)', boxShadow: '0 -2px 8px rgba(0,0,0,0.06)' }}>
+          <div className="card-body d-flex align-items-center justify-content-between py-3">
+            <button type="button" className="btn btn-outline" onClick={() => navigate('/admin/productos')}>
+              <i className="bi bi-x-lg me-1"></i>Cancelar
+            </button>
+            <button type="submit" className="btn btn-accent px-4" disabled={loading}>
+              {loading ? <><span className="spinner-border spinner-border-sm me-1" />Guardando...</> : <><i className="bi bi-check-lg me-1"></i>{isEdit ? 'Guardar cambios' : 'Crear producto'}</>}
+            </button>
+          </div>
         </div>
       </form>
     </div>
