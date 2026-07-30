@@ -134,10 +134,6 @@ function ProductForm() {
   };
 
   const previewUrl = previews.length > 0 ? previews[0] : null;
-  const previewNombre = form.nombre || 'Nombre del producto';
-  const previewPrecio = form.precio
-    ? `$${parseFloat(form.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-    : '$0.00';
 
   if (fetching) {
     return (
@@ -198,22 +194,6 @@ function ProductForm() {
                     </select>
                   </div>
                 )}
-                <div className="mt-3 p-3 border rounded" style={{ background: '#faf5f0', maxWidth: 260 }}>
-                  <p className="small mb-1" style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>Vista previa en catálogo</p>
-                  <div className="bg-white rounded border" style={{ overflow: 'hidden' }}>
-                    <div style={{ width: '100%', height: 100, background: '#f8f9fa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {previewUrl ? (
-                        <img src={previewUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 4 }} />
-                      ) : (
-                        <i className="bi bi-image" style={{ fontSize: '1.5rem', color: '#ccc' }}></i>
-                      )}
-                    </div>
-                    <div style={{ padding: '6px 8px' }}>
-                      <p className="small mb-0" style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{previewNombre}</p>
-                      <p className="small mb-0" style={{ color: 'var(--accent)', fontWeight: 700 }}>{previewPrecio}</p>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
