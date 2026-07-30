@@ -7,18 +7,27 @@ import SEOHead from '../components/SEOHead';
 function Dashboard() {
   const navigate = useNavigate();
   const [productos, setProductos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [categoria, setCategoria] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
+  useEffect(() => {
+    api.get('/categorias')
+      .then(res => setCategorias(res.data.data || []))
+      .catch(console.error);
+  }, []);
+
   const fetchProductos = useCallback(() => {
     setLoading(true);
     const params = { page, limit: 10 };
     if (search.trim()) params.search = search.trim();
+    if (categoria) params.categoria = categoria;
     api.get('/productos', { params })
       .then(res => {
         setProductos(res.data.data || []);
@@ -27,7 +36,7 @@ function Dashboard() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [page, search]);
+  }, [page, search, categoria]);
 
   useEffect(() => { fetchProductos(); }, [fetchProductos]);
 
@@ -45,6 +54,8 @@ function Dashboard() {
     }
   };
 
+  const sinStock = p => p.disponible === false || (p.stock !== undefined && p.stock <= 0);
+
   return (
     <>
     <SEOHead title="Productos" />
@@ -59,15 +70,28 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="d-flex flex-column flex-sm-row gap-2 mb-4">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Buscar productos..."
-          value={search}
-          onChange={e => { setSearch(e.target.value); setPage(1); }}
-          style={{ maxWidth: 320, borderRadius: 8 }}
-        />
+      <div className="d-flex flex-column flex-md-row gap-2 mb-4">
+        <div className="d-flex gap-2 flex-grow-1">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Buscar productos..."
+            value={search}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
+            style={{ maxWidth: 320, borderRadius: 8 }}
+          />
+          <select
+            className="form-select"
+            value={categoria}
+            onChange={e => { setCategoria(e.target.value); setPage(1); }}
+            style={{ maxWidth: 200, borderRadius: 8 }}
+          >
+            <option value="">Todas las categorías</option>
+            {categorias.map(c => (
+              <option key={c.id} value={c.slug}>{c.nombre}</option>
+            ))}
+          </select>
+        </div>
         <button className="btn btn-accent flex-shrink-0" onClick={() => navigate('/admin/productos/nuevo')}>
           <i className="bi bi-plus-lg me-1"></i>Nuevo
         </button>
@@ -78,19 +102,21 @@ function Dashboard() {
           <table className="table align-middle">
             <thead>
               <tr>
-                <th style={{ width: 52 }} className="d-none d-sm-table-cell"></th>
+                <th style={{ width: 48 }} className="d-none d-sm-table-cell"></th>
                 <th>Nombre</th>
                 <th className="d-none d-md-table-cell">Categoría</th>
-                <th style={{ width: 120 }}>Precio</th>
+                <th style={{ width: 100 }}>Stock</th>
+                <th style={{ width: 110 }}>Precio</th>
                 <th style={{ width: 130 }}></th>
               </tr>
             </thead>
             <tbody>
               {[1,2,3,4,5].map(i => (
                 <tr key={i}>
-                  <td className="d-none d-sm-table-cell"><div className="skeleton" style={{ width: 40, height: 40, borderRadius: 6 }} /></td>
+                  <td className="d-none d-sm-table-cell"><div className="skeleton" style={{ width: 36, height: 36, borderRadius: 6 }} /></td>
                   <td><div className="skeleton skeleton-line" /></td>
                   <td className="d-none d-md-table-cell"><div className="skeleton skeleton-line-sm" /></td>
+                  <td><div className="skeleton" style={{ height: 22, width: 60, borderRadius: 4 }} /></td>
                   <td><div className="skeleton skeleton-line-sm" /></td>
                   <td><div className="skeleton" style={{ height: 30, width: 120, marginLeft: 'auto' }} /></td>
                 </tr>
@@ -110,27 +136,39 @@ function Dashboard() {
             <table className="table align-middle">
               <thead>
                 <tr>
-                  <th style={{ width: 52 }} className="d-none d-sm-table-cell"></th>
+                  <th style={{ width: 48 }} className="d-none d-sm-table-cell"></th>
                   <th>Nombre</th>
                   <th className="d-none d-md-table-cell">Categoría</th>
-                  <th style={{ width: 120 }}>Precio</th>
+                  <th style={{ width: 100 }}>Stock</th>
+                  <th style={{ width: 110 }}>Precio</th>
                   <th style={{ width: 130 }}></th>
                 </tr>
               </thead>
               <tbody>
                 {productos.map(p => (
-                  <tr key={p.id}>
+                  <tr key={p.id} className={sinStock(p) ? 'table-danger' : ''}>
                     <td className="d-none d-sm-table-cell">
                       <img
                         src={imageUrl(p.imagen)}
                         alt={p.nombre}
                         className="rounded"
-                        style={{ width: 40, height: 40, objectFit: 'cover' }}
+                        style={{ width: 36, height: 36, objectFit: 'cover', filter: sinStock(p) ? 'grayscale(1)' : 'none', opacity: sinStock(p) ? 0.5 : 1 }}
                       />
                     </td>
-                    <td className="fw-medium">{p.nombre}</td>
+                    <td className="fw-medium" style={{ color: sinStock(p) ? '#9ca3af' : 'inherit' }}>{p.nombre}</td>
                     <td className="d-none d-md-table-cell text-muted small">
                       {p.categoria_nombre || '-'}
+                    </td>
+                    <td>
+                      {p.disponible === false || (p.stock !== undefined && p.stock <= 0) ? (
+                        <span className="badge" style={{ background: '#fef2f2', color: '#dc2626', fontSize: '0.7rem', fontWeight: 600, padding: '2px 8px', borderRadius: 4 }}>
+                          Sin stock
+                        </span>
+                      ) : (
+                        <span className="badge" style={{ background: '#f0fdf4', color: '#16a34a', fontSize: '0.7rem', fontWeight: 600, padding: '2px 8px', borderRadius: 4 }}>
+                          {p.stock} en stock
+                        </span>
+                      )}
                     </td>
                     <td className="fw-semibold" style={{ color: 'var(--accent)' }}>
                       {p.precio > 0
