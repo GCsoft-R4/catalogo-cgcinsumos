@@ -9,7 +9,7 @@ function SEOHead({ title, description, image }) {
   const desc = description || `Productos y accesorios en ${siteName}.`;
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const ogImage = image
-    ? image.startsWith('http') ? image : `${origin}${image}`
+    ? image.startsWith('http') ? image : `${origin}/uploads/${image}`
     : logo ? `${origin}${imageUrl(logo)}` : `${origin}/gclogo.png`;
 
   return (

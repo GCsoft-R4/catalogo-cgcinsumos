@@ -31,7 +31,11 @@ function uploadMultiple(req, res) {
 async function deleteImage(req, res) {
   try {
     const { filename } = req.params;
-    const filePath = path.join(uploadsDir, filename);
+    const filePath = path.resolve(path.join(uploadsDir, filename));
+
+    if (!filePath.startsWith(path.resolve(uploadsDir))) {
+      return res.status(400).json({ ok: false, error: 'Nombre de archivo inválido' });
+    }
 
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ ok: false, error: 'Imagen no encontrada' });
