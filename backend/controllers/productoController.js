@@ -37,9 +37,17 @@ async function getAll(req, res) {
       nombre_desc: 'p.nombre DESC',
       precio_asc: 'p.precio ASC',
       precio_desc: 'p.precio DESC',
+      stock_asc: 'p.stock ASC',
+      stock_desc: 'p.stock DESC',
       newest: 'p.fecha_creacion DESC'
     };
     const orderBy = sortOptions[req.query.sort] || 'p.fecha_creacion DESC';
+
+    if (req.query.stock === 'bajo') {
+      conditions.push('(p.stock > 0 AND p.stock <= 2)');
+    } else if (req.query.stock === 'sin_stock') {
+      conditions.push('(p.stock <= 0 OR p.disponible = false)');
+    }
 
     const countResult = await pool.query(
       `SELECT COUNT(*)::int AS total FROM productos p

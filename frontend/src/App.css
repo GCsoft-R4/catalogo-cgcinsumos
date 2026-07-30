@@ -314,6 +314,113 @@ body {
   background: var(--bg);
 }
 
+.table th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+.table th.sortable:hover {
+  color: var(--accent);
+}
+.table th.sortable::after {
+  content: '';
+  display: inline-block;
+  width: 0.6rem;
+  margin-left: 0.3rem;
+  opacity: 0.3;
+}
+.table th.sortable.sort-asc::after {
+  content: '↑';
+  opacity: 0.7;
+}
+.table th.sortable.sort-desc::after {
+  content: '↓';
+  opacity: 0.7;
+}
+
+.actions-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.actions-dropdown-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.2rem 0.4rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.actions-dropdown-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  background: var(--bg);
+}
+.actions-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  min-width: 150px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  padding: 0.35rem;
+  z-index: 100;
+  display: none;
+}
+.actions-dropdown-menu.open {
+  display: block;
+}
+.actions-dropdown-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.45rem 0.7rem;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  color: var(--text);
+  transition: background 0.1s;
+  cursor: pointer;
+}
+.actions-dropdown-menu button:hover {
+  background: var(--bg-secondary);
+}
+.actions-dropdown-menu button.text-danger {
+  color: #dc2626;
+}
+.actions-dropdown-menu button.text-danger:hover {
+  background: #fef2f2;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.filter-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.filter-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
 .page-title {
   font-size: 1.5rem;
   font-weight: 700;

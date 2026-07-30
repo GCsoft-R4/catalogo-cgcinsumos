@@ -84,8 +84,6 @@ function Catalogo() {
   };
 
   const list = Array.isArray(productos) ? productos : [];
-  const esNuevo = p => p.fecha_creacion && (Date.now() - new Date(p.fecha_creacion).getTime()) < 3 * 24 * 60 * 60 * 1000;
-  const mainList = !searchQuery ? list.filter(p => !(p.oferta || esNuevo(p))) : list;
 
   if (loading && (!Array.isArray(productos) || productos.length === 0)) {
     return (
@@ -303,32 +301,12 @@ function Catalogo() {
       </div>
 
       {list.length === 0 ? (
-        <div className="empty-state">
-          {!searchQuery ? (
-            <>
-              <i className="bi bi-box-seam"></i>
-              <h5>Catálogo vacío</h5>
-              <p className="text-muted">Todavía no hay productos disponibles. Volvé pronto.</p>
-            </>
-          ) : (
-            <>
-              <i className="bi bi-search"></i>
-              <h5>Sin resultados</h5>
-              <p className="text-muted">No encontramos productos que coincidan con tu búsqueda. Intentá con otro término.</p>
-            </>
-          )}
-        </div>
-      ) : mainList.length === 0 ? (
-        <div className="empty-state">
-          <i className="bi bi-gift"></i>
-          <h5>Solo hay novedades</h5>
-          <p className="text-muted">Todos los productos aparecen en la sección de novedades de arriba.</p>
-        </div>
+        <p className="text-muted text-center py-5">No se encontraron productos.</p>
       ) : (
         <>
           {viewMode === 'grid' ? (
             <div className="row g-4">
-              {mainList.map(p => (
+              {list.map(p => (
                 <div className="col-6 col-md-4 col-lg-3" key={p.id}>
                   <ProductCard producto={p} />
                 </div>
@@ -336,7 +314,7 @@ function Catalogo() {
             </div>
           ) : (
             <div className="d-flex flex-column gap-3">
-              {mainList.map(p => (
+              {list.map(p => (
                 <ProductCard key={p.id} producto={p} viewMode="list" />
               ))}
             </div>

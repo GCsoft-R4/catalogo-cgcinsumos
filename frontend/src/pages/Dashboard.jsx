@@ -11,11 +11,15 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [categoria, setCategoria] = useState('');
+  const [stockFilter, setStockFilter] = useState('');
+  const [sortField, setSortField] = useState('fecha_creacion');
+  const [sortDir, setSortDir] = useState('desc');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [openDropdownId, setOpenDropdownId] = useState(null);
 
   useEffect(() => {
     api.get('/categorias')
@@ -23,11 +27,27 @@ function Dashboard() {
       .catch(console.error);
   }, []);
 
+  useEffect(() => {
+    const handler = (e) => {
+      if (!e.target.closest('.actions-dropdown')) {
+        setOpenDropdownId(null);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const getSortParam = () => {
+    if (sortField === 'fecha_creacion') return 'newest';
+    return `${sortField}_${sortDir}`;
+  };
+
   const fetchProductos = useCallback(() => {
     setLoading(true);
-    const params = { page, limit: 10 };
+    const params = { page, limit: 10, sort: getSortParam() };
     if (search.trim()) params.search = search.trim();
     if (categoria) params.categoria = categoria;
+    if (stockFilter) params.stock = stockFilter;
     api.get('/productos', { params })
       .then(res => {
         setProductos(res.data.data || []);
@@ -36,9 +56,24 @@ function Dashboard() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [page, search, categoria]);
+  }, [page, search, categoria, stockFilter, sortField, sortDir]);
 
   useEffect(() => { fetchProductos(); }, [fetchProductos]);
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDir(d => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      setSortDir('asc');
+    }
+    setPage(1);
+  };
+
+  const sortClass = (field) => {
+    if (sortField !== field) return 'sortable';
+    return `sortable sort-${sortDir}`;
+  };
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
@@ -56,6 +91,20 @@ function Dashboard() {
 
   const sinStock = p => p.disponible === false || (p.stock !== undefined && p.stock <= 0);
 
+  const stockBadge = (p) => {
+    if (p.disponible === false || (p.stock !== undefined && p.stock <= 0)) {
+      return { bg: '#fef2f2', color: '#dc2626', text: 'Sin stock' };
+    }
+    if (p.stock <= 2) {
+      return { bg: '#fffbeb', color: '#d97706', text: `${p.stock} en stock` };
+    }
+    return { bg: '#f0fdf4', color: '#16a34a', text: `${p.stock} en stock` };
+  };
+
+  const toggleDropdown = (id) => {
+    setOpenDropdownId(prev => (prev === id ? null : id));
+  };
+
   return (
     <>
     <SEOHead title="Productos" />
@@ -70,7 +119,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="d-flex flex-column flex-md-row gap-2 mb-4">
+      <div className="d-flex flex-column flex-md-row gap-2 mb-3">
         <div className="d-flex gap-2 flex-grow-1">
           <input
             type="text"
@@ -97,28 +146,45 @@ function Dashboard() {
         </button>
       </div>
 
+      <div className="d-flex gap-2 mb-3">
+        <span
+          className={`filter-chip${stockFilter === 'bajo' ? ' active' : ''}`}
+          onClick={() => { setStockFilter(f => (f === 'bajo' ? '' : 'bajo')); setPage(1); }}
+        >
+          <i className="bi bi-exclamation-triangle"></i>
+          Stock bajo
+        </span>
+        <span
+          className={`filter-chip${stockFilter === 'sin_stock' ? ' active' : ''}`}
+          onClick={() => { setStockFilter(f => (f === 'sin_stock' ? '' : 'sin_stock')); setPage(1); }}
+        >
+          <i className="bi bi-x-circle"></i>
+          Sin stock
+        </span>
+      </div>
+
       {loading ? (
         <div className="table-responsive" style={{ opacity: 0.6 }}>
           <table className="table align-middle">
             <thead>
               <tr>
-                <th style={{ width: 48 }} className="d-none d-sm-table-cell"></th>
+                <th style={{ width: 56 }} className="d-none d-sm-table-cell"></th>
                 <th>Nombre</th>
                 <th className="d-none d-md-table-cell">Categoría</th>
                 <th style={{ width: 100 }}>Stock</th>
                 <th style={{ width: 110 }}>Precio</th>
-                <th style={{ width: 130 }}></th>
+                <th style={{ width: 56 }}></th>
               </tr>
             </thead>
             <tbody>
               {[1,2,3,4,5].map(i => (
                 <tr key={i}>
-                  <td className="d-none d-sm-table-cell"><div className="skeleton" style={{ width: 36, height: 36, borderRadius: 6 }} /></td>
+                  <td className="d-none d-sm-table-cell"><div className="skeleton" style={{ width: 48, height: 48, borderRadius: 6 }} /></td>
                   <td><div className="skeleton skeleton-line" /></td>
                   <td className="d-none d-md-table-cell"><div className="skeleton skeleton-line-sm" /></td>
                   <td><div className="skeleton" style={{ height: 22, width: 60, borderRadius: 4 }} /></td>
                   <td><div className="skeleton skeleton-line-sm" /></td>
-                  <td><div className="skeleton" style={{ height: 30, width: 120, marginLeft: 'auto' }} /></td>
+                  <td><div className="skeleton" style={{ height: 30, width: 40, marginLeft: 'auto' }} /></td>
                 </tr>
               ))}
             </tbody>
@@ -136,12 +202,12 @@ function Dashboard() {
             <table className="table align-middle">
               <thead>
                 <tr>
-                  <th style={{ width: 48 }} className="d-none d-sm-table-cell"></th>
-                  <th>Nombre</th>
+                  <th style={{ width: 56 }} className="d-none d-sm-table-cell"></th>
+                  <th className={sortClass('nombre')} onClick={() => handleSort('nombre')}>Nombre</th>
                   <th className="d-none d-md-table-cell">Categoría</th>
-                  <th style={{ width: 100 }}>Stock</th>
-                  <th style={{ width: 110 }}>Precio</th>
-                  <th style={{ width: 130 }}></th>
+                  <th style={{ width: 100 }} className={sortClass('stock')} onClick={() => handleSort('stock')}>Stock</th>
+                  <th style={{ width: 110 }} className={`text-end ${sortClass('precio')}`} onClick={() => handleSort('precio')}>Precio</th>
+                  <th style={{ width: 56 }}></th>
                 </tr>
               </thead>
               <tbody>
@@ -152,7 +218,7 @@ function Dashboard() {
                         src={imageUrl(p.imagen)}
                         alt={p.nombre}
                         className="rounded"
-                        style={{ width: 36, height: 36, objectFit: 'cover', filter: sinStock(p) ? 'grayscale(1)' : 'none', opacity: sinStock(p) ? 0.5 : 1 }}
+                        style={{ width: 48, height: 48, objectFit: 'cover', filter: sinStock(p) ? 'grayscale(1)' : 'none', opacity: sinStock(p) ? 0.5 : 1 }}
                       />
                     </td>
                     <td className="fw-medium" style={{ color: sinStock(p) ? '#9ca3af' : 'inherit' }}>{p.nombre}</td>
@@ -160,35 +226,32 @@ function Dashboard() {
                       {p.categoria_nombre || '-'}
                     </td>
                     <td>
-                      {p.disponible === false || (p.stock !== undefined && p.stock <= 0) ? (
-                        <span className="badge" style={{ background: '#fef2f2', color: '#dc2626', fontSize: '0.7rem', fontWeight: 600, padding: '2px 8px', borderRadius: 4 }}>
-                          Sin stock
-                        </span>
-                      ) : (
-                        <span className="badge" style={{ background: '#f0fdf4', color: '#16a34a', fontSize: '0.7rem', fontWeight: 600, padding: '2px 8px', borderRadius: 4 }}>
-                          {p.stock} en stock
-                        </span>
-                      )}
+                      <span className="badge" style={{ background: stockBadge(p).bg, color: stockBadge(p).color, fontSize: '0.7rem', fontWeight: 600, padding: '2px 8px', borderRadius: 4 }}>
+                        {stockBadge(p).text}
+                      </span>
                     </td>
-                    <td className="fw-semibold" style={{ color: 'var(--accent)' }}>
+                    <td className="fw-semibold text-end" style={{ color: 'var(--accent)' }}>
                       {p.precio > 0
                         ? `$${parseFloat(p.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                         : '-'}
                     </td>
                     <td>
-                      <div className="d-flex flex-column flex-sm-row gap-1 justify-content-end">
+                      <div className="actions-dropdown">
                         <button
-                          className="btn btn-sm btn-outline text-nowrap"
-                          onClick={() => navigate(`/admin/productos/editar/${p.id}`)}
+                          className="actions-dropdown-btn"
+                          onClick={() => toggleDropdown(p.id)}
+                          aria-label="Acciones"
                         >
-                          Editar
+                          <i className="bi bi-three-dots-vertical"></i>
                         </button>
-                        <button
-                          className="btn btn-sm btn-outline-danger text-nowrap"
-                          onClick={() => setDeleteTarget(p.id)}
-                        >
-                          Eliminar
-                        </button>
+                        <div className={`actions-dropdown-menu${openDropdownId === p.id ? ' open' : ''}`}>
+                          <button onClick={() => { setOpenDropdownId(null); navigate(`/admin/productos/editar/${p.id}`); }}>
+                            <i className="bi bi-pencil me-2"></i>Editar
+                          </button>
+                          <button className="text-danger" onClick={() => { setOpenDropdownId(null); setDeleteTarget(p.id); }}>
+                            <i className="bi bi-trash3 me-2"></i>Eliminar
+                          </button>
+                        </div>
                       </div>
                     </td>
                   </tr>
