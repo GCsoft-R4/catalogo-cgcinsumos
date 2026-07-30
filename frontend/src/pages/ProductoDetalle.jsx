@@ -103,17 +103,20 @@ function ProductoDetalle() {
         <div className="col-lg-5">
           <h1 className="fw-bold mb-2" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }}>{producto.nombre}</h1>
           {producto.precio > 0 && (
-            <p className="fw-bold fs-3 mb-3" style={{ color: 'var(--accent)' }}>
+            <p className="fw-bold fs-3 mb-2" style={{ color: 'var(--accent)' }}>
               ${parseFloat(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
           )}
-          <div className="mb-3">
-            {producto.stock > 0 && (
-              <span className="badge" style={{ background: '#10b981', fontSize: '0.85rem', fontWeight: 600, padding: '0.35rem 0.75rem' }}>
-                <i className="bi bi-check-circle me-1"></i>{producto.stock} en stock
-              </span>
-            )}
-          </div>
+          {producto.disponible === false && (
+            <span className="d-inline-block mb-3" style={{ background: '#fef2f2', color: '#dc2626', fontSize: '0.8rem', fontWeight: 600, padding: '3px 10px', borderRadius: 6 }}>
+              Sin stock
+            </span>
+          )}
+          {producto.disponible !== false && (
+            <span className="d-inline-block mb-3" style={{ background: '#f0fdf4', color: '#16a34a', fontSize: '0.8rem', fontWeight: 600, padding: '3px 10px', borderRadius: 6 }}>
+              En stock
+            </span>
+          )}
           <p className="text-muted" style={{ fontSize: '1.1rem', lineHeight: 1.7 }}>
             {producto.descripcion}
           </p>
