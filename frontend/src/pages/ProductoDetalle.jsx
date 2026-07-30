@@ -6,33 +6,49 @@ import { useCart } from '../context/CartContext';
 import SEOHead from '../components/SEOHead';
 
 const iconMap = [
-  { keywords: ['bluetooth', 'inalambrico', 'wireless', 'inalámbrico'], icon: '📶' },
-  { keywords: ['voz', 'voice'], icon: '🎙️' },
-  { keywords: ['bass', 'graves', 'subwoofer', 'bajo'], icon: '🔊' },
-  { keywords: ['stereo', 'estereo', 'estéreo'], icon: '🎵' },
-  { keywords: ['rgb', 'luz led', 'led', 'iluminacion', 'iluminación'], icon: '💡' },
-  { keywords: ['bateria', 'batería', 'horas', 'duracion', 'duración', 'recargable'], icon: '🔋' },
-  { keywords: ['manos libres', 'microfono', 'micrófono'], icon: '🎤' },
-  { keywords: ['usb', 'carga', 'cargador', 'tipo c', 'type-c'], icon: '🔌' },
-  { keywords: ['agua', 'resistente', 'ipx', 'salpicaduras'], icon: '💧' },
-  { keywords: ['control remoto', 'remoto'], icon: '🎮' },
-  { keywords: ['wifi', 'conexion', 'conexión', 'conectividad'], icon: '🌐' },
+  { keywords: ['bluetooth'], icon: 'bi-bluetooth' },
+  { keywords: ['voz', 'voice'], icon: 'bi-mic' },
+  { keywords: ['bass', 'graves', 'subwoofer', 'bajo', 'super bass'], icon: 'bi-speaker' },
+  { keywords: ['stereo', 'estereo', 'estéreo', 'sonido'], icon: 'bi-music-note-beamed' },
+  { keywords: ['rgb', 'luz led', 'led', 'iluminacion', 'iluminación', 'luz'], icon: 'bi-lightbulb' },
+  { keywords: ['bateria', 'batería', 'horas', 'duracion', 'duración', 'recargable', 'uso'], icon: 'bi-battery-charging' },
+  { keywords: ['manos libres', 'microfono', 'micrófono'], icon: 'bi-headset' },
+  { keywords: ['usb', 'carga', 'cargador', 'tipo c', 'type-c'], icon: 'bi-usb-c' },
+  { keywords: ['cable', 'cable'], icon: 'bi-plug' },
+  { keywords: ['agua', 'resistente', 'ipx', 'salpicaduras', 'impermeable'], icon: 'bi-droplet' },
+  { keywords: ['control', 'remoto', 'control remoto'], icon: 'bi-controller' },
+  { keywords: ['wifi', 'inalambrico', 'inalámbrico', 'alcance', 'conexion', 'conexión', 'conectividad'], icon: 'bi-wifi' },
+  { keywords: ['longitud', 'medidas', 'dimension', 'dimensiones', 'tamaño'], icon: 'bi-arrows-angle-expand' },
+  { keywords: ['funcion', 'funciones', 'modo', 'modalidad', 'modos'], icon: 'bi-gear' },
+  { keywords: ['potencia', 'watts', 'w', 'voltaje'], icon: 'bi-lightning-charge' },
+  { keywords: ['frecuencia', 'radio', 'fm', 'am'], icon: 'bi-broadcast' },
+  { keywords: ['color', 'colores'], icon: 'bi-palette' },
+  { keywords: ['garantia', 'garantía'], icon: 'bi-shield-check' },
+  { keywords: ['material', 'construccion', 'construcción'], icon: 'bi-box-seam' },
+  { keywords: ['peso'], icon: 'bi-bar-chart-line' },
+  { keywords: ['conector', 'jack', '3.5mm', 'aux', 'hdmi'], icon: 'bi-plug' },
 ];
 
 function getIcon(text) {
-  const lower = text.toLowerCase();
+  const lower = text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   for (const entry of iconMap) {
     if (entry.keywords.some(k => lower.includes(k))) return entry.icon;
   }
   return null;
 }
 
+function decodeHtml(str) {
+  const el = document.createElement('textarea');
+  el.innerHTML = str;
+  return el.value;
+}
+
 function parseDescription(desc) {
   if (!desc) return null;
-  const parts = desc.split(/\s*-\s*/).map(s => s.trim()).filter(Boolean);
-  if (parts.length < 2) return { type: 'text', content: desc };
-  const items = parts.filter(p => !/^[A-Z\s]{4,}$/.test(p));
-  return { type: 'list', items };
+  const raw = decodeHtml(desc);
+  const parts = raw.split(/\s*-\s*/).map(s => s.trim()).filter(Boolean);
+  if (parts.length < 2) return { type: 'text', content: raw };
+  return { type: 'list', items: parts };
 }
 
 function ProductoDetalle() {
@@ -64,6 +80,8 @@ function ProductoDetalle() {
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
+
+  const sinStock = producto && (producto.disponible === false || (producto.stock !== undefined && producto.stock <= 0));
 
   if (loading) {
     return (
@@ -151,13 +169,13 @@ function ProductoDetalle() {
             </p>
           )}
           <div className="mb-3" style={{ marginTop: '-2px' }}>
-            {producto.disponible === false ? (
+            {sinStock ? (
               <span style={{ background: '#fef2f2', color: '#dc2626', fontSize: '0.7rem', fontWeight: 600, padding: '2px 8px', borderRadius: 4 }}>
                 Sin stock
               </span>
             ) : (
               <span style={{ background: '#f0fdf4', color: '#16a34a', fontSize: '0.7rem', fontWeight: 600, padding: '2px 8px', borderRadius: 4 }}>
-                {producto.stock > 0 ? `${producto.stock} en stock` : 'Sin stock'}
+                {producto.stock > 0 ? `${producto.stock} en stock` : 'En stock'}
               </span>
             )}
           </div>
@@ -165,12 +183,11 @@ function ProductoDetalle() {
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
               {descParsed.items.map((item, i) => {
                 const icon = getIcon(item);
+                const iconName = icon || 'bi-dot';
                 return (
-                  <li key={i} style={{ fontSize: '0.95rem', lineHeight: 1.5, color: '#374151' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                      {icon && <span style={{ flexShrink: 0, fontSize: '1rem' }}>{icon}</span>}
-                      {item}
-                    </span>
+                  <li key={i} style={{ fontSize: '0.95rem', lineHeight: 1.5, color: '#374151', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <i className={iconName} style={{ fontSize: '1rem', flexShrink: 0, color: icon ? 'var(--accent)' : '#9ca3af' }}></i>
+                    {item}
                   </li>
                 );
               })}
@@ -181,11 +198,12 @@ function ProductoDetalle() {
           <div className="d-flex flex-wrap gap-2 mt-4">
             <button
               className="btn d-inline-flex align-items-center justify-content-center gap-2"
-              style={{ background: added ? '#198754' : 'var(--accent)', color: '#fff', borderRadius: 8, fontWeight: 600, padding: '0.65rem 1.25rem', fontSize: '0.9rem', border: 'none', transition: 'background 0.15s', flex: '1 1 auto', minWidth: 160 }}
+              style={{ background: sinStock ? '#e5e7eb' : (added ? '#198754' : 'var(--accent)'), color: sinStock ? '#9ca3af' : '#fff', borderRadius: 8, fontWeight: 600, padding: '0.65rem 1.25rem', fontSize: '0.9rem', border: 'none', transition: 'background 0.15s', flex: '1 1 auto', minWidth: 160, cursor: sinStock ? 'not-allowed' : 'pointer' }}
               onClick={handleAddToCart}
+              disabled={sinStock}
             >
-              <i className={`bi ${added ? 'bi-check-lg' : 'bi-cart-plus'}`} style={{ fontSize: '1rem' }}></i>
-              {added ? 'Agregado' : 'Agregar al carrito'}
+              <i className={`bi ${sinStock ? 'bi-cart-x' : (added ? 'bi-check-lg' : 'bi-cart-plus')}`} style={{ fontSize: '1rem' }}></i>
+              {sinStock ? 'Sin stock' : (added ? 'Agregado' : 'Agregar al carrito')}
             </button>
             {whatsapp_number && (
             <a
