@@ -20,6 +20,7 @@ function ProductForm() {
   const [categoriaId, setCategoriaId] = useState('');
   const [disponible, setDisponible] = useState(true);
   const [oferta, setOferta] = useState(false);
+  const [stock, setStock] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState({});
   const [error, setError] = useState('');
@@ -39,6 +40,7 @@ function ProductForm() {
         if (p.categoria_id) setCategoriaId(p.categoria_id);
         if (p.disponible !== undefined) setDisponible(p.disponible);
         if (p.oferta !== undefined) setOferta(p.oferta);
+        if (p.stock !== undefined) setStock(p.stock);
         if (p.imagen) {
           setImagenExistente(p.imagen);
           setPreviews([imageUrl(p.imagen)]);
@@ -98,6 +100,7 @@ function ProductForm() {
     fd.append('precio', form.precio);
     fd.append('disponible', disponible ? '1' : '0');
     fd.append('oferta', oferta ? '1' : '0');
+    fd.append('stock', stock);
     if (categoriaId) fd.append('categoria_id', categoriaId);
     if (imagenes.length > 0) {
       imagenes.forEach(f => fd.append('imagenes', f));
@@ -198,6 +201,17 @@ function ProductForm() {
             <label htmlFor="oferta" className="form-check-label ms-2" style={{ cursor: 'pointer' }}>
               {oferta ? 'En oferta' : 'Sin oferta'}
             </label>
+          </div>
+          <div className="input-group input-group-sm" style={{ width: 110 }}>
+            <span className="input-group-text" style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem' }}>Stock</span>
+            <input
+              type="number"
+              className="form-control"
+              value={stock}
+              onChange={e => setStock(Math.max(0, parseInt(e.target.value) || 0))}
+              min="0"
+              style={{ height: 32, fontSize: '0.85rem' }}
+            />
           </div>
         </div>
         <div className="mb-3">

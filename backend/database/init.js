@@ -46,6 +46,7 @@ async function initDatabase() {
         descripcion TEXT NOT NULL DEFAULT '',
         precio DECIMAL(10,2) NOT NULL DEFAULT 0,
         imagen TEXT,
+        stock INTEGER NOT NULL DEFAULT 0,
         disponible BOOLEAN NOT NULL DEFAULT TRUE,
         oferta BOOLEAN NOT NULL DEFAULT FALSE,
         fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -364,6 +365,19 @@ async function initDatabase() {
           WHERE table_name='productos' AND column_name='oferta'
         ) THEN
           ALTER TABLE productos ADD COLUMN oferta BOOLEAN NOT NULL DEFAULT FALSE;
+        END IF;
+      END $$;
+    `);
+
+    // Migrar columna stock en productos
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='productos' AND column_name='stock'
+        ) THEN
+          ALTER TABLE productos ADD COLUMN stock INTEGER NOT NULL DEFAULT 0;
         END IF;
       END $$;
     `);

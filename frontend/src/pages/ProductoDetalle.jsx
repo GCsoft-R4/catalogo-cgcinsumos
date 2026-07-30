@@ -107,6 +107,13 @@ function ProductoDetalle() {
               ${parseFloat(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
           )}
+          <div className="mb-3">
+            {producto.stock > 0 && (
+              <span className="badge" style={{ background: '#10b981', fontSize: '0.85rem', fontWeight: 600, padding: '0.35rem 0.75rem' }}>
+                <i className="bi bi-check-circle me-1"></i>{producto.stock} en stock
+              </span>
+            )}
+          </div>
           <p className="text-muted" style={{ fontSize: '1.1rem', lineHeight: 1.7 }}>
             {producto.descripcion}
           </p>
