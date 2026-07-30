@@ -19,22 +19,11 @@ function Dashboard() {
   const [total, setTotal] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
-  const [openDropdownId, setOpenDropdownId] = useState(null);
 
   useEffect(() => {
     api.get('/categorias')
       .then(res => setCategorias(res.data.data || []))
       .catch(console.error);
-  }, []);
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (!e.target.closest('.actions-dropdown')) {
-        setOpenDropdownId(null);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
   }, []);
 
   const getSortParam = () => {
@@ -99,10 +88,6 @@ function Dashboard() {
       return { bg: '#fffbeb', color: '#d97706', text: `${p.stock} en stock` };
     }
     return { bg: '#f0fdf4', color: '#16a34a', text: `${p.stock} en stock` };
-  };
-
-  const toggleDropdown = (id) => {
-    setOpenDropdownId(prev => (prev === id ? null : id));
   };
 
   return (
@@ -236,22 +221,21 @@ function Dashboard() {
                         : '-'}
                     </td>
                     <td>
-                      <div className="actions-dropdown">
+                      <div className="d-flex gap-1">
                         <button
-                          className="actions-dropdown-btn"
-                          onClick={() => toggleDropdown(p.id)}
-                          aria-label="Acciones"
+                          className="btn btn-sm btn-outline border-0"
+                          title="Editar"
+                          onClick={() => navigate(`/admin/productos/editar/${p.id}`)}
                         >
-                          <i className="bi bi-three-dots-vertical"></i>
+                          <i className="bi bi-pencil" style={{ color: 'var(--text-secondary)' }}></i>
                         </button>
-                        <div className={`actions-dropdown-menu${openDropdownId === p.id ? ' open' : ''}`}>
-                          <button onClick={() => { setOpenDropdownId(null); navigate(`/admin/productos/editar/${p.id}`); }}>
-                            <i className="bi bi-pencil me-2"></i>Editar
-                          </button>
-                          <button className="text-danger" onClick={() => { setOpenDropdownId(null); setDeleteTarget(p.id); }}>
-                            <i className="bi bi-trash3 me-2"></i>Eliminar
-                          </button>
-                        </div>
+                        <button
+                          className="btn btn-sm btn-outline border-0"
+                          title="Eliminar"
+                          onClick={() => setDeleteTarget(p.id)}
+                        >
+                          <i className="bi bi-trash3" style={{ color: '#dc2626' }}></i>
+                        </button>
                       </div>
                     </td>
                   </tr>
