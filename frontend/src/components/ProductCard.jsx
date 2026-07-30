@@ -85,7 +85,7 @@ function ProductCard({ producto, viewMode = 'grid' }) {
           <div className="d-flex gap-2 mt-2">
             <button
               className="btn d-inline-flex align-items-center justify-content-center gap-1"
-              style={{ background: sinStock ? '#e5e7eb' : (added ? '#198754' : 'var(--accent)'), color: sinStock ? '#9ca3af' : '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem', transition: 'background 0.15s', cursor: sinStock ? 'not-allowed' : 'pointer', border: 'none' }}
+              style={{ background: sinStock ? '#e5e7eb' : (added ? '#198754' : 'var(--accent)'), color: sinStock ? '#9ca3af' : '#fff', borderRadius: 8, fontWeight: 600, fontSize: '0.72rem', padding: '0.25rem 0.65rem', transition: 'background 0.15s', cursor: sinStock ? 'not-allowed' : 'pointer', border: 'none' }}
               onClick={handleAddToCart}
               disabled={sinStock}
             >
@@ -97,7 +97,7 @@ function ProductCard({ producto, viewMode = 'grid' }) {
               target="_blank"
               rel="noopener noreferrer"
               className="btn d-inline-flex align-items-center justify-content-center gap-1"
-              style={{ background: 'transparent', color: '#25D366', border: '1px solid #25D366', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+              style={{ background: 'transparent', color: '#25D366', border: '1px solid #25D366', borderRadius: 8, fontWeight: 600, fontSize: '0.72rem', padding: '0.25rem 0.65rem' }}
               onClick={e => e.stopPropagation()}
             >
               <i className="bi bi-whatsapp" style={{ fontSize: '0.75rem' }}></i>
@@ -156,7 +156,7 @@ function ProductCard({ producto, viewMode = 'grid' }) {
         <div className="d-flex gap-2 mt-2">
           <button
             className="btn flex-grow-1 d-flex align-items-center justify-content-center gap-1"
-            style={{ background: sinStock ? '#e5e7eb' : (added ? '#198754' : 'var(--accent)'), color: sinStock ? '#9ca3af' : '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem', transition: 'background 0.15s', cursor: sinStock ? 'not-allowed' : 'pointer', border: 'none' }}
+            style={{ background: sinStock ? '#e5e7eb' : (added ? '#198754' : 'var(--accent)'), color: sinStock ? '#9ca3af' : '#fff', borderRadius: 8, fontWeight: 600, fontSize: '0.72rem', padding: '0.25rem 0.65rem', transition: 'background 0.15s', cursor: sinStock ? 'not-allowed' : 'pointer', border: 'none' }}
             onClick={handleAddToCart}
             disabled={sinStock}
           >
@@ -168,7 +168,7 @@ function ProductCard({ producto, viewMode = 'grid' }) {
             target="_blank"
             rel="noopener noreferrer"
             className="btn flex-grow-1 d-flex align-items-center justify-content-center gap-1"
-            style={{ background: 'transparent', color: '#25D366', border: '1px solid #25D366', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+            style={{ background: 'transparent', color: '#25D366', border: '1px solid #25D366', borderRadius: 8, fontWeight: 600, fontSize: '0.72rem', padding: '0.25rem 0.65rem' }}
             onClick={e => e.stopPropagation()}
           >
             <i className="bi bi-whatsapp" style={{ fontSize: '0.75rem' }}></i>
