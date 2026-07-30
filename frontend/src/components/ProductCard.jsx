@@ -17,6 +17,7 @@ function ProductCard({ producto, viewMode = 'grid' }) {
   })();
 
   const esOferta = producto.oferta === true;
+  const sinStock = producto.disponible === false || (producto.stock !== undefined && producto.stock <= 0);
 
   const imageUrl = getImgUrl(producto.imagen);
   const precio = producto.precio > 0
@@ -61,6 +62,11 @@ function ProductCard({ producto, viewMode = 'grid' }) {
           {esOferta && (
             <span style={{ position: 'absolute', top: 8, left: esNuevo ? 60 : 8, background: '#fee2e2', color: '#dc2626', fontSize: '0.55rem', fontWeight: 700, padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Oferta</span>
           )}
+          {sinStock && (
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.6)', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ background: '#fef2f2', color: '#dc2626', fontSize: '0.65rem', fontWeight: 700, padding: '4px 14px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Sin stock</span>
+            </div>
+          )}
         </div>
 
         <div className="card-body d-flex flex-column flex-grow-1">
@@ -81,11 +87,12 @@ function ProductCard({ producto, viewMode = 'grid' }) {
           <div className="d-flex gap-2 mt-2">
             <button
               className="btn d-inline-flex align-items-center justify-content-center gap-1"
-              style={{ background: added ? '#198754' : 'var(--accent)', color: '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem', transition: 'background 0.15s' }}
+              style={{ background: sinStock ? '#e5e7eb' : (added ? '#198754' : 'var(--accent)'), color: sinStock ? '#9ca3af' : '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem', transition: 'background 0.15s', cursor: sinStock ? 'not-allowed' : 'pointer', border: 'none' }}
               onClick={handleAddToCart}
+              disabled={sinStock}
             >
-              <i className={`bi ${added ? 'bi-check-lg' : 'bi-cart-plus'}`} style={{ fontSize: '0.75rem' }}></i>
-              {added ? 'Agregado' : 'Agregar'}
+              <i className={`bi ${sinStock ? 'bi-cart-x' : (added ? 'bi-check-lg' : 'bi-cart-plus')}`} style={{ fontSize: '0.75rem' }}></i>
+              {sinStock ? 'Sin stock' : (added ? 'Agregado' : 'Agregar')}
             </button>
             {whatsapp_number && (<a
               href={`https://wa.me/${whatsapp_number}?text=${msg}`}
@@ -121,11 +128,16 @@ function ProductCard({ producto, viewMode = 'grid' }) {
           alt={producto.nombre}
           loading="lazy"
         />
-        {esNuevo && (
-          <span style={{ position: 'absolute', top: 8, left: 8, background: '#d1fae5', color: '#065f46', fontSize: '0.55rem', fontWeight: 700, padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Nuevo</span>
-        )}
+          {esNuevo && (
+            <span style={{ position: 'absolute', top: 8, left: 8, background: '#d1fae5', color: '#065f46', fontSize: '0.55rem', fontWeight: 700, padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Nuevo</span>
+          )}
           {esOferta && (
             <span style={{ position: 'absolute', top: 8, left: esNuevo ? 60 : 8, background: '#fee2e2', color: '#dc2626', fontSize: '0.55rem', fontWeight: 700, padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Oferta</span>
+          )}
+          {sinStock && (
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.6)', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ background: '#fef2f2', color: '#dc2626', fontSize: '0.65rem', fontWeight: 700, padding: '4px 14px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Sin stock</span>
+            </div>
           )}
         </div>
 
@@ -147,11 +159,12 @@ function ProductCard({ producto, viewMode = 'grid' }) {
         <div className="d-flex gap-2 mt-2">
           <button
             className="btn flex-grow-1 d-flex align-items-center justify-content-center gap-1"
-            style={{ background: added ? '#198754' : 'var(--accent)', color: '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem', transition: 'background 0.15s' }}
+            style={{ background: sinStock ? '#e5e7eb' : (added ? '#198754' : 'var(--accent)'), color: sinStock ? '#9ca3af' : '#fff', borderRadius: 5, fontWeight: 600, fontSize: '0.72rem', padding: '0.2rem 0.5rem', transition: 'background 0.15s', cursor: sinStock ? 'not-allowed' : 'pointer', border: 'none' }}
             onClick={handleAddToCart}
+            disabled={sinStock}
           >
-            <i className={`bi ${added ? 'bi-check-lg' : 'bi-cart-plus'}`} style={{ fontSize: '0.75rem' }}></i>
-            {added ? 'Agregado' : 'Agregar'}
+            <i className={`bi ${sinStock ? 'bi-cart-x' : (added ? 'bi-check-lg' : 'bi-cart-plus')}`} style={{ fontSize: '0.75rem' }}></i>
+            {sinStock ? 'Sin stock' : (added ? 'Agregado' : 'Agregar')}
           </button>
           {whatsapp_number && (<a
             href={`https://wa.me/${whatsapp_number}?text=${msg}`}
