@@ -54,7 +54,7 @@ function ProductCard({ producto, viewMode = 'grid' }) {
             className="h-100 w-100"
             alt={producto.nombre}
             loading="lazy"
-            style={{ objectFit: 'contain', background: '#f8f9fa', padding: 2 }}
+            style={{ objectFit: 'contain', background: '#f8f9fa', padding: 2, filter: sinStock ? 'grayscale(1)' : 'none', opacity: sinStock ? 0.6 : 1 }}
           />
           {esNuevo && (
             <span style={{ position: 'absolute', top: 8, left: 8, background: '#d1fae5', color: '#065f46', fontSize: '0.55rem', fontWeight: 700, padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Nuevo</span>
@@ -63,9 +63,7 @@ function ProductCard({ producto, viewMode = 'grid' }) {
             <span style={{ position: 'absolute', top: 8, left: esNuevo ? 60 : 8, background: '#fee2e2', color: '#dc2626', fontSize: '0.55rem', fontWeight: 700, padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Oferta</span>
           )}
           {sinStock && (
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.6)', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ background: '#fef2f2', color: '#dc2626', fontSize: '0.65rem', fontWeight: 700, padding: '4px 14px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Sin stock</span>
-            </div>
+            <span style={{ position: 'absolute', top: 8, left: esOferta ? 116 : (esNuevo ? 60 : 8), background: '#fef2f2', color: '#dc2626', fontSize: '0.55rem', fontWeight: 700, padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Sin stock</span>
           )}
         </div>
 
@@ -127,6 +125,7 @@ function ProductCard({ producto, viewMode = 'grid' }) {
           className="card-img-top"
           alt={producto.nombre}
           loading="lazy"
+          style={{ filter: sinStock ? 'grayscale(1)' : 'none', opacity: sinStock ? 0.6 : 1 }}
         />
           {esNuevo && (
             <span style={{ position: 'absolute', top: 8, left: 8, background: '#d1fae5', color: '#065f46', fontSize: '0.55rem', fontWeight: 700, padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Nuevo</span>
@@ -135,9 +134,7 @@ function ProductCard({ producto, viewMode = 'grid' }) {
             <span style={{ position: 'absolute', top: 8, left: esNuevo ? 60 : 8, background: '#fee2e2', color: '#dc2626', fontSize: '0.55rem', fontWeight: 700, padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Oferta</span>
           )}
           {sinStock && (
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.6)', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ background: '#fef2f2', color: '#dc2626', fontSize: '0.65rem', fontWeight: 700, padding: '4px 14px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Sin stock</span>
-            </div>
+            <span style={{ position: 'absolute', top: 8, left: esOferta ? 116 : (esNuevo ? 60 : 8), background: '#fef2f2', color: '#dc2626', fontSize: '0.55rem', fontWeight: 700, padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.04em', zIndex: 2 }}>Sin stock</span>
           )}
         </div>
 
