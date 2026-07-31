@@ -12,6 +12,17 @@ function formatPrecio(precio) {
     : '-';
 }
 
+export async function descargarPlantillaProductos() {
+  const XLSX = await import('xlsx');
+  const ws = XLSX.utils.json_to_sheet([
+    { Nombre: 'Ejemplo Parlante BT', Categoría: 'Audio', Precio: 15000, Stock: 10, Disponible: 'Si', Oferta: 'No', Descripción: 'Bluetooth - 50H de batería' }
+  ]);
+  ws['!cols'] = [{ wch: 35 }, { wch: 18 }, { wch: 12 }, { wch: 8 }, { wch: 12 }, { wch: 8 }, { wch: 60 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Productos');
+  XLSX.writeFile(wb, 'plantilla_productos.xlsx');
+}
+
 export function exportarExcel(productos) {
   const rows = productos.map(p => ({
     Nombre: p.nombre,

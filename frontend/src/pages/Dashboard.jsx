@@ -24,6 +24,7 @@ function Dashboard() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [importModal, setImportModal] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
 
   useEffect(() => {
@@ -199,13 +200,47 @@ function Dashboard() {
               </>
             )}
           </div>
-          <button
-            className="btn btn-sm btn-outline"
-            onClick={() => setImportOpen(true)}
-            title="Importar productos desde Excel"
-          >
-            <i className="bi bi-file-earmark-arrow-up me-1" style={{ color: '#16a34a' }}></i>Importar
-          </button>
+          <div className="position-relative">
+            <button
+              className="btn btn-sm btn-outline d-inline-flex align-items-center gap-1"
+              onClick={() => setImportOpen(o => !o)}
+              title="Importar productos"
+            >
+              <i className="bi bi-file-earmark-arrow-up" style={{ color: '#16a34a' }}></i>
+              Importar
+              <i className="bi bi-chevron-down" style={{ fontSize: '0.7rem' }}></i>
+            </button>
+            {importOpen && (
+              <>
+                <div
+                  className="position-fixed top-0 start-0 w-100 h-100"
+                  style={{ zIndex: 1049 }}
+                  onClick={() => setImportOpen(false)}
+                />
+                <div
+                  className="position-absolute end-0 mt-1 py-1"
+                  style={{ zIndex: 1050, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8, minWidth: 220, boxShadow: '0 4px 14px rgba(0,0,0,0.12)' }}
+                >
+                  <button
+                    className="btn d-flex align-items-center gap-2 w-100 text-start"
+                    style={{ borderRadius: 0, fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+                    onClick={() => { setImportOpen(false); setImportModal(true); }}
+                  >
+                    <i className="bi bi-file-earmark-excel" style={{ color: '#16a34a', fontSize: '1rem' }}></i>
+                    Importar desde Excel
+                  </button>
+                  <button
+                    className="btn d-flex align-items-center gap-2 w-100 text-start"
+                    style={{ borderRadius: 0, fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+                    onClick={() => { setImportOpen(false); import('../services/exportarCatalogo').then(m => m.descargarPlantillaProductos()); }}
+                  >
+                    <i className="bi bi-download" style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}></i>
+                    Descargar plantilla
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
           <button className="btn btn-accent flex-shrink-0" onClick={() => navigate('/admin/productos/nuevo')}>
             <i className="bi bi-plus-lg me-1"></i>Nuevo
           </button>
@@ -360,8 +395,8 @@ function Dashboard() {
         loading={deleting}
       />
       <ImportModal
-        show={importOpen}
-        onClose={() => setImportOpen(false)}
+        show={importModal}
+        onClose={() => setImportModal(false)}
         onImported={() => { setPage(1); fetchProductos(); }}
       />
     </div>

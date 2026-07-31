@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import api from '../services/api';
+import { descargarPlantillaProductos } from '../services/exportarCatalogo';
 
 function normalizarHeader(h) {
   const s = String(h || '').toLowerCase().trim();
@@ -58,16 +59,7 @@ function ImportModal({ show, onClose, onImported }) {
     }
   };
 
-  const descargarPlantilla = async () => {
-    const XLSX = await import('xlsx');
-    const ws = XLSX.utils.json_to_sheet([
-      { Nombre: 'Ejemplo Parlante BT', Categoría: 'Audio', Precio: 15000, Stock: 10, Disponible: 'Si', Oferta: 'No', Descripción: 'Bluetooth - 50H de batería' }
-    ]);
-    ws['!cols'] = [{ wch: 35 }, { wch: 18 }, { wch: 12 }, { wch: 8 }, { wch: 12 }, { wch: 8 }, { wch: 60 }];
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Productos');
-    XLSX.writeFile(wb, 'plantilla_productos.xlsx');
-  };
+  const descargarPlantilla = descargarPlantillaProductos;
 
   const handleImport = async () => {
     setImporting(true);
