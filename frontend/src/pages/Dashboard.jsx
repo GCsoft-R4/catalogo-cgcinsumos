@@ -5,6 +5,7 @@ import ConfirmModal from '../components/ConfirmModal';
 import ImportModal from '../components/ImportModal';
 import SEOHead from '../components/SEOHead';
 import { useConfig } from '../context/ConfigContext';
+import { Upload, Download, FileSpreadsheet, FileText, ArrowUp, ArrowDown } from 'lucide-react';
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -163,9 +164,9 @@ function Dashboard() {
               disabled={!!exporting}
               title="Exportar catálogo"
             >
-              <i className="bi bi-download"></i>
+              <Upload size={16} strokeWidth={2} />
               {exporting ? 'Exportando...' : 'Exportar'}
-              <i className="bi bi-chevron-up" style={{ fontSize: '0.7rem' }}></i>
+              <ArrowUp size={12} strokeWidth={2} />
             </button>
             {exportOpen && (
               <>
@@ -176,7 +177,7 @@ function Dashboard() {
                 />
                 <div
                   className="position-absolute end-0 mt-1 py-1"
-                  style={{ zIndex: 1050, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8, minWidth: 190, boxShadow: '0 4px 14px rgba(0,0,0,0.12)' }}
+                  style={{ zIndex: 1050, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8, minWidth: 210, boxShadow: '0 4px 14px rgba(0,0,0,0.12)' }}
                 >
                   <button
                     className="btn d-flex align-items-center gap-2 w-100 text-start"
@@ -184,7 +185,7 @@ function Dashboard() {
                     onClick={() => { setExportOpen(false); handleExport('excel'); }}
                     disabled={!!exporting}
                   >
-                    <i className="bi bi-file-earmark-excel" style={{ color: '#16a34a', fontSize: '1rem' }}></i>
+                    <FileSpreadsheet size={16} strokeWidth={2} style={{ color: '#16a34a' }} />
                     Excel
                   </button>
                   <button
@@ -193,8 +194,17 @@ function Dashboard() {
                     onClick={() => { setExportOpen(false); handleExport('pdf'); }}
                     disabled={!!exporting}
                   >
-                    <i className="bi bi-file-earmark-pdf" style={{ color: '#dc2626', fontSize: '1rem' }}></i>
+                    <FileText size={16} strokeWidth={2} style={{ color: '#dc2626' }} />
                     PDF
+                  </button>
+                  <div className="my-1" style={{ borderTop: '1px solid var(--border)' }}></div>
+                  <button
+                    className="btn d-flex align-items-center gap-2 w-100 text-start"
+                    style={{ borderRadius: 0, fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+                    onClick={() => { setExportOpen(false); import('../services/exportarCatalogo').then(m => m.descargarPlantillaProductos()); }}
+                  >
+                    <Download size={16} strokeWidth={2} style={{ color: 'var(--text-secondary)' }} />
+                    Descargar plantilla
                   </button>
                 </div>
               </>
@@ -206,9 +216,9 @@ function Dashboard() {
               onClick={() => setImportOpen(o => !o)}
               title="Importar productos"
             >
-              <i className="bi bi-file-earmark-arrow-up" style={{ color: '#16a34a' }}></i>
+              <Download size={16} strokeWidth={2} />
               Importar
-              <i className="bi bi-chevron-down" style={{ fontSize: '0.7rem' }}></i>
+              <ArrowDown size={12} strokeWidth={2} />
             </button>
             {importOpen && (
               <>
@@ -219,23 +229,15 @@ function Dashboard() {
                 />
                 <div
                   className="position-absolute end-0 mt-1 py-1"
-                  style={{ zIndex: 1050, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8, minWidth: 220, boxShadow: '0 4px 14px rgba(0,0,0,0.12)' }}
+                  style={{ zIndex: 1050, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8, minWidth: 210, boxShadow: '0 4px 14px rgba(0,0,0,0.12)' }}
                 >
                   <button
                     className="btn d-flex align-items-center gap-2 w-100 text-start"
                     style={{ borderRadius: 0, fontSize: '0.875rem', padding: '0.5rem 1rem' }}
                     onClick={() => { setImportOpen(false); setImportModal(true); }}
                   >
-                    <i className="bi bi-file-earmark-excel" style={{ color: '#16a34a', fontSize: '1rem' }}></i>
+                    <FileSpreadsheet size={16} strokeWidth={2} style={{ color: '#16a34a' }} />
                     Importar desde Excel
-                  </button>
-                  <button
-                    className="btn d-flex align-items-center gap-2 w-100 text-start"
-                    style={{ borderRadius: 0, fontSize: '0.875rem', padding: '0.5rem 1rem' }}
-                    onClick={() => { setImportOpen(false); import('../services/exportarCatalogo').then(m => m.descargarPlantillaProductos()); }}
-                  >
-                    <i className="bi bi-download" style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}></i>
-                    Descargar plantilla
                   </button>
                 </div>
               </>
