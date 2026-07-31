@@ -153,7 +153,7 @@ function Dashboard() {
             ))}
           </select>
         </div>
-        <div className="d-flex gap-2 flex-shrink-0">
+        <div className="d-flex gap-2 flex-shrink-0 flex-wrap">
           <button
             className="btn btn-sm btn-outline"
             onClick={() => handleExport('excel')}
@@ -170,6 +170,13 @@ function Dashboard() {
           >
             <i className="bi bi-file-earmark-pdf me-1"></i>{exporting === 'pdf' ? 'Exportando...' : 'PDF'}
           </button>
+          <button
+            className="btn btn-sm btn-outline"
+            onClick={() => setImportOpen(true)}
+            title="Importar productos desde Excel"
+          >
+            <i className="bi bi-file-earmark-arrow-up me-1" style={{ color: '#16a34a' }}></i>Importar
+          </button>
           <button className="btn btn-accent flex-shrink-0" onClick={() => navigate('/admin/productos/nuevo')}>
             <i className="bi bi-plus-lg me-1"></i>Nuevo
           </button>
@@ -177,9 +184,6 @@ function Dashboard() {
       </div>
 
       <div className="d-flex flex-wrap gap-2 mb-3 align-items-center">
-        <button className="btn btn-sm btn-outline" onClick={() => setImportOpen(true)} title="Importar productos desde Excel">
-          <i className="bi bi-file-earmark-excel me-1" style={{ color: '#16a34a' }}></i>Importar
-        </button>
         <div className="d-flex gap-2 ms-sm-auto">
         <span
           className={`filter-chip${stockFilter === 'bajo' ? ' active' : ''}`}
