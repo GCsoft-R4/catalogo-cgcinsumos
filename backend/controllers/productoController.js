@@ -114,6 +114,16 @@ async function getById(req, res) {
     );
     producto.imagenes = imagenes.rows.map(r => r.filename);
 
+    const todas = req.query.todas === '1';
+    const colores = await pool.query(
+      `SELECT id, nombre, hex, imagen, disponible
+       FROM producto_colores
+       WHERE producto_id = $1${todas ? '' : ' AND disponible = true'}
+       ORDER BY orden, id`,
+      [req.params.id]
+    );
+    producto.colores = colores.rows;
+
     res.json({ ok: true, data: producto });
 
   } catch (error) {
@@ -124,7 +134,7 @@ async function getById(req, res) {
 async function create(req, res) {
   try {
     const tenantId = req.user?.tenant_id || req.tenant?.id;
-    const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id, disponible, oferta, stock } = req.body;
+    const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id, disponible, oferta, stock, colores } = req.body;
 
     let imagen = null;
     let files = [];
@@ -171,6 +181,18 @@ async function create(req, res) {
         'INSERT INTO producto_imagenes (producto_id, filename, orden) VALUES ($1, $2, $3)',
         [producto.id, todasLasImagenes[i], i]
       );
+    }
+
+    if (colores) {
+      const lista = JSON.parse(colores);
+      for (let i = 0; i < lista.length; i++) {
+        const c = lista[i];
+        await pool.query(
+          `INSERT INTO producto_colores (producto_id, nombre, hex, imagen, disponible, orden)
+           VALUES ($1, $2, $3, $4, $5, $6)`,
+          [producto.id, c.nombre, c.hex || '#000000', c.imagen || null, c.disponible !== false, i]
+        );
+      }
     }
 
     res.status(201).json({
@@ -282,7 +304,7 @@ async function importar(req, res) {
 async function update(req, res) {
   try {
     const tenantId = req.user?.tenant_id || req.tenant?.id;
-    const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id, disponible, oferta, stock } = req.body;
+    const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id, disponible, oferta, stock, colores } = req.body;
 
     const existing = await pool.query(
       'SELECT * FROM productos WHERE id = $1 AND tenant_id = $2',
@@ -351,6 +373,19 @@ async function update(req, res) {
         await pool.query(
           'INSERT INTO producto_imagenes (producto_id, filename, orden) VALUES ($1, $2, $3)',
           [req.params.id, todasLasImagenes[i], i]
+        );
+      }
+    }
+
+    if (colores !== undefined) {
+      await pool.query('DELETE FROM producto_colores WHERE producto_id = $1', [req.params.id]);
+      const lista = JSON.parse(colores);
+      for (let i = 0; i < lista.length; i++) {
+        const c = lista[i];
+        await pool.query(
+          `INSERT INTO producto_colores (producto_id, nombre, hex, imagen, disponible, orden)
+           VALUES ($1, $2, $3, $4, $5, $6)`,
+          [req.params.id, c.nombre, c.hex || '#000000', c.imagen || null, c.disponible !== false, i]
         );
       }
     }

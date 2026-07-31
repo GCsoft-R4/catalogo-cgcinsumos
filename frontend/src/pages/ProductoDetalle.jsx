@@ -59,12 +59,14 @@ function ProductoDetalle() {
   const [loading, setLoading] = useState(true);
   const [selectedImg, setSelectedImg] = useState('');
   const [added, setAdded] = useState(false);
+  const [colorActivo, setColorActivo] = useState(null);
 
   useEffect(() => {
     api.get(`/productos/${id}`)
       .then(res => {
         const p = res.data.data;
         setProducto(p);
+        setColorActivo(null);
         if (p.imagenes?.length) {
           setSelectedImg(p.imagenes[0]);
         } else if (p.imagen) {
@@ -74,6 +76,11 @@ function ProductoDetalle() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [id]);
+
+  const seleccionarColor = color => {
+    setColorActivo(color.id);
+    if (color.imagen) setSelectedImg(color.imagen);
+  };
 
   const handleAddToCart = () => {
     addItem(producto);
@@ -179,6 +186,36 @@ function ProductoDetalle() {
               </span>
             )}
           </div>
+          {producto.colores?.length > 0 && (
+            <div className="mb-4">
+              <p className="small mb-2 fw-semibold" style={{ color: 'var(--text-secondary)' }}>
+                {colorActivo ? `Color: ${producto.colores.find(c => c.id === colorActivo)?.nombre || ''}` : 'Color:'}
+              </p>
+              <div className="d-flex flex-wrap gap-2">
+                {producto.colores.map(color => (
+                  <button
+                    key={color.id}
+                    type="button"
+                    className="border rounded-circle p-0"
+                    style={{
+                      width: 34,
+                      height: 34,
+                      background: /^#[0-9a-fA-F]{6}$/.test(color.hex) ? color.hex : '#000000',
+                      borderWidth: color.id === colorActivo ? 3 : 1,
+                      borderColor: color.id === colorActivo ? 'var(--accent)' : 'var(--border)',
+                      boxShadow: color.id === colorActivo ? '0 0 0 3px rgba(0,0,0,0.08)' : 'none',
+                      cursor: 'pointer',
+                      transition: 'border-color 0.15s, box-shadow 0.15s',
+                      transform: color.id === colorActivo ? 'scale(1.1)' : 'none',
+                    }}
+                    onClick={() => seleccionarColor(color)}
+                    title={color.nombre}
+                    aria-label={`Color ${color.nombre}`}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
           {descParsed && descParsed.type === 'list' ? (
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
               {descParsed.items.map((item, i) => {

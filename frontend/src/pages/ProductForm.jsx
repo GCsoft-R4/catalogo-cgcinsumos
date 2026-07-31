@@ -23,6 +23,7 @@ function ProductForm() {
   const [stock, setStock] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState({});
+  const [colores, setColores] = useState([]);
   const [error, setError] = useState('');
   const fileRef = useRef(null);
 
@@ -33,7 +34,7 @@ function ProductForm() {
 
   useEffect(() => {
     if (!isEdit) return;
-    api.get(`/productos/${id}`)
+    api.get(`/productos/${id}?todas=1`)
       .then(res => {
         const p = res.data.data;
         setForm({ nombre: p.nombre, descripcion: p.descripcion, precio: p.precio || '' });
@@ -48,6 +49,7 @@ function ProductForm() {
         if (p.imagenes?.length) {
           setGaleria(p.imagenes.filter(f => f !== p.imagen));
         }
+        if (p.colores) setColores(p.colores);
       })
       .catch(() => navigate('/admin/productos'))
       .finally(() => setFetching(false));
@@ -116,6 +118,9 @@ function ProductForm() {
     if (todasGaleria.length > 0) {
       fd.append('galeria', JSON.stringify(todasGaleria));
     }
+    if (colores.length > 0) {
+      fd.append('colores', JSON.stringify(colores));
+    }
 
     try {
       setError('');
@@ -134,6 +139,18 @@ function ProductForm() {
   };
 
   const previewUrl = previews.length > 0 ? previews[0] : null;
+
+  const agregarColor = () => {
+    setColores(prev => [...prev, { nombre: '', hex: '#000000', imagen: '', disponible: true }]);
+  };
+
+  const actualizarColor = (idx, campo, valor) => {
+    setColores(prev => prev.map((c, i) => i === idx ? { ...c, [campo]: valor } : c));
+  };
+
+  const eliminarColor = idx => {
+    setColores(prev => prev.filter((_, i) => i !== idx));
+  };
 
   if (fetching) {
     return (
@@ -326,6 +343,90 @@ function ProductForm() {
                 </div>
               ));
             })()}
+          </div>
+        </div>
+
+        <div className="card mb-4" style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)' }}>
+          <div className="card-body">
+            <div className="d-flex align-items-center justify-content-between mb-3">
+              <h5 className="card-title mb-0" style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                <i className="bi bi-palette me-2"></i>Colores
+              </h5>
+              <button type="button" className="btn btn-sm btn-outline" onClick={agregarColor}>
+                <i className="bi bi-plus-lg me-1"></i>Agregar color
+              </button>
+            </div>
+            {colores.length === 0 && (
+              <p className="small mb-0" style={{ color: 'var(--text-secondary)' }}>Sin colores cargados. Agregá un color para mostrarlo en el detalle del producto.</p>
+            )}
+            {colores.map((c, idx) => (
+              <div key={idx} className="border rounded p-2 mb-2" style={{ background: '#fafafa' }}>
+                <div className="row g-2 align-items-center">
+                  <div className="col-2 col-sm-1" style={{ maxWidth: 52 }}>
+                    <input
+                      type="color"
+                      className="form-control form-control-color"
+                      style={{ width: 40, height: 40, cursor: 'pointer' }}
+                      value={/^#[0-9a-fA-F]{6}$/.test(c.hex) ? c.hex : '#000000'}
+                      onChange={e => actualizarColor(idx, 'hex', e.target.value)}
+                      title="Color"
+                    />
+                  </div>
+                  <div className="col">
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      placeholder="Nombre del color (ej: Rojo, Negro)"
+                      value={c.nombre}
+                      onChange={e => actualizarColor(idx, 'nombre', e.target.value)}
+                    />
+                  </div>
+                  <div className="col-12 col-md-3">
+                    <select
+                      className="form-select form-select-sm"
+                      value={c.imagen || ''}
+                      onChange={e => actualizarColor(idx, 'imagen', e.target.value)}
+                    >
+                      <option value="">Usar imagen principal</option>
+                      {allImages.map(img => (
+                        <option key={img.name} value={img.name}>{img.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-auto d-flex align-items-center gap-2">
+                    <div className="form-check form-switch mb-0">
+                      <input
+                        type="checkbox"
+                        id={`color-disponible-${idx}`}
+                        className="form-check-input"
+                        role="switch"
+                        checked={c.disponible !== false}
+                        onChange={e => actualizarColor(idx, 'disponible', e.target.checked)}
+                      />
+                      <label htmlFor={`color-disponible-${idx}`} className="form-check-label ms-1" style={{ fontSize: '0.8rem', cursor: 'pointer' }}>
+                        {c.disponible !== false ? 'Visible' : 'Sin stock'}
+                      </label>
+                    </div>
+                    <button type="button" className="btn btn-sm btn-outline-danger" style={{ padding: '0.2rem 0.5rem' }} onClick={() => eliminarColor(idx)}>
+                      <i className="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </div>
+                <div className="row g-2 mt-1 align-items-center">
+                  <div className="col-4 col-sm-2">
+                    <div
+                      className="border rounded"
+                      style={{ width: '100%', aspectRatio: '1', background: /^#[0-9a-fA-F]{6}$/.test(c.hex) ? c.hex : '#000000' }}
+                    />
+                  </div>
+                  <div className="col">
+                    <span className="small" style={{ color: 'var(--text-secondary)' }}>
+                      {c.hex} · {c.imagen ? `Imagen propia: ${c.imagen}` : 'Usa la imagen principal'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
