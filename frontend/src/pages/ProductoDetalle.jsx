@@ -245,7 +245,7 @@ function ProductoDetalle() {
             {whatsapp_number && (
             <a
               href={`https://wa.me/${whatsapp_number}?text=${encodeURIComponent(
-                `Hola, me interesa ${producto.nombre}${producto.precio > 0 ? ` ($${parseFloat(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})` : ''}`
+                `Hola, me interesa ${producto.nombre}${colorActivo && producto.colores?.length ? ` en color ${producto.colores.find(c => c.id === colorActivo)?.nombre || ''}`.trim() : ''}${producto.precio > 0 ? ` ($${parseFloat(producto.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})` : ''}`
               )}`}
               target="_blank"
               rel="noopener noreferrer"
