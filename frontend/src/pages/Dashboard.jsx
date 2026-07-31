@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import api, { imageUrl } from '../services/api';
 import ConfirmModal from '../components/ConfirmModal';
 import SEOHead from '../components/SEOHead';
+import { useConfig } from '../context/ConfigContext';
 
 function Dashboard() {
   const navigate = useNavigate();
+  const config = useConfig();
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(null);
   const [search, setSearch] = useState('');
   const [categoria, setCategoria] = useState('');
   const [stockFilter, setStockFilter] = useState('');
@@ -78,6 +81,27 @@ function Dashboard() {
     }
   };
 
+  const handleExport = async (formato) => {
+    setExporting(formato);
+    try {
+      const params = { page: 1, limit: 10000 };
+      if (search.trim()) params.search = search.trim();
+      if (categoria) params.categoria = categoria;
+      const res = await api.get('/productos', { params });
+      const data = res.data.data || [];
+      const { exportarExcel, exportarPdf } = await import('../services/exportarCatalogo');
+      if (formato === 'excel') {
+        exportarExcel(data);
+      } else {
+        exportarPdf(data, config);
+      }
+    } catch (err) {
+      console.error('Error al exportar:', err);
+    } finally {
+      setExporting(null);
+    }
+  };
+
   const sinStock = p => p.disponible === false || (p.stock !== undefined && p.stock <= 0);
 
   const stockBadge = (p) => {
@@ -126,9 +150,27 @@ function Dashboard() {
             ))}
           </select>
         </div>
-        <button className="btn btn-accent flex-shrink-0" onClick={() => navigate('/admin/productos/nuevo')}>
-          <i className="bi bi-plus-lg me-1"></i>Nuevo
-        </button>
+        <div className="d-flex gap-2 flex-shrink-0">
+          <button
+            className="btn btn-sm btn-outline"
+            onClick={() => handleExport('excel')}
+            disabled={!!exporting}
+            title="Descargar catálogo en Excel"
+          >
+            <i className="bi bi-file-earmark-excel me-1"></i>{exporting === 'excel' ? 'Exportando...' : 'Excel'}
+          </button>
+          <button
+            className="btn btn-sm btn-outline"
+            onClick={() => handleExport('pdf')}
+            disabled={!!exporting}
+            title="Descargar catálogo en PDF"
+          >
+            <i className="bi bi-file-earmark-pdf me-1"></i>{exporting === 'pdf' ? 'Exportando...' : 'PDF'}
+          </button>
+          <button className="btn btn-accent flex-shrink-0" onClick={() => navigate('/admin/productos/nuevo')}>
+            <i className="bi bi-plus-lg me-1"></i>Nuevo
+          </button>
+        </div>
       </div>
 
       <div className="d-flex gap-2 mb-3">
