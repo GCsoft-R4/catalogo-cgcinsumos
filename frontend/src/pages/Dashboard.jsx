@@ -24,6 +24,7 @@ function Dashboard() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
 
   useEffect(() => {
     api.get('/categorias')
@@ -153,23 +154,51 @@ function Dashboard() {
             ))}
           </select>
         </div>
-        <div className="d-flex gap-2 flex-shrink-0 flex-wrap">
-          <button
-            className="btn btn-sm btn-outline"
-            onClick={() => handleExport('excel')}
-            disabled={!!exporting}
-            title="Descargar catálogo en Excel"
-          >
-            <i className="bi bi-file-earmark-excel me-1"></i>{exporting === 'excel' ? 'Exportando...' : 'Excel'}
-          </button>
-          <button
-            className="btn btn-sm btn-outline"
-            onClick={() => handleExport('pdf')}
-            disabled={!!exporting}
-            title="Descargar catálogo en PDF"
-          >
-            <i className="bi bi-file-earmark-pdf me-1"></i>{exporting === 'pdf' ? 'Exportando...' : 'PDF'}
-          </button>
+        <div className="d-flex gap-2 flex-shrink-0 flex-wrap align-items-center">
+          <div className="position-relative">
+            <button
+              className="btn btn-sm btn-outline d-inline-flex align-items-center gap-1"
+              onClick={() => setExportOpen(o => !o)}
+              disabled={!!exporting}
+              title="Exportar catálogo"
+            >
+              <i className="bi bi-download"></i>
+              {exporting ? 'Exportando...' : 'Exportar'}
+              <i className="bi bi-chevron-down" style={{ fontSize: '0.7rem' }}></i>
+            </button>
+            {exportOpen && (
+              <>
+                <div
+                  className="position-fixed top-0 start-0 w-100 h-100"
+                  style={{ zIndex: 1049 }}
+                  onClick={() => setExportOpen(false)}
+                />
+                <div
+                  className="position-absolute end-0 mt-1 py-1"
+                  style={{ zIndex: 1050, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8, minWidth: 190, boxShadow: '0 4px 14px rgba(0,0,0,0.12)' }}
+                >
+                  <button
+                    className="btn d-flex align-items-center gap-2 w-100 text-start"
+                    style={{ borderRadius: 0, fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+                    onClick={() => { setExportOpen(false); handleExport('excel'); }}
+                    disabled={!!exporting}
+                  >
+                    <i className="bi bi-file-earmark-excel" style={{ color: '#16a34a', fontSize: '1rem' }}></i>
+                    Excel
+                  </button>
+                  <button
+                    className="btn d-flex align-items-center gap-2 w-100 text-start"
+                    style={{ borderRadius: 0, fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+                    onClick={() => { setExportOpen(false); handleExport('pdf'); }}
+                    disabled={!!exporting}
+                  >
+                    <i className="bi bi-file-earmark-pdf" style={{ color: '#dc2626', fontSize: '1rem' }}></i>
+                    PDF
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
           <button
             className="btn btn-sm btn-outline"
             onClick={() => setImportOpen(true)}
