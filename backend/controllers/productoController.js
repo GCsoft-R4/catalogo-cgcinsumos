@@ -183,6 +183,102 @@ async function create(req, res) {
   }
 }
 
+async function importar(req, res) {
+  let client;
+  try {
+    const tenantId = req.user?.tenant_id || req.tenant?.id;
+    const { productos } = req.body;
+
+    if (!Array.isArray(productos) || productos.length === 0) {
+      return res.status(400).json({ ok: false, error: 'No se recibieron productos para importar' });
+    }
+    if (productos.length > 1000) {
+      return res.status(400).json({ ok: false, error: 'El máximo permitido es 1000 productos por importación' });
+    }
+
+    const cats = await pool.query(
+      'SELECT id, nombre, slug FROM categorias WHERE tenant_id = $1',
+      [tenantId]
+    );
+    const catMap = {};
+    cats.rows.forEach(c => {
+      catMap[c.nombre.toLowerCase().trim()] = c.id;
+      catMap[c.slug.toLowerCase()] = c.id;
+    });
+
+    const parseBool = (v, dflt = false) => {
+      if (v === undefined || v === null || v === '') return dflt;
+      if (typeof v === 'boolean') return v;
+      const s = String(v).toLowerCase().trim();
+      if (['si', 'sí', '1', 'true', 'verdadero'].includes(s)) return true;
+      if (['no', '0', 'false', 'falso'].includes(s)) return false;
+      return dflt;
+    };
+    const parseNum = (v) => {
+      if (v === undefined || v === null || v === '') return 0;
+      const n = parseFloat(String(v).replace(/[^\d.-]/g, ''));
+      return isNaN(n) ? 0 : n;
+    };
+
+    client = await pool.connect();
+    await client.query('BEGIN');
+
+    const errores = [];
+    let creados = 0;
+
+    for (let i = 0; i < productos.length; i++) {
+      const item = productos[i];
+      const fila = i + 2;
+      const nombre = String(item.nombre || '').trim();
+
+      if (!nombre) {
+        errores.push(`Fila ${fila}: falta el nombre`);
+        continue;
+      }
+      if (nombre.length > 255) {
+        errores.push(`Fila ${fila}: el nombre excede 255 caracteres`);
+        continue;
+      }
+
+      const catId = item.categoria ? (catMap[String(item.categoria).toLowerCase().trim()] ?? null) : null;
+      const precio = parseNum(item.precio);
+      const stock = Math.max(0, Math.round(parseNum(item.stock)));
+
+      await client.query(
+        `INSERT INTO productos (tenant_id, nombre, descripcion, precio, imagen, categoria_id, disponible, oferta, stock)
+         VALUES ($1, $2, $3, $4, NULL, $5, $6, $7, $8)`,
+        [
+          tenantId,
+          nombre,
+          String(item.descripcion || '').slice(0, 500),
+          precio,
+          catId,
+          parseBool(item.disponible, true),
+          parseBool(item.oferta, false),
+          stock
+        ]
+      );
+      creados++;
+    }
+
+    await client.query('COMMIT');
+
+    res.json({
+      ok: true,
+      data: {
+        creados,
+        errores,
+        total: productos.length
+      }
+    });
+  } catch (error) {
+    if (client) await client.query('ROLLBACK');
+    res.status(500).json({ ok: false, error: error.message });
+  } finally {
+    if (client) client.release();
+  }
+}
+
 async function update(req, res) {
   try {
     const tenantId = req.user?.tenant_id || req.tenant?.id;
@@ -319,6 +415,7 @@ module.exports = {
   getAll,
   getById,
   create,
+  importar,
   update,
   remove,
   uploadImage

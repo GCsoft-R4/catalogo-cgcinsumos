@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api, { imageUrl } from '../services/api';
 import ConfirmModal from '../components/ConfirmModal';
+import ImportModal from '../components/ImportModal';
 import SEOHead from '../components/SEOHead';
 import { useConfig } from '../context/ConfigContext';
 
@@ -22,6 +23,7 @@ function Dashboard() {
   const [total, setTotal] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
 
   useEffect(() => {
     api.get('/categorias')
@@ -87,6 +89,7 @@ function Dashboard() {
       const params = { page: 1, limit: 10000 };
       if (search.trim()) params.search = search.trim();
       if (categoria) params.categoria = categoria;
+      if (stockFilter) params.stock = stockFilter;
       const res = await api.get('/productos', { params });
       const data = res.data.data || [];
       const { exportarExcel, exportarPdf } = await import('../services/exportarCatalogo');
@@ -173,7 +176,11 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="d-flex gap-2 mb-3">
+      <div className="d-flex flex-wrap gap-2 mb-3 align-items-center">
+        <button className="btn btn-sm btn-outline" onClick={() => setImportOpen(true)} title="Importar productos desde Excel">
+          <i className="bi bi-file-earmark-excel me-1" style={{ color: '#16a34a' }}></i>Importar
+        </button>
+        <div className="d-flex gap-2 ms-sm-auto">
         <span
           className={`filter-chip${stockFilter === 'bajo' ? ' active' : ''}`}
           onClick={() => { setStockFilter(f => (f === 'bajo' ? '' : 'bajo')); setPage(1); }}
@@ -188,6 +195,7 @@ function Dashboard() {
           <i className="bi bi-x-circle"></i>
           Sin stock
         </span>
+        </div>
       </div>
 
       {loading ? (
@@ -317,6 +325,11 @@ function Dashboard() {
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}
         loading={deleting}
+      />
+      <ImportModal
+        show={importOpen}
+        onClose={() => setImportOpen(false)}
+        onImported={() => { setPage(1); fetchProductos(); }}
       />
     </div>
     </>
