@@ -58,10 +58,10 @@ function ProductForm() {
   const handleFile = e => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
-    setImagen(files[0]);
+    setImagen(prev => prev || files[0]);
     setImagenExistente('');
-    setImagenes(files);
-    setPreviews(files.map(f => URL.createObjectURL(f)));
+    setImagenes(prev => [...prev, ...files]);
+    setPreviews(prev => [...prev, ...files.map(f => URL.createObjectURL(f))]);
   };
 
   const openFilePicker = () => fileRef.current?.click();
@@ -175,9 +175,23 @@ function ProductForm() {
                 </div>
                 <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={handleFile} style={{ display: 'none' }} />
                 <button type="button" className="btn btn-sm btn-outline mt-2 w-100" onClick={openFilePicker}>
-                  <i className="bi bi-camera me-1"></i>{previewUrl ? 'Cambiar imagen' : 'Subir imágenes'}
+                  <i className="bi bi-camera me-1"></i>{previewUrl ? 'Cambiar / agregar imágenes' : 'Subir imágenes'}
                 </button>
                 <span className="d-block text-center mt-1" style={{ fontSize: 11, color: 'var(--text-secondary)' }}>La primera es la principal</span>
+                {previews.length > 1 && (
+                  <div className="row g-1 mt-2">
+                    {previews.map((p, i) => (
+                      <div className="col-4" key={i} style={{ position: 'relative' }}>
+                        <img src={p} alt={`Seleccionada ${i + 1}`} className="w-100" style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 6, border: i === 0 ? '2px solid var(--accent)' : '1px solid var(--border)' }} />
+                        {i === 0 && (
+                          <span className="position-absolute start-50 translate-middle-x" style={{ bottom: 2, background: 'var(--accent)', color: '#fff', borderRadius: 4, fontSize: 9, fontWeight: 600, padding: '0 5px', lineHeight: '14px', whiteSpace: 'nowrap', zIndex: 1 }}>
+                            Principal
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="col-md-8">
                 <div className="mb-3">
