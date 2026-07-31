@@ -47,7 +47,7 @@ function Catalogo() {
   const fetchProductos = useCallback((cat = categoriaActiva, pg = page, search = searchQuery, sortBy = sort) => {
     setLoading(true);
 
-    const params = { page: pg, limit: 12, sort: sortBy };
+    const params = { page: pg, limit: 24, sort: sortBy };
     if (cat) params.categoria = cat;
     if (search) params.search = search;
     api.get('/productos', { params })
