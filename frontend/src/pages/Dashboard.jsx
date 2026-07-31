@@ -165,7 +165,7 @@ function Dashboard() {
             >
               <i className="bi bi-download"></i>
               {exporting ? 'Exportando...' : 'Exportar'}
-              <i className="bi bi-chevron-down" style={{ fontSize: '0.7rem' }}></i>
+              <i className="bi bi-chevron-up" style={{ fontSize: '0.7rem' }}></i>
             </button>
             {exportOpen && (
               <>
