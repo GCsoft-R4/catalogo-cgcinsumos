@@ -31,7 +31,8 @@ async function forgotPassword(req, res) {
       [tenantId, user.id, token, expiresAt]
     );
 
-    const resetUrl = `${req.protocol}://${req.headers.host}/admin/reset-password?token=${token}`;
+    const host = req.headers['x-forwarded-host'] || req.hostname || req.headers.host;
+    const resetUrl = `${req.protocol}://${host}/admin/reset-password?token=${token}`;
 
     await sendResetEmail(user.email, resetUrl);
 

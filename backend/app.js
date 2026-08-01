@@ -1,11 +1,20 @@
 require('dotenv').config();
 
+process.on('unhandledRejection', (reason) => {
+  console.error('[process] Unhandled promise rejection:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('[process] Uncaught exception:', err);
+});
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 
+const { pool } = require('./config/db');
 const { initDatabase } = require('./database/init');
 const { tenantMiddleware } = require('./middlewares/tenant');
 
@@ -80,10 +89,11 @@ const authLimiter = rateLimit({
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 500,
   message: { ok: false, error: 'Demasiadas solicitudes. Intentá de nuevo más tarde.' },
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) => req.headers.host || req.ip,
 });
 
 
@@ -93,6 +103,34 @@ const apiLimiter = rateLimit({
 
 app.use(express.json());
 
+
+// =======================
+// Health check — público, no pasa por tenant
+// =======================
+
+app.get('/health', async (req, res) => {
+  try {
+    await pool.query('SELECT 1');
+    res.json({ ok: true, db: 'up' });
+  } catch (e) {
+    console.error('[health] DB check failed:', e.message);
+    res.status(503).json({ ok: false, db: 'down', error: e.message });
+  }
+});
+
+// =======================
+// Request logger — antes de tenant para ver todo
+// =======================
+
+app.use('/api', (req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    console.log(
+      `[req] ${req.method} ${req.originalUrl} host=${req.headers.host} xff=${req.headers['x-forwarded-host'] || '-'} status=${res.statusCode} ${Date.now() - start}ms`
+    );
+  });
+  next();
+});
 
 // =======================
 // Archivos estáticos

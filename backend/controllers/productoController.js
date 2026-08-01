@@ -30,6 +30,12 @@ async function getAll(req, res) {
       conditions.push(`(p.nombre ILIKE $${++idx} OR p.descripcion ILIKE $${++idx} OR c.nombre ILIKE $${++idx})`);
     }
 
+    if (req.query.stock === 'bajo') {
+      conditions.push('(p.stock > 0 AND p.stock <= 2)');
+    } else if (req.query.stock === 'sin_stock') {
+      conditions.push('(p.stock <= 0 OR p.disponible = false)');
+    }
+
     const where = `WHERE ${conditions.join(' AND ')}`;
 
     const sortOptions = {
@@ -42,12 +48,6 @@ async function getAll(req, res) {
       newest: 'p.fecha_creacion DESC'
     };
     const orderBy = sortOptions[req.query.sort] || 'p.fecha_creacion DESC';
-
-    if (req.query.stock === 'bajo') {
-      conditions.push('(p.stock > 0 AND p.stock <= 2)');
-    } else if (req.query.stock === 'sin_stock') {
-      conditions.push('(p.stock <= 0 OR p.disponible = false)');
-    }
 
     const countResult = await pool.query(
       `SELECT COUNT(*)::int AS total FROM productos p
@@ -294,7 +294,13 @@ async function importar(req, res) {
       }
     });
   } catch (error) {
-    if (client) await client.query('ROLLBACK');
+    if (client) {
+      try {
+        await client.query('ROLLBACK');
+      } catch (rbErr) {
+        console.error('Error en ROLLBACK:', rbErr.message);
+      }
+    }
     res.status(500).json({ ok: false, error: error.message });
   } finally {
     if (client) client.release();
