@@ -9,11 +9,13 @@
 #   HEALTH_URL            URL a chequear (default: http://localhost:5000/health)
 #   WATCHDOG_LOG          archivo de log (default: /var/log/catalogoweb_health.log)
 #   ALERT_RETRIES         fallos consecutivos antes de alertar (default: 3)
-#   BACKEND_DIR           ruta absoluta del backend (para el script de email)
-#   ALERT_EMAIL_TO        email destinatario (requiere SMTP_* en backend/.env)
+#
+# Las alertas se envian por email con email-alert.js (misma carpeta), que lee
+# SMTP_* y ALERT_EMAIL_TO desde backend/.env. Requiere: npm install en watchdog/.
 #
 set -u
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 HEALTH_URL="${HEALTH_URL:-http://localhost:5000/health}"
 LOG_FILE="${WATCHDOG_LOG:-/var/log/catalogoweb_health.log}"
 STATE_DIR="${WATCHDOG_STATE_DIR:-/tmp/catalogoweb}"
@@ -21,19 +23,16 @@ STATE_FILE="$STATE_DIR/fail_count"
 ALERTED_FILE="$STATE_DIR/alerted"
 ALERT_RETRIES="${ALERT_RETRIES:-3}"
 
-BACKEND_DIR="${BACKEND_DIR:-}"
-ALERT_EMAIL_TO="${ALERT_EMAIL_TO:-}"
-
 log() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') $*" >> "$LOG_FILE"
 }
 
 send_alert_email() {
   local msg="$1"
-  if [ -n "$ALERT_EMAIL_TO" ] && [ -n "$BACKEND_DIR" ] && command -v node >/dev/null 2>&1; then
-    node "$BACKEND_DIR/scripts/watchdog-alert.js" "$msg" >> "$LOG_FILE" 2>&1
+  if command -v node >/dev/null 2>&1 && [ -d "$SCRIPT_DIR/node_modules" ]; then
+    node "$SCRIPT_DIR/email-alert.js" "$msg" >> "$LOG_FILE" 2>&1
   else
-    log "Email no enviado (falta ALERT_EMAIL_TO/BACKEND_DIR o node): $msg"
+    log "Email no enviado (falta node o npm install en watchdog/): $msg"
   fi
 }
 

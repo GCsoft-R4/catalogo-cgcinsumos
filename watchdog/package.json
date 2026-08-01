@@ -1,0 +1,9 @@
+{
+  "name": "catalogoweb-watchdog",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "nodemailer": "^6.9.15"
+  }
+}
