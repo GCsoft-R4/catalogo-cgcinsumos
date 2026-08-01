@@ -93,7 +93,7 @@ const apiLimiter = rateLimit({
   message: { ok: false, error: 'Demasiadas solicitudes. Intentá de nuevo más tarde.' },
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.headers.host || req.ip,
+  keyGenerator: (req) => req.headers.host || 'unknown-host',
 });
 
 
