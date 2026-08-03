@@ -67,11 +67,7 @@ function ProductoDetalle() {
         const p = res.data.data;
         setProducto(p);
         setColorActivo(null);
-        if (p.imagenes?.length) {
-          setSelectedImg(p.imagenes[0]);
-        } else if (p.imagen) {
-          setSelectedImg(p.imagen);
-        }
+        setSelectedImg(p.imagen || p.imagenes?.[0] || '');
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -119,11 +115,10 @@ function ProductoDetalle() {
     );
   }
 
-  const todasLasImagenes = producto.imagenes?.length
-    ? producto.imagenes
-    : (producto.imagen ? [producto.imagen] : []);
+  const todasLasImagenes = [producto.imagen, ...(producto.imagenes || [])]
+    .filter((f, i, arr) => f && arr.indexOf(f) === i);
 
-  const ogImage = producto.imagenes?.[0] || producto.imagen;
+  const ogImage = producto.imagen || producto.imagenes?.[0];
 
   const descParsed = parseDescription(producto.descripcion);
 

@@ -1,4 +1,8 @@
 const { pool } = require('../config/db');
+const fs = require('fs');
+const path = require('path');
+
+const uploadsDir = path.join(__dirname, '..', 'uploads');
 
 async function getAll(req, res) {
   try {
@@ -112,7 +116,12 @@ async function getById(req, res) {
       'SELECT filename FROM producto_imagenes WHERE producto_id = $1 ORDER BY orden',
       [req.params.id]
     );
-    producto.imagenes = imagenes.rows.map(r => r.filename);
+    const lista = imagenes.rows.map(r => r.filename);
+    if (producto.imagen) {
+      producto.imagenes = [producto.imagen, ...lista.filter(f => f !== producto.imagen)];
+    } else {
+      producto.imagenes = lista;
+    }
 
     const todas = req.query.todas === '1';
     const colores = await pool.query(
@@ -131,16 +140,47 @@ async function getById(req, res) {
   }
 }
 
+async function limpiarArchivosHuerfanos(prevFilenames) {
+  const unicos = [...new Set(prevFilenames.filter(Boolean))];
+  if (unicos.length === 0) return;
+
+  const used = await pool.query(
+    `SELECT filename FROM (
+       SELECT imagen AS filename FROM productos WHERE imagen IS NOT NULL
+       UNION
+       SELECT filename FROM producto_imagenes
+       UNION
+       SELECT imagen AS filename FROM producto_colores WHERE imagen IS NOT NULL
+     ) u`
+  );
+  const usedSet = new Set(used.rows.map(r => r.filename));
+
+  for (const f of unicos) {
+    if (usedSet.has(f)) continue;
+    const fp = path.resolve(path.join(uploadsDir, f));
+    if (!fp.startsWith(path.resolve(uploadsDir)) || !fs.existsSync(fp)) continue;
+    try {
+      fs.unlinkSync(fp);
+      console.log(`[imagen] archivo huérfano borrado: ${f}`);
+    } catch (err) {
+      console.error(`[imagen] error al borrar ${f}:`, err.message);
+    }
+  }
+}
+
 async function create(req, res) {
   try {
     const tenantId = req.user?.tenant_id || req.tenant?.id;
-    const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id, disponible, oferta, stock, colores } = req.body;
+    const { nombre, descripcion, precio, imagen_existente, imagen_principal, galeria, categoria_id, disponible, oferta, stock, colores } = req.body;
+
+    let uploaded = [];
+    if (req.files && req.files.length > 0) uploaded = req.files.map(f => f.filename);
 
     let imagen = null;
-    let files = [];
-    if (req.files && req.files.length > 0) {
-      imagen = req.files[0].filename;
-      files = req.files.slice(1).map(f => f.filename);
+    if (req.body.imagen_principal && !uploaded.includes(req.body.imagen_principal)) {
+      imagen = req.body.imagen_principal;
+    } else if (uploaded.length > 0) {
+      imagen = uploaded[0];
     } else if (imagen_existente) {
       imagen = imagen_existente;
     }
@@ -174,7 +214,7 @@ async function create(req, res) {
       const lista = JSON.parse(galeria);
       lista.forEach(f => { if (!todasLasImagenes.includes(f)) todasLasImagenes.push(f); });
     }
-    files.forEach(f => { if (!todasLasImagenes.includes(f)) todasLasImagenes.push(f); });
+    uploaded.forEach(f => { if (f !== imagen && !todasLasImagenes.includes(f)) todasLasImagenes.push(f); });
 
     for (let i = 0; i < todasLasImagenes.length; i++) {
       await pool.query(
@@ -310,7 +350,7 @@ async function importar(req, res) {
 async function update(req, res) {
   try {
     const tenantId = req.user?.tenant_id || req.tenant?.id;
-    const { nombre, descripcion, precio, imagen_existente, galeria, categoria_id, disponible, oferta, stock, colores } = req.body;
+    const { nombre, descripcion, precio, imagen_existente, imagen_principal, galeria, categoria_id, disponible, oferta, stock, colores } = req.body;
 
     const existing = await pool.query(
       'SELECT * FROM productos WHERE id = $1 AND tenant_id = $2',
@@ -326,11 +366,21 @@ async function update(req, res) {
 
     const productoActual = existing.rows[0];
 
+    const refsPrevias = [productoActual.imagen];
+    const prevGaleria = await pool.query(
+      'SELECT filename FROM producto_imagenes WHERE producto_id = $1',
+      [req.params.id]
+    );
+    refsPrevias.push(...prevGaleria.rows.map(r => r.filename));
+
+    let uploaded = [];
+    if (req.files && req.files.length > 0) uploaded = req.files.map(f => f.filename);
+
     let imagen = productoActual.imagen;
-    let files = [];
-    if (req.files && req.files.length > 0) {
-      imagen = req.files[0].filename;
-      files = req.files.slice(1).map(f => f.filename);
+    if (req.body.imagen_principal && !uploaded.includes(req.body.imagen_principal)) {
+      imagen = req.body.imagen_principal;
+    } else if (uploaded.length > 0) {
+      imagen = uploaded[0];
     } else if (imagen_existente !== undefined) {
       imagen = imagen_existente;
     }
@@ -367,14 +417,14 @@ async function update(req, res) {
       ]
     );
 
-    if (galeria || files.length > 0) {
+    if (galeria !== undefined || uploaded.length > 0) {
       await pool.query('DELETE FROM producto_imagenes WHERE producto_id = $1', [req.params.id]);
       const todasLasImagenes = [];
       if (galeria) {
         const lista = JSON.parse(galeria);
         lista.forEach(f => { if (!todasLasImagenes.includes(f)) todasLasImagenes.push(f); });
       }
-      files.forEach(f => { if (!todasLasImagenes.includes(f)) todasLasImagenes.push(f); });
+      uploaded.forEach(f => { if (f !== imagen && !todasLasImagenes.includes(f)) todasLasImagenes.push(f); });
       for (let i = 0; i < todasLasImagenes.length; i++) {
         await pool.query(
           'INSERT INTO producto_imagenes (producto_id, filename, orden) VALUES ($1, $2, $3)',
@@ -395,6 +445,8 @@ async function update(req, res) {
         );
       }
     }
+
+    await limpiarArchivosHuerfanos(refsPrevias);
 
     res.json({
       ok: true,

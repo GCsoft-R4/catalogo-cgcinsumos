@@ -2,17 +2,16 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api, { imageUrl } from '../services/api';
 
+let imgSeq = 0;
+const uid = () => `img-${++imgSeq}`;
+
 function ProductForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEdit = !!id;
 
   const [form, setForm] = useState({ nombre: '', descripcion: '', precio: '' });
-  const [imagen, setImagen] = useState(null);
-  const [imagenes, setImagenes] = useState([]);
-  const [imagenExistente, setImagenExistente] = useState('');
-  const [previews, setPreviews] = useState([]);
-  const [galeria, setGaleria] = useState([]);
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEdit);
   const [allImages, setAllImages] = useState([]);
@@ -42,13 +41,14 @@ function ProductForm() {
         if (p.disponible !== undefined) setDisponible(p.disponible);
         if (p.oferta !== undefined) setOferta(p.oferta);
         if (p.stock !== undefined) setStock(p.stock);
-        if (p.imagen) {
-          setImagenExistente(p.imagen);
-          setPreviews([imageUrl(p.imagen)]);
-        }
-        if (p.imagenes?.length) {
-          setGaleria(p.imagenes.filter(f => f !== p.imagen));
-        }
+        const list = [];
+        if (p.imagen) list.push({ id: uid(), kind: 'existing', name: p.imagen, url: imageUrl(p.imagen) });
+        (p.imagenes || []).forEach(f => {
+          if (f && f !== p.imagen && !list.some(i => i.name === f)) {
+            list.push({ id: uid(), kind: 'existing', name: f, url: imageUrl(f) });
+          }
+        });
+        setItems(list);
         if (p.colores) setColores(p.colores);
       })
       .catch(() => navigate('/admin/productos'))
@@ -60,38 +60,36 @@ function ProductForm() {
   const handleFile = e => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
-    setImagen(prev => prev || files[0]);
-    setImagenExistente('');
-    setImagenes(prev => [...prev, ...files]);
-    setPreviews(prev => [...prev, ...files.map(f => URL.createObjectURL(f))]);
+    const nuevos = files.map(f => ({ id: uid(), kind: 'new', file: f, name: f.name, url: URL.createObjectURL(f) }));
+    setItems(prev => [...prev, ...nuevos]);
   };
 
   const openFilePicker = () => fileRef.current?.click();
 
-  const toggleGaleria = filename => {
-    setImagen(null);
-    setImagenes([]);
-    setPreviews([]);
-    if (fileRef.current) fileRef.current.value = '';
-    setGaleria(prev => {
-      const isIn = prev.includes(filename);
-      if (isIn) {
-        const next = prev.filter(f => f !== filename);
-        if (next.length > 0) {
-          setImagenExistente(next[0]);
-          setPreviews([imageUrl(next[0])]);
-        } else {
-          setImagenExistente('');
-          setPreviews([]);
-        }
-        return next;
-      } else {
-        if (prev.length === 0) {
-          setImagenExistente(filename);
-          setPreviews([imageUrl(filename)]);
-        }
-        return [...prev, filename];
-      }
+  const removeItem = id => {
+    setItems(prev => {
+      const target = prev.find(i => i.id === id);
+      if (target?.kind === 'new' && target.url?.startsWith('blob:')) URL.revokeObjectURL(target.url);
+      return prev.filter(i => i.id !== id);
+    });
+  };
+
+  const setMain = id => {
+    setItems(prev => {
+      const idx = prev.findIndex(i => i.id === id);
+      if (idx <= 0) return prev;
+      const next = [...prev];
+      const [item] = next.splice(idx, 1);
+      next.unshift(item);
+      return next;
+    });
+  };
+
+  const togglePoolImage = name => {
+    setItems(prev => {
+      const inList = prev.some(i => i.kind === 'existing' && i.name === name);
+      if (inList) return prev.filter(i => !(i.kind === 'existing' && i.name === name));
+      return [...prev, { id: uid(), kind: 'existing', name, url: imageUrl(name) }];
     });
   };
 
@@ -106,18 +104,14 @@ function ProductForm() {
     fd.append('oferta', oferta ? '1' : '0');
     fd.append('stock', stock);
     if (categoriaId) fd.append('categoria_id', categoriaId);
-    if (imagenes.length > 0) {
-      imagenes.forEach(f => fd.append('imagenes', f));
-    } else if (imagenExistente) {
-      fd.append('imagen_existente', imagenExistente);
-    }
-    const todasGaleria = [...galeria];
-    if (imagenExistente && !todasGaleria.includes(imagenExistente)) {
-      todasGaleria.unshift(imagenExistente);
-    }
-    if (todasGaleria.length > 0) {
-      fd.append('galeria', JSON.stringify(todasGaleria));
-    }
+
+    const mainItem = items[0];
+    const newFiles = items.filter(i => i.kind === 'new').map(i => i.file);
+    const existingNames = items.filter(i => i.kind === 'existing').map(i => i.name);
+    newFiles.forEach(f => fd.append('imagenes', f));
+    if (mainItem?.kind === 'existing') fd.append('imagen_principal', mainItem.name);
+    fd.append('imagen_existente', mainItem?.kind === 'existing' ? mainItem.name : '');
+    fd.append('galeria', JSON.stringify(existingNames));
     if (colores.length > 0) {
       fd.append('colores', JSON.stringify(colores));
     }
@@ -137,8 +131,6 @@ function ProductForm() {
       setLoading(false);
     }
   };
-
-  const previewUrl = previews.length > 0 ? previews[0] : null;
 
   const agregarColor = () => {
     setColores(prev => [...prev, { nombre: '', hex: '#000000', imagen: '', disponible: true }]);
@@ -174,34 +166,55 @@ function ProductForm() {
             <div className="row g-3">
               <div className="col-md-4">
                 <label className="form-label d-block" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-                  Imagen principal
+                  Fotos del producto
                 </label>
                 <div
                   className="border rounded d-flex align-items-center justify-content-center flex-column"
-                  style={{ width: '100%', aspectRatio: '1', maxWidth: 200, background: '#f8f9fa', cursor: 'pointer' }}
+                  style={{ width: '100%', aspectRatio: '1', maxWidth: 200, background: '#f8f9fa', cursor: 'pointer', position: 'relative' }}
                   onClick={openFilePicker}
+                  title="Subir imágenes"
                 >
-                  {previewUrl ? (
-                    <img src={previewUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 4 }} />
+                  {items[0] ? (
+                    <img src={items[0].url} alt="Principal" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 4 }} />
                   ) : (
                     <>
                       <i className="bi bi-image" style={{ fontSize: '2rem', color: 'var(--text-secondary)', opacity: 0.4 }}></i>
                       <span className="small mt-1" style={{ color: 'var(--text-secondary)' }}>Sin imagen</span>
                     </>
                   )}
+                  {items[0] && (
+                    <span className="badge position-absolute" style={{ bottom: 6, left: 6, background: 'var(--accent)', color: '#fff', fontSize: 10, fontWeight: 600, zIndex: 1 }}>
+                      Principal
+                    </span>
+                  )}
                 </div>
                 <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={handleFile} style={{ display: 'none' }} />
                 <button type="button" className="btn btn-sm btn-outline mt-2 w-100" onClick={openFilePicker}>
-                  <i className="bi bi-camera me-1"></i>{previewUrl ? 'Cambiar / agregar imágenes' : 'Subir imágenes'}
+                  <i className="bi bi-camera me-1"></i>{items.length ? 'Agregar más imágenes' : 'Subir imágenes'}
                 </button>
-                <span className="d-block text-center mt-1" style={{ fontSize: 11, color: 'var(--text-secondary)' }}>La primera es la principal</span>
-                {previews.length > 1 && (
-                  <div className="row g-1 mt-2">
-                    {previews.map((p, i) => (
-                      <div className="col-4" key={i} style={{ position: 'relative' }}>
-                        <img src={p} alt={`Seleccionada ${i + 1}`} className="w-100" style={{ aspectRatio: '1', objectFit: 'cover', borderRadius: 6, border: i === 0 ? '2px solid var(--accent)' : '1px solid var(--border)' }} />
+                <span className="d-block text-center mt-1" style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
+                  Clickeá una foto para hacerla principal · X para borrarla (se elimina al guardar)
+                </span>
+                {items.length > 0 && (
+                  <div className="d-flex flex-wrap gap-2 mt-2">
+                    {items.map((it, i) => (
+                      <div key={it.id} className="position-relative" style={{ width: 56, cursor: 'pointer' }} onClick={() => setMain(it.id)} title="Hacer principal">
+                        <img
+                          src={it.url}
+                          alt={`Foto ${i + 1}`}
+                          style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 6, border: i === 0 ? '2px solid var(--accent)' : '1px solid var(--border)' }}
+                        />
+                        <button
+                          type="button"
+                          className="btn border-0 p-0 position-absolute"
+                          style={{ top: -6, right: -6, width: 18, height: 18, fontSize: 11, lineHeight: '18px', borderRadius: '50%', background: '#dc3545', color: '#fff', zIndex: 2 }}
+                          onClick={ev => { ev.stopPropagation(); removeItem(it.id); }}
+                          title="Borrar foto"
+                        >
+                          <i className="bi bi-x"></i>
+                        </button>
                         {i === 0 && (
-                          <span className="position-absolute start-50 translate-middle-x" style={{ bottom: 2, background: 'var(--accent)', color: '#fff', borderRadius: 4, fontSize: 9, fontWeight: 600, padding: '0 5px', lineHeight: '14px', whiteSpace: 'nowrap', zIndex: 1 }}>
+                          <span className="position-absolute start-50 translate-middle-x" style={{ bottom: 2, background: 'var(--accent)', color: '#fff', borderRadius: 4, fontSize: 8, fontWeight: 600, padding: '0 4px', lineHeight: '13px', whiteSpace: 'nowrap', zIndex: 1 }}>
                             Principal
                           </span>
                         )}
@@ -318,17 +331,17 @@ function ProductForm() {
                     <div className="row g-2 mt-1 px-2" style={{ animation: 'fadeIn 0.2s ease' }}>
                       {groups[key].map(img => {
                         const name = typeof img === 'string' ? img : img.name;
-                        const enGaleria = galeria.includes(name) || imagenExistente === name;
-                        const esPrincipal = imagenExistente === name;
+                        const esPrincipal = items[0]?.kind === 'existing' && items[0].name === name;
+                        const enProducto = items.some(i => i.kind === 'existing' && i.name === name);
                         return (
                           <div className="col-4 col-sm-3 col-md-2" key={name}>
-                            <div className={`p-1 border rounded ${esPrincipal ? 'border-primary' : enGaleria ? 'border-success' : ''}`} style={{ cursor: 'pointer', borderWidth: esPrincipal || enGaleria ? 2 : 1, position: 'relative', transition: 'border-color 0.15s' }} onClick={() => toggleGaleria(name)}>
+                            <div className={`p-1 border rounded ${esPrincipal ? 'border-primary' : enProducto ? 'border-success' : ''}`} style={{ cursor: 'pointer', borderWidth: esPrincipal || enProducto ? 2 : 1, position: 'relative', transition: 'border-color 0.15s' }} onClick={() => togglePoolImage(name)}>
                               {esPrincipal && (
                                 <span className="position-absolute start-50 translate-middle-x" style={{ top: -1, background: 'var(--accent)', color: '#fff', borderRadius: 4, fontSize: 9, fontWeight: 600, padding: '0 5px', lineHeight: '16px', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap', zIndex: 1 }}>
                                   Principal
                                 </span>
                               )}
-                              {enGaleria && !esPrincipal && (
+                              {enProducto && !esPrincipal && (
                                 <span className="position-absolute top-0 end-0" style={{ background: '#198754', color: '#fff', borderRadius: '50%', width: 18, height: 18, fontSize: 11, lineHeight: '18px', textAlign: 'center', margin: 2 }}>
                                   <i className="bi bi-check"></i>
                                 </span>

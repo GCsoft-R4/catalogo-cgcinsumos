@@ -6,7 +6,15 @@ const uploadsDir = path.join(__dirname, '..', 'uploads');
 
 async function listImages(req, res) {
   try {
-    const usedResult = await pool.query('SELECT DISTINCT filename FROM producto_imagenes');
+    const usedResult = await pool.query(
+      `SELECT filename FROM (
+         SELECT imagen AS filename FROM productos WHERE imagen IS NOT NULL
+         UNION
+         SELECT filename FROM producto_imagenes
+         UNION
+         SELECT imagen AS filename FROM producto_colores WHERE imagen IS NOT NULL
+       ) u`
+    );
     const usedSet = new Set(usedResult.rows.map(r => r.filename));
 
     const files = fs.readdirSync(uploadsDir)
@@ -41,12 +49,21 @@ async function deleteImage(req, res) {
       return res.status(404).json({ ok: false, error: 'Imagen no encontrada' });
     }
 
-    // Verificar si está siendo usada por algún producto
+    // Verificar si está siendo usada por algún producto (principal, galería o colores)
     const usage = await pool.query(
       `SELECT DISTINCT p.id, p.nombre
+       FROM productos p
+       WHERE p.imagen = $1
+       UNION
+       SELECT DISTINCT p.id, p.nombre
        FROM producto_imagenes pi
        JOIN productos p ON p.id = pi.producto_id
-       WHERE pi.filename = $1`,
+       WHERE pi.filename = $1
+       UNION
+       SELECT DISTINCT p.id, p.nombre
+       FROM producto_colores pc
+       JOIN productos p ON p.id = pc.producto_id
+       WHERE pc.imagen = $1`,
       [filename]
     );
 
