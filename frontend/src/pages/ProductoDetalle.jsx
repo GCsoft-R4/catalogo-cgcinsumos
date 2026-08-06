@@ -227,7 +227,7 @@ function ProductoDetalle() {
           ) : descParsed && descParsed.type === 'text' ? (
             <p className="text-muted" style={{ fontSize: '1rem', lineHeight: 1.7 }}>{descParsed.content}</p>
           ) : null}
-          <div className="d-flex flex-wrap gap-2 mt-4">
+          <div className="d-flex flex-column flex-md-row flex-wrap gap-2 mt-4">
             <button
               className="btn d-inline-flex align-items-center justify-content-center gap-2"
               style={{ background: sinStock ? '#e5e7eb' : (added ? '#198754' : 'var(--accent)'), color: sinStock ? '#9ca3af' : '#fff', borderRadius: 8, fontWeight: 600, padding: '0.65rem 1.25rem', fontSize: '0.9rem', border: 'none', transition: 'background 0.15s', flex: '1 1 auto', minWidth: 160, cursor: sinStock ? 'not-allowed' : 'pointer' }}
