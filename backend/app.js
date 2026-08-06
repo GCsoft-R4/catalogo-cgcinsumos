@@ -98,6 +98,18 @@ const apiLimiter = rateLimit({
   },
 });
 
+const visitasLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 60,
+  message: { ok: false, error: 'Demasiadas solicitudes. Intentá de nuevo más tarde.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => {
+    const ip = (req.ip || req.socket?.remoteAddress || '').replace(/^::ffff:/, '');
+    return ip || req.headers.host || 'unknown';
+  },
+});
+
 
 // =======================
 // Middlewares globales
@@ -150,6 +162,7 @@ app.use(
 
 app.use('/api/login', authLimiter);
 app.use('/api/forgot-password', authLimiter);
+app.use('/api/visitas', visitasLimiter);
 app.use('/api', apiLimiter);
 
 // =======================

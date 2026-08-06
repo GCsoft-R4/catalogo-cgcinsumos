@@ -21,7 +21,10 @@ async function registrarVisita(req, res) {
   try {
     const tenantId = req.tenant?.id;
     const ip = req.ip || req.connection?.remoteAddress || '';
-    const pagina = req.body?.pagina || '/';
+    let pagina = String(req.body?.pagina || '/').slice(0, 200);
+    if (!/^\/[a-zA-Z0-9/_-]*$/.test(pagina)) {
+      pagina = '/';
+    }
     await pool.query(
       'INSERT INTO visitas (tenant_id, ip, pagina) VALUES ($1, $2, $3)',
       [tenantId, ip, pagina]
