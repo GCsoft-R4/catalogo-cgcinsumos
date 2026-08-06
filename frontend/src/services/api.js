@@ -5,6 +5,7 @@ const API_HOSTS = {
   'catalogo-web-nine.vercel.app': 'productosgc.duckdns.org',
   'gc-catalogo.vercel.app': 'productosgc.duckdns.org',
   'catalogo-cgcinsumos.vercel.app': 'serenidad-gp.duckdns.org',
+  'serenidad-gp.vercel.app': 'serenidad-gp.duckdns.org',
 };
 
 const siteHost = typeof window !== 'undefined' ? window.location.hostname : '';
