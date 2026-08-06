@@ -17,8 +17,8 @@ function Dashboard() {
   const [search, setSearch] = useState('');
   const [categoria, setCategoria] = useState('');
   const [stockFilter, setStockFilter] = useState('');
-  const [sortField, setSortField] = useState('fecha_creacion');
-  const [sortDir, setSortDir] = useState('desc');
+  const [sortField, setSortField] = useState('nombre');
+  const [sortDir, setSortDir] = useState('asc');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
