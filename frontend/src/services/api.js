@@ -1,7 +1,15 @@
 import axios from 'axios';
 import { navigate } from './navigation';
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+const API_HOSTS = {
+  'catalogo-web-nine.vercel.app': 'productosgc.duckdns.org',
+  'gc-catalogo.vercel.app': 'productosgc.duckdns.org',
+  'serenidad-gp.vercel.app': 'serenidad-gp.duckdns.org',
+};
+
+const siteHost = typeof window !== 'undefined' ? window.location.hostname : '';
+const apiHost = API_HOSTS[siteHost] || (siteHost.endsWith('.duckdns.org') ? siteHost : '');
+const API_BASE = apiHost ? `https://${apiHost}` : (import.meta.env.VITE_API_URL || '');
 
 const api = axios.create({
   baseURL: API_BASE ? `${API_BASE}/api` : '/api',
