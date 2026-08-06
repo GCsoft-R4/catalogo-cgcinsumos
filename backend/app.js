@@ -23,7 +23,6 @@ const productoRoutes = require('./routes/productos');
 const usuarioRoutes = require('./routes/usuarios');
 const categoriaRoutes = require('./routes/categorias');
 const resetRoutes = require('./routes/reset');
-const chatRoutes = require('./routes/chat');
 const configRoutes = require('./routes/config');
 const visitasRoutes = require('./routes/visitas');
 
@@ -163,7 +162,6 @@ app.use('/api', productoRoutes);
 app.use('/api', usuarioRoutes);
 app.use('/api', categoriaRoutes);
 app.use('/api', resetRoutes);
-app.use('/api', chatRoutes);
 app.use('/api', configRoutes);
 app.use('/api', visitasRoutes);
 
