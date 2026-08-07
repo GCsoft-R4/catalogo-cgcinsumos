@@ -287,6 +287,18 @@ async function initDatabase() {
         ) THEN
           ALTER TABLE configuracion ADD COLUMN color_secundario VARCHAR(9) NOT NULL DEFAULT '';
         END IF;
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='configuracion' AND column_name='color_fondo'
+        ) THEN
+          ALTER TABLE configuracion ADD COLUMN color_fondo VARCHAR(9) NOT NULL DEFAULT '';
+        END IF;
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='configuracion' AND column_name='color_fondo_secundario'
+        ) THEN
+          ALTER TABLE configuracion ADD COLUMN color_fondo_secundario VARCHAR(9) NOT NULL DEFAULT '';
+        END IF;
       END $$;
     `);
 

@@ -4,7 +4,7 @@ import { useConfig } from '../context/ConfigContext';
 
 function Configuracion() {
   const { refreshConfig } = useConfig();
-  const [form, setForm] = useState({ nombre_negocio: '', logo: '', logo_size: 50, telefono: '', direccion: '', horarios: '', marquesina: '', nosotros: '', facebook_url: '', instagram_url: '', whatsapp_number: '', color_primario: '#2563eb', color_secundario: '#d97706' });
+  const [form, setForm] = useState({ nombre_negocio: '', logo: '', logo_size: 50, telefono: '', direccion: '', horarios: '', marquesina: '', nosotros: '', facebook_url: '', instagram_url: '', whatsapp_number: '', color_primario: '#2563eb', color_secundario: '#d97706', color_fondo: '#f5f0eb', color_fondo_secundario: '#ffffff' });
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
   const [msgType, setMsgType] = useState('');
@@ -27,6 +27,8 @@ function Configuracion() {
         whatsapp_number: d.whatsapp_number || '',
         color_primario: d.color_primario || '#2563eb',
         color_secundario: d.color_secundario || '#d97706',
+        color_fondo: d.color_fondo || '#f5f0eb',
+        color_fondo_secundario: d.color_fondo_secundario || '#ffffff',
       });
     }).catch(() => {
       setMsg('Error al cargar la configuración');
@@ -212,6 +214,46 @@ function Configuracion() {
             />
           </div>
           <div className="form-text">Detalles y elementos de apoyo.</div>
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Color de fondo</label>
+          <div className="d-flex align-items-center gap-3">
+            <input
+              type="color"
+              className="form-control form-control-color"
+              style={{ width: 56, height: 38 }}
+              value={form.color_fondo}
+              onChange={e => setForm({ ...form, color_fondo: e.target.value })}
+            />
+            <input
+              type="text"
+              className="form-control"
+              style={{ maxWidth: 140 }}
+              value={form.color_fondo}
+              onChange={e => setForm({ ...form, color_fondo: e.target.value })}
+            />
+          </div>
+          <div className="form-text">Fondo de la página, navbar y menú.</div>
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Color de fondo de las tarjetas</label>
+          <div className="d-flex align-items-center gap-3">
+            <input
+              type="color"
+              className="form-control form-control-color"
+              style={{ width: 56, height: 38 }}
+              value={form.color_fondo_secundario}
+              onChange={e => setForm({ ...form, color_fondo_secundario: e.target.value })}
+            />
+            <input
+              type="text"
+              className="form-control"
+              style={{ maxWidth: 140 }}
+              value={form.color_fondo_secundario}
+              onChange={e => setForm({ ...form, color_fondo_secundario: e.target.value })}
+            />
+          </div>
+          <div className="form-text">Tarjetas de productos y superficies.</div>
         </div>
 
         <hr className="my-4" />

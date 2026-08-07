@@ -41,6 +41,8 @@ function ConfigProvider({ children }) {
     whatsapp_number: '',
     color_primario: '',
     color_secundario: '',
+    color_fondo: '',
+    color_fondo_secundario: '',
   });
 
   const fetchConfig = useCallback(() => {
@@ -61,6 +63,8 @@ function ConfigProvider({ children }) {
           whatsapp_number: d.whatsapp_number || '',
           color_primario: d.color_primario || '',
           color_secundario: d.color_secundario || '',
+          color_fondo: d.color_fondo || '',
+          color_fondo_secundario: d.color_fondo_secundario || '',
         });
       })
       .catch(() => {});
@@ -81,7 +85,13 @@ function ConfigProvider({ children }) {
       root.style.setProperty('--accent-secondary', normalizeHex(config.color_secundario));
       root.style.setProperty('--accent-secondary-hover', darken(config.color_secundario));
     }
-  }, [config.color_primario, config.color_secundario]);
+    if (normalizeHex(config.color_fondo)) {
+      root.style.setProperty('--bg-secondary', normalizeHex(config.color_fondo));
+    }
+    if (normalizeHex(config.color_fondo_secundario)) {
+      root.style.setProperty('--bg', normalizeHex(config.color_fondo_secundario));
+    }
+  }, [config.color_primario, config.color_secundario, config.color_fondo, config.color_fondo_secundario]);
 
   return (
     <ConfigContext.Provider value={{ ...config, refreshConfig: fetchConfig }}>
