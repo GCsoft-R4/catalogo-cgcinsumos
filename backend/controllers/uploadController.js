@@ -39,9 +39,10 @@ function uploadMultiple(req, res) {
 async function deleteImage(req, res) {
   try {
     const { filename } = req.params;
+    const base = path.resolve(uploadsDir) + path.sep;
     const filePath = path.resolve(path.join(uploadsDir, filename));
 
-    if (!filePath.startsWith(path.resolve(uploadsDir))) {
+    if (!filePath.startsWith(base)) {
       return res.status(400).json({ ok: false, error: 'Nombre de archivo inválido' });
     }
 

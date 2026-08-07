@@ -162,6 +162,7 @@ app.use(
 
 app.use('/api/login', authLimiter);
 app.use('/api/forgot-password', authLimiter);
+app.use('/api/reset-password', authLimiter);
 app.use('/api/visitas', visitasLimiter);
 app.use('/api', apiLimiter);
 
