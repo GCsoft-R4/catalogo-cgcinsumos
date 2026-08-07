@@ -128,7 +128,7 @@ app.get('/health', async (req, res) => {
     res.json({ ok: true, db: 'up' });
   } catch (e) {
     console.error('[health] DB check failed:', e.message);
-    res.status(503).json({ ok: false, db: 'down', error: e.message });
+    res.status(503).json({ ok: false, db: 'down' });
   }
 });
 

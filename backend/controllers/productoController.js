@@ -4,11 +4,16 @@ const path = require('path');
 
 const uploadsDir = path.join(__dirname, '..', 'uploads');
 
+function sendError(res, err, context) {
+  console.error(`[producto:${context}]`, err.message);
+  res.status(500).json({ ok: false, error: 'Error interno del servidor' });
+}
+
 async function getAll(req, res) {
   try {
     const tenantId = req.tenant?.id;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 12;
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 12));
     const offset = (page - 1) * limit;
     const categoria = req.query.categoria;
     const search = req.query.search;
@@ -91,7 +96,7 @@ async function getAll(req, res) {
       totalPages: Math.ceil(total / limit)
     });
   } catch (error) {
-    res.status(500).json({ ok: false, error: error.message });
+    sendError(res, error, 'getAll');
   }
 }
 
@@ -136,7 +141,7 @@ async function getById(req, res) {
     res.json({ ok: true, data: producto });
 
   } catch (error) {
-    res.status(500).json({ ok: false, error: error.message });
+    sendError(res, error, 'getById');
   }
 }
 
@@ -241,7 +246,7 @@ async function create(req, res) {
     });
 
   } catch (error) {
-    res.status(500).json({ ok: false, error: error.message });
+    sendError(res, error, 'create');
   }
 }
 
@@ -334,6 +339,7 @@ async function importar(req, res) {
       }
     });
   } catch (error) {
+    console.error('[producto:importar]', error.message);
     if (client) {
       try {
         await client.query('ROLLBACK');
@@ -341,7 +347,7 @@ async function importar(req, res) {
         console.error('Error en ROLLBACK:', rbErr.message);
       }
     }
-    res.status(500).json({ ok: false, error: error.message });
+    res.status(500).json({ ok: false, error: 'Error interno del servidor' });
   } finally {
     if (client) client.release();
   }
@@ -454,7 +460,7 @@ async function update(req, res) {
     });
 
   } catch (error) {
-    res.status(500).json({ ok: false, error: error.message });
+    sendError(res, error, 'update');
   }
 }
 
@@ -484,7 +490,7 @@ async function remove(req, res) {
     });
 
   } catch (error) {
-    res.status(500).json({ ok: false, error: error.message });
+    sendError(res, error, 'remove');
   }
 }
 
