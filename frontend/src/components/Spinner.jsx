@@ -1,4 +1,8 @@
+import { useConfig } from '../context/ConfigContext';
+import { imageUrl } from '../services/api';
+
 function Spinner() {
+  const { logo } = useConfig();
   return (
     <div style={{
       position: 'fixed',
@@ -10,7 +14,7 @@ function Spinner() {
       zIndex: 9999,
     }}>
       <div style={{ textAlign: 'center' }}>
-        <img src="/gclogo.png" alt="" style={{ height: 48, marginBottom: 16, opacity: 0.8 }} />
+        <img src={logo ? imageUrl(logo) : '/gclogo.png'} alt="" style={{ height: 48, marginBottom: 16, opacity: 0.8 }} />
         <div style={{
           width: 36,
           height: 36,
