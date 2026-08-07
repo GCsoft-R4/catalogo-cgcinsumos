@@ -271,6 +271,25 @@ async function initDatabase() {
       END $$;
     `);
 
+    // Migrar colores del negocio en configuracion
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='configuracion' AND column_name='color_primario'
+        ) THEN
+          ALTER TABLE configuracion ADD COLUMN color_primario VARCHAR(9) NOT NULL DEFAULT '';
+        END IF;
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='configuracion' AND column_name='color_secundario'
+        ) THEN
+          ALTER TABLE configuracion ADD COLUMN color_secundario VARCHAR(9) NOT NULL DEFAULT '';
+        END IF;
+      END $$;
+    `);
+
     // Migrar categoria_id
     await pool.query(`
       DO $$

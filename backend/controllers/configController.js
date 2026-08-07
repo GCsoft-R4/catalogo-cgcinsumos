@@ -6,10 +6,10 @@ async function getConfig(req, res, next) {
   try {
     const tenantId = req.tenant?.id;
     const result = await pool.query(
-      'SELECT nombre_negocio, logo, logo_size, telefono, direccion, horarios, marquesina, nosotros, facebook_url, instagram_url, whatsapp_number FROM configuracion WHERE tenant_id = $1',
+      'SELECT nombre_negocio, logo, logo_size, telefono, direccion, horarios, marquesina, nosotros, facebook_url, instagram_url, whatsapp_number, color_primario, color_secundario FROM configuracion WHERE tenant_id = $1',
       [tenantId]
     );
-    const config = result.rows[0] || { nombre_negocio: '', logo: '', logo_size: 50, telefono: '', direccion: '', horarios: '', marquesina: '', nosotros: '', facebook_url: '', instagram_url: '', whatsapp_number: '' };
+    const config = result.rows[0] || { nombre_negocio: '', logo: '', logo_size: 50, telefono: '', direccion: '', horarios: '', marquesina: '', nosotros: '', facebook_url: '', instagram_url: '', whatsapp_number: '', color_primario: '', color_secundario: '' };
     res.json({ ok: true, data: config });
   } catch (err) { next(err); }
 }
@@ -17,11 +17,11 @@ async function getConfig(req, res, next) {
 async function updateConfig(req, res, next) {
   try {
     const tenantId = req.tenant?.id;
-    const { nombre_negocio, logo, logo_size, telefono, direccion, horarios, marquesina, nosotros, facebook_url, instagram_url, whatsapp_number } = req.body;
+    const { nombre_negocio, logo, logo_size, telefono, direccion, horarios, marquesina, nosotros, facebook_url, instagram_url, whatsapp_number, color_primario, color_secundario } = req.body;
 
     await pool.query(
-      `UPDATE configuracion SET nombre_negocio = $1, logo = $2, logo_size = $3, telefono = $4, direccion = $5, horarios = $6, marquesina = $7, nosotros = $8, facebook_url = $9, instagram_url = $10, whatsapp_number = $11, updated_at = CURRENT_TIMESTAMP WHERE tenant_id = $12`,
-      [nombre_negocio || '', logo || '', logo_size || 50, telefono || '', direccion || '', horarios || '', marquesina || '', nosotros || '', facebook_url || '', instagram_url || '', whatsapp_number || '', tenantId]
+      `UPDATE configuracion SET nombre_negocio = $1, logo = $2, logo_size = $3, telefono = $4, direccion = $5, horarios = $6, marquesina = $7, nosotros = $8, facebook_url = $9, instagram_url = $10, whatsapp_number = $11, color_primario = $12, color_secundario = $13, updated_at = CURRENT_TIMESTAMP WHERE tenant_id = $14`,
+      [nombre_negocio || '', logo || '', logo_size || 50, telefono || '', direccion || '', horarios || '', marquesina || '', nosotros || '', facebook_url || '', instagram_url || '', whatsapp_number || '', color_primario || '', color_secundario || '', tenantId]
     );
 
     res.json({ ok: true });

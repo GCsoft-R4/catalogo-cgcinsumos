@@ -4,7 +4,7 @@ import { useConfig } from '../context/ConfigContext';
 
 function Configuracion() {
   const { refreshConfig } = useConfig();
-  const [form, setForm] = useState({ nombre_negocio: '', logo: '', logo_size: 50, telefono: '', direccion: '', horarios: '', marquesina: '', nosotros: '', facebook_url: '', instagram_url: '', whatsapp_number: '' });
+  const [form, setForm] = useState({ nombre_negocio: '', logo: '', logo_size: 50, telefono: '', direccion: '', horarios: '', marquesina: '', nosotros: '', facebook_url: '', instagram_url: '', whatsapp_number: '', color_primario: '#2563eb', color_secundario: '#d97706' });
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
   const [msgType, setMsgType] = useState('');
@@ -25,6 +25,8 @@ function Configuracion() {
         facebook_url: d.facebook_url || '',
         instagram_url: d.instagram_url || '',
         whatsapp_number: d.whatsapp_number || '',
+        color_primario: d.color_primario || '#2563eb',
+        color_secundario: d.color_secundario || '#d97706',
       });
     }).catch(() => {
       setMsg('Error al cargar la configuración');
@@ -166,6 +168,50 @@ function Configuracion() {
             placeholder="Ej: Mi Negocio"
           />
           <div className="form-text">Aparece en el navbar, sidebar y páginas del catálogo.</div>
+        </div>
+
+        <hr className="my-4" />
+
+        <h6 className="fw-bold mb-3">Colores del sitio</h6>
+        <div className="mb-3">
+          <label className="form-label">Color principal</label>
+          <div className="d-flex align-items-center gap-3">
+            <input
+              type="color"
+              className="form-control form-control-color"
+              style={{ width: 56, height: 38 }}
+              value={form.color_primario}
+              onChange={e => setForm({ ...form, color_primario: e.target.value })}
+            />
+            <input
+              type="text"
+              className="form-control"
+              style={{ maxWidth: 140 }}
+              value={form.color_primario}
+              onChange={e => setForm({ ...form, color_primario: e.target.value })}
+            />
+          </div>
+          <div className="form-text">Botones, precios, enlaces y acentos del catálogo.</div>
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Color secundario</label>
+          <div className="d-flex align-items-center gap-3">
+            <input
+              type="color"
+              className="form-control form-control-color"
+              style={{ width: 56, height: 38 }}
+              value={form.color_secundario}
+              onChange={e => setForm({ ...form, color_secundario: e.target.value })}
+            />
+            <input
+              type="text"
+              className="form-control"
+              style={{ maxWidth: 140 }}
+              value={form.color_secundario}
+              onChange={e => setForm({ ...form, color_secundario: e.target.value })}
+            />
+          </div>
+          <div className="form-text">Detalles y elementos de apoyo.</div>
         </div>
 
         <hr className="my-4" />
