@@ -19,7 +19,6 @@ autenticación JWT y **aislamiento multi‑tenant por dominio**.
 [Características](#-características) ·
 [Stack](#-stack) ·
 [Arquitectura](#-arquitectura) ·
-[Capturas](#️-capturas) ·
 [Instalación](#-configuración) ·
 [API](#-api) ·
 [Estructura](#-estructura)
@@ -33,12 +32,16 @@ autenticación JWT y **aislamiento multi‑tenant por dominio**.
 - [Stack](#-stack)
 - [Características](#-características)
 - [Arquitectura](#-arquitectura)
-- [Capturas](#️-capturas)
 - [Requisitos](#-requisitos)
 - [Configuración](#-configuración)
 - [Ejecutar](#-ejecutar)
 - [Variables de entorno](#-variables-de-entorno)
+- [Base de datos y migraciones](#-base-de-datos-y-migraciones)
+- [Multi‑tenant](#-multi-tenant)
 - [API](#-api)
+- [Seguridad](#-seguridad)
+- [Deploy en producción](#-deploy-en-producción)
+- [Mantenimiento](#-mantenimiento)
 - [Tests](#-tests)
 - [Estructura](#-estructura)
 - [Licencia](#-licencia)
@@ -49,87 +52,79 @@ autenticación JWT y **aislamiento multi‑tenant por dominio**.
 
 | Capa | Tecnología |
 |------|-----------|
-| **Frontend** | React 19 · Vite · React Router · Bootstrap 5 · Axios |
-| **Backend** | Node.js · Express · PostgreSQL |
-| **Infra** | Docker (backend) · Vercel (frontend) |
+| **Frontend** | React 19 · Vite · React Router v6 · Bootstrap 5 · Axios · jspdf (export PDF) · SheetJS/xlsx (export Excel) |
+| **Backend** | Node.js 20 · Express · PostgreSQL |
+| **Infra** | Docker (backend) · Vercel (frontend) · nginx (proxy reverso) |
 
 ---
 
 ## ✨ Características
 
 ### 🛍️ Catálogo público
-- Listado de productos con paginación y búsqueda
-- Filtro por categorías con carrusel horizontal (auto‑scroll + flechas)
-- Vista detalle de producto
+- Listado de productos con paginación (24/página), búsqueda y filtro por categorías
+- Carrusel de "Productos nuevos" (auto‑scroll + flechas); se oculta cuando hay filtro o búsqueda activa
+- Vista detalle de producto con **variantes de color** (imagen por color, disponibles y agotadas)
 - Marcas de **"Sin stock"** con imagen en escala de grises
-- Footer minimalista y marquesina promocional
+- Botones de acción responsivos (estilo WhatsApp, ver detalle, agregar al carrito) que se adaptan a pantallas pequeñas
+- Marquesina promocional, página "Nosotros", redes sociales y datos de contacto configurables
+- Contador de visitas (IP + geo)
 
 ### 🔐 Panel de administración (`/admin`)
 - Dashboard con listado de productos, búsqueda y paginación
-- CRUD de productos con subida de imágenes y galería
+- CRUD de productos con subida de imágenes (máx. 5 MB c/u, hasta 10 por producto), galería y variantes de color
+- Importación masiva desde Excel/CSV
 - CRUD de categorías
 - CRUD de usuarios con email y último acceso
 - Login / logout con JWT (expiración 24 h)
-- Recuperación de contraseña por email (Nodemailer)
+- Recuperación de contraseña por email con token de un solo uso (Nodemailer)
+- Configuración del negocio: nombre, logo, colores de marca, marquesina, texto "Nosotros", teléfono, dirección, horarios y redes
+- Panel de visitas con eliminación y limpieza
 
 ### 🛡️ Seguridad
-- JWT con bcrypt
-- Helmet (HTTP headers)
-- Rate limiting (10 intentos / 15 min en login y forgot‑password)
-- SQL parametrizado
-- CORS dinámico
-
-### 🏢 Multi‑tenant
-- Aislamiento por dominio (Host header)
-- Cada tenant tiene sus propios productos, categorías y usuarios
-- Middleware de tenant automático en todas las rutas `/api`
+- Passwords con bcrypt, JWT firmado (JWT_SECRET obligatorio al boot)
+- Helmet (HTTP headers + CSP)
+- Rate limiting: login / forgot-password / reset-password (10 intentos / 15 min), visitas (60 / 15 min), API general (500 / 15 min)
+- SQL 100 % parametrizado
+- CORS restringido a orígenes permitidos (default: dominios Vercel de producción)
+- Subida de archivos validada por tipo y tamaño, con nombres UUID
+- Path traversal mitigado en el borrado de imágenes
+- Errores de base ocultos al cliente (respuestas genéricas)
 
 ---
 
 ## 🗺️ Arquitectura
 
-<div align="center">
-<img src="./assets/architecture.png" alt="Diagrama de arquitectura multi-tenant" width="100%" />
-</div>
+```
+                        ┌───────────────────────────┐
+  Usuario → Vercel      │      Vercel (frontend)     │
+   (HTTPS) ────────────►│  React SPA · vercel.json   │
+                        │  headers CSP + rewrites    │
+                        └────────────┬──────────────┘
+                                     │ HTTPS (CORS)
+                        ┌────────────▼──────────────┐
+                        │  nginx (proxy reverso)     │
+                        │  productosgc.duckdns.org   │
+                        │  → 127.0.0.1:5000          │
+                        └────────────┬──────────────┘
+                                     │
+                        ┌────────────▼──────────────┐
+                        │  Docker: catalogoweb_backend│
+                        │  Express API + uploads     │
+                        └────────────┬──────────────┘
+                                     │
+                        ┌────────────▼──────────────┐
+                        │  PostgreSQL                │
+                        │  (catálogo)                │
+                        └───────────────────────────┘
+```
 
 El `Host` header de cada request identifica al tenant; el middleware de tenant
 resuelve el dominio contra la base y aísla las consultas de productos,
 categorías y usuarios para esa organización, antes de llegar a los controllers.
 
----
-
-## 🖼️ Capturas
-
-<table>
-<tr>
-<td width="50%">
-
-**Catálogo público**
-<img src="./assets/screenshot-catalogo.png" alt="Catálogo público de productos" width="100%" />
-
-</td>
-<td width="50%">
-
-**Panel — Productos**
-<img src="./assets/screenshot-productos.png" alt="Panel de administración - listado de productos" width="100%" />
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-**Panel — Nuevo producto**
-<img src="./assets/screenshot-nuevo-producto.png" alt="Formulario de alta de producto" width="100%" />
-
-</td>
-<td width="50%">
-
-**Panel — Usuarios**
-<img src="./assets/screenshot-usuarios.png" alt="Gestión de usuarios (emails ocultos)" width="100%" />
-
-</td>
-</tr>
-</table>
+> **Nota importante:** el frontend se sirve desde **Vercel**, no desde nginx.
+> nginx solo proxya la API. El CSP de la SPA se configura en `vercel.json`,
+> no en nginx. El backend **no** sirve la SPA.
 
 ---
 
@@ -137,7 +132,8 @@ categorías y usuarios para esa organización, antes de llegar a los controllers
 
 - Node.js 20+
 - PostgreSQL 14+
-- Docker (opcional, para backend)
+- Docker y Docker Compose (para producción)
+- Cuenta en Vercel (frontend)
 
 ---
 
@@ -158,21 +154,7 @@ cp .env.example .env
 npm install
 ```
 
-Editar `.env` con los datos de tu base PostgreSQL:
-
-```env
-PORT=5000
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=catalogo
-DB_USER=postgres
-DB_PASSWORD=postgres
-JWT_SECRET=una_clave_segura
-ADMIN_USER=admin
-ADMIN_PASS=admin123
-DEFAULT_DOMAIN=localhost
-CORS_ORIGINS=http://localhost:5173
-```
+Editar `.env` con los datos de tu base PostgreSQL (ver [variables](#-variables-de-entorno)).
 
 ### 3. Frontend
 
@@ -181,7 +163,7 @@ cd frontend
 npm install
 ```
 
-Crear archivo `frontend/.env`:
+Crear archivo `frontend/.env` (solo desarrollo):
 
 ```env
 VITE_API_URL=http://localhost:5000
@@ -194,7 +176,7 @@ VITE_API_URL=http://localhost:5000
 ### Desarrollo
 
 ```bash
-# Terminal 1 — Backend
+# Terminal 1 — Backend (inicializa la DB y el admin automáticamente)
 cd backend && npm start
 
 # Terminal 2 — Frontend
@@ -205,18 +187,10 @@ cd frontend && npm run dev
 
 ```bash
 git pull origin main
-docker compose build backend
-docker compose down
-docker compose up -d
+docker compose up -d --build backend
 ```
 
-### Frontend (Vercel)
-
-Conectar el repo a Vercel y agregar variable de entorno:
-
-| Name | Value |
-|------|-------|
-| `VITE_API_URL` | `https://tu-dominio.com` |
+El backend expone solo `127.0.0.1:5000` (no es accesible desde afuera; nginx hace de entrada).
 
 ---
 
@@ -232,54 +206,212 @@ Conectar el repo a Vercel y agregar variable de entorno:
 | `DB_NAME` | — | Nombre de la base |
 | `DB_USER` | — | Usuario de la base |
 | `DB_PASSWORD` | — | Contraseña |
-| `JWT_SECRET` | `secretkey` | Clave para firmar JWT |
+| `JWT_SECRET` | — | Clave para firmar JWT (**obligatoria**; el backend no arranca sin ella) |
 | `ADMIN_USER` | `admin` | Usuario admin del tenant por defecto |
-| `ADMIN_PASS` | `admin123` | Contraseña del admin |
+| `ADMIN_PASS` | — | Contraseña del admin (¡cambiarla en producción!) |
 | `DEFAULT_DOMAIN` | `localhost` | Dominio del tenant por defecto |
-| `CORS_ORIGINS` | — | Orígenes permitidos (separados por coma) |
-| `SMTP_HOST` | `smtp.gmail.com` | Servidor SMTP |
+| `CORS_ORIGINS` | dominios Vercel | Orígenes permitidos (separados por coma). Por defecto: `https://gc-catalogo.vercel.app,https://catalogo-web-nine.vercel.app` |
+| `SMTP_HOST` | `smtp.gmail.com` | Servidor SMTP (recuperación de contraseña) |
 | `SMTP_PORT` | `587` | Puerto SMTP |
 | `SMTP_USER` | — | Usuario SMTP |
 | `SMTP_PASS` | — | Contraseña de aplicación |
 | `SMTP_FROM` | `SMTP_USER` | Dirección de remitente |
 
-### Frontend (Vercel)
+### Frontend (Vercel / `.env` local)
 
 | Variable | Descripción |
 |----------|-------------|
-| `VITE_API_URL` | URL base de la API backend |
+| `VITE_API_URL` | URL base de la API backend (prod: `https://productosgc.duckdns.org`) |
+
+---
+
+## 🗄️ Base de datos y migraciones
+
+### Inicialización automática
+
+Al arrancar, `backend/database/init.js` crea las tablas si no existen y aplica
+migraciones idempotentes. También crea el tenant por defecto y el usuario admin
+si no existen. **No hay que crear el esquema a mano.**
+
+### Tablas
+
+- `tenants` — organizaciones multi‑tenant (`name`, `slug`, `domain`)
+- `productos` — nombre, descripción, precio, imagen principal, stock, `disponible`, `oferta`, `categoria_id`
+- `producto_imagenes` — galería (`producto_id`, `filename`, `orden`)
+- `producto_colores` — variantes de color (`producto_id`, `nombre`, `hex`, `imagen`, `disponible`, `orden`)
+- `categorias` — nombre, slug, orden (slug único por tenant)
+- `usuarios` — username, email, password (bcrypt), `ultimo_acceso` (único por tenant)
+- `configuracion` — datos del negocio por tenant (nombre, logo, colores, marquesina, nosotros, teléfono, dirección, horarios, redes)
+- `password_reset_tokens` — tokens de recuperación (un solo uso, expiran)
+- `visitas` — registro de visitas por IP y página (+ geo JSONB)
+
+### Migraciones manuales
+
+Los archivos viven en `backend/database/migrations/`:
+
+```bash
+docker exec catalogoweb_backend node scripts/run-migration.js 001_producto_colores.sql
+```
+
+(O con psql si se prefiere, ejecutando el archivo directamente.)
+
+---
+
+## 🏢 Multi‑tenant
+
+- Cada tenant se identifica por el `Host`/dominio del request (`backend/middlewares/tenant.js`).
+- Cada tenant tiene **sus propios** productos, categorías, usuarios y configuración.
+- El **slug** debe ser único; el **dominio** debe ser único.
+- El admin login usa `username` + `tenant` (único por tenant).
+- La SPA se sirve desde Vercel; cada dominio del tenant se conecta a la misma API, que resuelve el tenant por `Host`.
+
+### Crear un tenant nuevo
+
+```bash
+docker exec catalogoweb_backend node scripts/create-tenant.js "<Nombre>" "<slug>" "<dominio.com>" [usuario] [clave]
+# Ejemplo:
+docker exec catalogoweb_backend node scripts/create-tenant.js "Mi Negocio" "mi-negocio" "mi-negocio.midominio.com" admin "clave-segura"
+```
 
 ---
 
 ## 📡 API
 
+Todas las rutas públicas y protegidas pasan por el middleware de tenant.
+
 ### Públicos
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| `GET` | `/api/productos` | Listar productos (paginado, filtro por categoría/búsqueda) |
-| `GET` | `/api/productos/:id` | Detalle de producto |
+| `GET` | `/api/productos` | Listar productos (paginado, `?page`, `?limit`, `?categoria`, `?search`, `?oferta`) |
+| `GET` | `/api/productos/:id` | Detalle de producto (colores: `?todas=1` para admin, si no solo `disponible`) |
 | `GET` | `/api/categorias` | Listar categorías |
-| `POST` | `/api/forgot-password` | Solicitar recuperación de contraseña |
-| `POST` | `/api/reset-password` | Restablecer contraseña con token |
+| `POST` | `/api/visitas` | Registrar una visita (IP + página) |
+| `GET` | `/api/config` | Configuración pública del negocio |
+| `POST` | `/api/forgot-password` | Solicitar recuperación de contraseña (rate‑limited) |
+| `POST` | `/api/reset-password` | Restablecer contraseña con token (rate‑limited) |
+| `GET` | `/health` | Health check (DB) |
 
-### Protegidos (requieren JWT)
+### Protegidos (requieren JWT en `Authorization: Bearer <token>`)
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| `POST` | `/api/login` | Iniciar sesión |
+| `POST` | `/api/login` | Iniciar sesión (rate‑limited) |
 | `GET` | `/api/usuarios` | Listar usuarios |
 | `POST` | `/api/usuarios` | Crear usuario |
 | `PUT` | `/api/usuarios/:id` | Editar usuario |
 | `DELETE` | `/api/usuarios/:id` | Eliminar usuario |
-| `POST` | `/api/productos` | Crear producto |
+| `POST` | `/api/productos` | Crear producto (`multipart/form-data` con `imagenes[]`) |
+| `POST` | `/api/productos/importar` | Importación masiva (Excel/CSV) |
 | `PUT` | `/api/productos/:id` | Editar producto |
 | `DELETE` | `/api/productos/:id` | Eliminar producto |
 | `POST` | `/api/categorias` | Crear categoría |
 | `PUT` | `/api/categorias/:id` | Editar categoría |
 | `DELETE` | `/api/categorias/:id` | Eliminar categoría |
-| `POST` | `/api/upload` | Subir imagen |
+| `POST` | `/api/upload` | Subir una imagen |
+| `POST` | `/api/upload/multiple` | Subir varias imágenes (hasta 20) |
 | `GET` | `/api/uploads` | Listar imágenes subidas |
+| `DELETE` | `/api/uploads/:filename` | Eliminar imagen |
+| `PUT` | `/api/config` | Actualizar configuración del negocio |
+| `POST` | `/api/config/logo` | Subir logo |
+| `DELETE` | `/api/config/logo` | Eliminar logo |
+| `GET` | `/api/visitas` | Listar visitas |
+| `DELETE` | `/api/visitas` | Limpiar todas las visitas |
+| `DELETE` | `/api/visitas/:id` | Eliminar una visita |
+
+---
+
+## 🛡️ Seguridad
+
+### Resumen implementado
+- **Helmet + CSP**: `script-src 'self'` (sin `unsafe-inline` en el frontend servido por Vercel), `frame-ancestors 'none'`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`.
+- **Rate limiting**: ver [Características](#-seguridad). Aplica antes del middleware de tenant para no golpear la DB.
+- **Errores seguros**: la API responde `error: 'Error interno del servidor'` ante fallos internos, sin exponer detalles de la DB.
+- **Uploads**: límite 5 MB, extensión/tipo validados, nombre aleatorio UUID, y borrado protegido contra path traversal.
+- **Reset de contraseña**: token UUID de un solo uso con expiración (1 h), sin enumeración de usuarios.
+
+### CSP del frontend (Vercel)
+El CSP de la SPA se define en `frontend/vercel.json`:
+
+```
+default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';
+img-src 'self' data: https://placehold.co https://productosgc.duckdns.org https://serenidad-gp.duckdns.org;
+font-src 'self'; connect-src 'self' https://productosgc.duckdns.org https://serenidad-gp.duckdns.org;
+frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+```
+
+> Si agregás un dominio de tenant, tenés que sumarlo a `img-src` y `connect-src`
+> (y al `CORS_ORIGINS` del backend).
+
+### Deuda técnica conocida
+- El JWT se guarda en `localStorage` (aceptado; migrar a cookie `httpOnly` implica re‑diseñar el flujo de auth y riesgo de CSRF/lockout).
+- La validación de archivos se basa en tipo MIME/extensión (mejorar con magic bytes).
+- `GET /api/productos/:id?todas=1` no requiere JWT (diseño para el panel; aceptado).
+- `react-router-dom` está en v6 (v7 corrige un open redirect, pero el upgrade puede romper rutas).
+
+---
+
+## 🚀 Deploy en producción
+
+### 1. Backend (Docker + nginx)
+
+```bash
+# En el server
+cd /apps/catalogoweb
+git pull origin main
+docker compose up -d --build backend
+docker compose ps
+```
+
+Verificar:
+
+```bash
+curl http://127.0.0.1:5000/health
+```
+
+**nginx** proxya `productosgc.duckdns.org` → `127.0.0.1:5000` (SSL con certbot).
+Requisito: `client_max_body_size 10M;` para que las subidas lleguen al backend.
+
+### 2. Frontend (Vercel)
+
+- Conectar el repo a Vercel, proyecto con root en `frontend/`.
+- Build command: `npm run build`, output: `dist`.
+- Variable de entorno en Vercel:
+
+| Name | Value |
+|------|-------|
+| `VITE_API_URL` | `https://productosgc.duckdns.org` |
+
+- `vercel.json` ya incluye `rewrites` (SPA) y los headers de seguridad.
+- Agregar el dominio del tenant (p. ej. `gc-catalogo.vercel.app`) en el proyecto Vercel y en el CORS del backend.
+
+### 3. DNS
+- `productosgc.duckdns.org` → IP del server (DuckDNS).
+- El dominio público del catálogo → proyecto Vercel.
+
+---
+
+## 🔧 Mantenimiento
+
+```bash
+# Aplicar una migración
+docker exec catalogoweb_backend node scripts/run-migration.js 001_producto_colores.sql
+
+# Crear un tenant nuevo
+docker exec catalogoweb_backend node scripts/create-tenant.js "Negocio" "negocio" "dominio.com" admin "clave"
+
+# Deduplicar productos repetidos
+docker exec catalogoweb_backend node scripts/dedupe-productos.js
+
+# Capitalizar nombres de productos
+docker exec catalogoweb_backend node scripts/capitalize-productos.js
+
+# Logs
+docker logs -f catalogoweb_backend
+
+# Backup de la base
+docker exec catalogoweb_backend pg_dump -U postgres catalogo > backup_$(date +%F).sql
+```
 
 ---
 
@@ -296,24 +428,34 @@ cd frontend && npm test
 
 ```
 catalogo-cgcinsumos/
-├── assets/              # banner.png, architecture.png, capturas
+├── assets/                    # banner.png, architecture.png, capturas
 ├── backend/
-│   ├── config/          # db.js, mailer.js
-│   ├── controllers/     # Lógica CRUD
-│   ├── database/        # init.js (esquema + migraciones)
-│   ├── middlewares/     # auth, tenant, upload, validation
-│   ├── routes/          # Definición de rutas
-│   ├── uploads/         # Imágenes subidas
+│   ├── config/                # db.js (pool pg), mailer.js (nodemailer)
+│   ├── controllers/           # auth, producto, usuario, categoria, upload, reset, config, visitas
+│   ├── database/
+│   │   ├── init.js            # esquema + migraciones idempotentes + seed admin
+│   │   └── migrations/        # 001_producto_colores.sql, ...
+│   ├── middlewares/           # auth (JWT), tenant, upload (multer), validation
+│   ├── routes/                # productos, usuarios, categorias, auth, reset, config, visitas
+│   ├── scripts/               # run-migration, create-tenant, dedupe-productos, capitalize-productos
+│   ├── uploads/               # imágenes subidas (volumen Docker)
+│   ├── __tests__/             # vitest + supertest
+│   ├── app.js                 # express: helmet, CORS, rate-limit, tenant, rutas, errors
 │   ├── Dockerfile
-│   ├── app.js
 │   └── package.json
 ├── frontend/
-│   └── src/
-│       ├── components/  # Navbar, Sidebar, ProductCard, etc.
-│       ├── layouts/     # AdminLayout, PublicLayout
-│       ├── pages/       # Catalogo, Dashboard, ProductForm, etc.
-│       └── services/    # api.js (Axios)
-├── docker-compose.yml
+│   ├── src/
+│   │   ├── components/        # Navbar, Sidebar, ProductCard, Carrusel, Spinner, ...
+│   │   ├── context/           # ConfigContext, CartContext
+│   │   ├── layouts/           # AdminLayout, PublicLayout
+│   │   ├── pages/             # Catalogo, Dashboard, ProductForm, Categorias, Imagenes, Usuarios, Configuracion, Visitas, Login, ...
+│   │   ├── services/          # api.js (Axios), navigation.js
+│   │   ├── App.jsx            # rutas (React Router)
+│   │   └── main.jsx
+│   ├── vercel.json            # rewrites SPA + headers CSP
+│   ├── vite.config.js
+│   └── package.json
+├── docker-compose.yml         # solo backend, 127.0.0.1:5000:5000
 └── README.md
 ```
 
