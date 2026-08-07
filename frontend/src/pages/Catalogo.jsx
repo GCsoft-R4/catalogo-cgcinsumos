@@ -118,7 +118,7 @@ function Catalogo() {
     <div className="container py-5">
       <div className="row justify-content-center mb-4">
         <div className="col-md-6">
-          <div className="input-group" style={{ borderRadius: 12, border: '1px solid var(--border)' }}>
+          <div className="input-group" style={{ borderRadius: 12, border: '1px solid #333' }}>
             <input
               type="text"
               className="form-control form-control-lg border-0"
@@ -191,7 +191,7 @@ function Catalogo() {
             className="form-select form-select-sm"
             value={sort}
             onChange={e => { setSort(e.target.value); setPage(1); }}
-            style={{ borderRadius: 8, border: '1px solid var(--border)', padding: '0.4rem 2rem 0.4rem 0.75rem' }}
+            style={{ borderRadius: 8, border: '1px solid #333', padding: '0.4rem 2rem 0.4rem 0.75rem' }}
           >
             <option value="newest">Más nuevos</option>
             <option value="nombre_asc">Alfabético A-Z</option>
@@ -225,7 +225,7 @@ function Catalogo() {
           {/* Desktop: chips */}
           <div className="d-none d-md-flex flex-wrap gap-2 justify-content-center mb-4">
             <button
-              className={`btn btn-sm rounded-pill flex-shrink-0 ${!categoriaActiva ? 'btn-accent' : 'btn-outline'}`}
+              className={`btn btn-sm rounded-pill flex-shrink-0 categoria-pill ${!categoriaActiva ? 'btn-accent' : 'btn-outline'}`}
               onClick={() => cambiarCategoria('')}
             >
               Todas
@@ -233,7 +233,7 @@ function Catalogo() {
             {categorias.map(c => (
               <button
                 key={c.id}
-                className={`btn btn-sm rounded-pill flex-shrink-0 ${categoriaActiva === c.slug ? 'btn-accent' : 'btn-outline'}`}
+                className={`btn btn-sm rounded-pill flex-shrink-0 categoria-pill ${categoriaActiva === c.slug ? 'btn-accent' : 'btn-outline'}`}
                 onClick={() => cambiarCategoria(c.slug)}
               >
                 {c.nombre}
@@ -245,7 +245,7 @@ function Catalogo() {
           <div className="d-md-none mb-3" ref={menuRef}>
             <div className="dropdown" style={{ position: 'relative' }}>
               <button
-                className="btn btn-outline w-100 d-flex align-items-center justify-content-between"
+                className="btn btn-outline w-100 categoria-pill d-flex align-items-center justify-content-between"
                 onClick={() => setMenuCategoriasOpen(prev => !prev)}
                 style={{ borderRadius: 10, padding: '10px 14px' }}
               >

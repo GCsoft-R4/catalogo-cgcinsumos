@@ -212,6 +212,18 @@ body {
   transition: all 0.15s;
 }
 
+.categoria-pill.btn-outline {
+  border-color: #333;
+}
+
+.categoria-pill.btn-accent {
+  border: 1px solid #333;
+}
+
+.categoria-pill.btn-outline:hover {
+  border-color: #333;
+}
+
 .btn-outline:hover {
   border-color: var(--accent);
   color: var(--accent);
