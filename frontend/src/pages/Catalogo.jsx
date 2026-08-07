@@ -287,7 +287,7 @@ function Catalogo() {
         </>
       )}
 
-      {!searchQuery && (
+      {!searchQuery && !categoriaActiva && (
         <ProductosNuevos />
       )}
 
