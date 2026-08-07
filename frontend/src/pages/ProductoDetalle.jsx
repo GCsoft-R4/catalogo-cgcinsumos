@@ -229,8 +229,8 @@ function ProductoDetalle() {
           ) : null}
           <div className="d-flex flex-column flex-md-row flex-wrap gap-2 mt-4">
             <button
-              className="btn d-inline-flex align-items-center justify-content-center gap-2"
-              style={{ background: sinStock ? '#e5e7eb' : (added ? '#198754' : 'var(--accent)'), color: sinStock ? '#9ca3af' : '#fff', borderRadius: 8, fontWeight: 600, padding: '0.65rem 1.25rem', fontSize: '0.9rem', border: 'none', transition: 'background 0.15s', flex: '1 1 auto', minWidth: 160, cursor: sinStock ? 'not-allowed' : 'pointer' }}
+              className="btn detail-action-btn d-inline-flex align-items-center justify-content-center gap-2"
+              style={{ background: sinStock ? '#e5e7eb' : (added ? '#198754' : 'var(--accent)'), color: sinStock ? '#9ca3af' : '#fff', borderRadius: 8, fontWeight: 600, border: 'none', transition: 'background 0.15s', flex: '1 1 auto', minWidth: 160, cursor: sinStock ? 'not-allowed' : 'pointer' }}
               onClick={handleAddToCart}
               disabled={sinStock}
             >
@@ -244,8 +244,8 @@ function ProductoDetalle() {
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn d-inline-flex align-items-center justify-content-center gap-2"
-              style={{ background: 'transparent', color: '#25D366', border: '1px solid #25D366', borderRadius: 8, fontWeight: 600, padding: '0.65rem 1.25rem', fontSize: '0.9rem', flex: '1 1 auto', minWidth: 160 }}
+              className="btn detail-action-btn d-inline-flex align-items-center justify-content-center gap-2"
+              style={{ background: 'transparent', color: '#25D366', border: '1px solid #25D366', borderRadius: 8, fontWeight: 600, flex: '1 1 auto', minWidth: 160 }}
             >
               <i className="bi bi-whatsapp" style={{ fontSize: '1rem' }}></i>
               Consultar

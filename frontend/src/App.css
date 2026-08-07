@@ -106,6 +106,42 @@ body {
   overflow: hidden;
 }
 
+/* ==== Botones de acción (Agregar / Consultar) — responsive ==== */
+.card-action-btn {
+  font-size: clamp(0.62rem, 1.4vw, 0.72rem);
+  padding: 0.28rem 0.5rem;
+}
+
+.card-action-btn i {
+  font-size: 0.7rem;
+}
+
+.card-action-btn span {
+  white-space: normal;
+  line-height: 1.15;
+}
+
+.detail-action-btn {
+  font-size: clamp(0.8rem, 1.8vw, 0.9rem);
+  padding: 0.55rem 1rem;
+}
+
+@media (max-width: 575.98px) {
+  .card-action-btn {
+    font-size: 0.6rem;
+    padding: 0.25rem 0.35rem;
+    gap: 0.25rem;
+  }
+  .card-action-btn i {
+    font-size: 0.65rem;
+  }
+  .detail-action-btn {
+    font-size: 0.82rem;
+    padding: 0.5rem 0.9rem;
+    min-width: 100% !important;
+  }
+}
+
 .detail-image {
   border-radius: var(--radius);
   width: 100%;
