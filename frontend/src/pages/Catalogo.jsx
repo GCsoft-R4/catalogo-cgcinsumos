@@ -118,7 +118,7 @@ function Catalogo() {
     <div className="container py-5">
       <div className="row justify-content-center mb-4">
         <div className="col-md-6">
-          <div className="input-group" style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid var(--border)' }}>
+          <div className="input-group" style={{ borderRadius: 12, border: '1px solid var(--border)' }}>
             <input
               type="text"
               className="form-control form-control-lg border-0"
@@ -126,7 +126,7 @@ function Catalogo() {
               value={searchInput}
               onChange={e => setSearchInput(e.target.value)}
               onKeyDown={handleSearchKey}
-              style={{ padding: '0.85rem 1.2rem', boxShadow: 'none' }}
+              style={{ padding: '0.85rem 1.2rem', boxShadow: 'none', borderRadius: '12px 0 0 12px' }}
             />
             <button
               className="btn d-flex align-items-center justify-content-center"
